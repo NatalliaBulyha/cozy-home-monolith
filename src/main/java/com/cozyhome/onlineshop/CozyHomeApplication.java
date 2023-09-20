@@ -1,0 +1,13 @@
+package com.cozyhome.onlineshop;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+
+@SpringBootApplication
+@EnableFeignClients
+public class CozyHomeApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(CozyHomeApplication.class, args);
+    }
+}
