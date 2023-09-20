@@ -1,0 +1,26 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build and Test
+        run: |
+          mvn clean install
+          mvn test
+
+      - name: Deploy to Render
+        uses: render/action@v1
+        with:
+          renderEmail: ${{ secrets.RENDER_EMAIL }}
+          renderToken: ${{ secrets.RENDER_API_KEY }}
+          renderYamlPath: ./render.yaml

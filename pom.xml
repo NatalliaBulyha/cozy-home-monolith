@@ -120,5 +120,6 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>cozy-home</finalName>
 	</build>
 </project>
