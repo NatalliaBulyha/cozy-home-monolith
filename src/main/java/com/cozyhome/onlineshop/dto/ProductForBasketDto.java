@@ -11,13 +11,14 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Builder
 @Data
-public class ProductforBasket {
+public class ProductForBasketDto {
     private String skuCode;
     private String name;
     private BigDecimal price;
     private BigDecimal priceWithDiscount;
     private String imagePath;
     private String colorName;
+    private String colorHex;
     private int availableProductQuantity;
     private String quantityStatus;
 }

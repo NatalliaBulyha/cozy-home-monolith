@@ -3,7 +3,7 @@ package com.cozyhome.onlineshop.productservice.controller.impl;
 import com.cozyhome.onlineshop.productservice.controller.ProductController;
 import com.cozyhome.onlineshop.dto.ProductDto;
 import com.cozyhome.onlineshop.dto.ProductStatusDto;
-import com.cozyhome.onlineshop.dto.ProductforBasket;
+import com.cozyhome.onlineshop.dto.ProductForBasketDto;
 import com.cozyhome.onlineshop.dto.filter.FilterDto;
 import com.cozyhome.onlineshop.dto.productcard.ProductCardDto;
 import com.cozyhome.onlineshop.dto.request.PageableDto;
@@ -91,7 +91,7 @@ public class ProductControllerImpl implements ProductController {
 
     @Override
     @PostMapping("/basket")
-    public ResponseEntity<List<ProductforBasket>> getProductsForBasket(@RequestBody @Valid List<ProductColorDto> productColorDtos){
+    public ResponseEntity<List<ProductForBasketDto>> getProductsForBasket(@RequestBody @Valid List<ProductColorDto> productColorDtos){
         return ResponseEntity.ok().body(productService.getProductsForBasket(productColorDtos));
     }
 }

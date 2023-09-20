@@ -1,15 +1,16 @@
 package com.cozyhome.onlineshop.productservice.service.builder;
 
-import com.cozyhome.onlineshop.dto.CheckingProductAvailableAndStatusDto;
+import com.cozyhome.onlineshop.dto.inventory.CheckingProductAvailableAndStatusDto;
 import com.cozyhome.onlineshop.dto.CollectionDto;
 import com.cozyhome.onlineshop.dto.ColorDto;
 import com.cozyhome.onlineshop.dto.ProductDto;
-import com.cozyhome.onlineshop.dto.ProductforBasket;
-import com.cozyhome.onlineshop.dto.QuantityStatusDto;
+import com.cozyhome.onlineshop.dto.ProductForBasketDto;
+import com.cozyhome.onlineshop.dto.inventory.QuantityStatusDto;
 import com.cozyhome.onlineshop.dto.productcard.ColorQuantityStatusDto;
 import com.cozyhome.onlineshop.dto.productcard.ProductCardDto;
 import com.cozyhome.onlineshop.dto.review.ReviewDto;
 import com.cozyhome.onlineshop.dto.request.ProductColorDto;
+import com.cozyhome.onlineshop.inventoryservice.service.InventoryService;
 import com.cozyhome.onlineshop.productservice.model.Category;
 import com.cozyhome.onlineshop.productservice.model.Color;
 import com.cozyhome.onlineshop.productservice.model.ImageProduct;
@@ -20,7 +21,6 @@ import com.cozyhome.onlineshop.productservice.model.enums.ProductQuantityStatus;
 import com.cozyhome.onlineshop.productservice.repository.CategoryRepository;
 import com.cozyhome.onlineshop.productservice.repository.ImageProductRepository;
 import com.cozyhome.onlineshop.productservice.repository.ImageRepositoryCustom;
-import com.cozyhome.onlineshop.productservice.service.feign.InventoryServiceFeignClient;
 import com.cozyhome.onlineshop.reviewservice.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +46,7 @@ public class ProductBuilder {
 	private final ImageRepositoryCustom imageRepositoryCustom;
 	private final ImageProductRepository imageProductRepository;
 	private final ReviewService reviewService;
-	private final InventoryServiceFeignClient inventoryServiceFeignClient;
+	private final InventoryService inventoryService;
 
 	private static final BigDecimal NULL_PERCENT = new BigDecimal("0");
 	private static final DecimalFormat ROUND_ONE_PLACE = new DecimalFormat("0.0");
@@ -79,7 +79,7 @@ public class ProductBuilder {
 	}
 
 	private Map<String, String> getProductQuantityStatusMap(List<Product> products) {
-		Map<String, String> result = inventoryServiceFeignClient.getProductQuantityStatusMap(extractSkuCodes(products));
+		Map<String, String> result = inventoryService.getQuantityStatusBySkuCodeList(extractSkuCodes(products));
 		log.info("GET PRODUCT QUANTITY STATUS MAP " + result);
 		return result;
 	}
@@ -137,8 +137,8 @@ public class ProductBuilder {
 			productCardDto.setImages(imageBuilder.buildProductCardImageDtos(images));
 		}
 
-		QuantityStatusDto colorsQuantityStatus = inventoryServiceFeignClient
-				.getColorQuantityStatusBySkuCode(productSkuCode);
+		QuantityStatusDto colorsQuantityStatus = inventoryService
+				.getProductCardColorQuantityStatus(productSkuCode);
 		if (colorsQuantityStatus.getStatus() != null) {
 			productCardDto.setQuantityStatus(colorsQuantityStatus.getStatus());
 		}
@@ -182,17 +182,18 @@ public class ProductBuilder {
 		}
     }
 
-    public List<ProductforBasket> buildProductsShopCard(Map<String, Product> productsMap, Map<ProductColorDto, ImageProduct> imagesMap,
-                                                        List<ProductColorDto> productColorDtos,
-                                                        Map<ProductColorDto, CheckingProductAvailableAndStatusDto> productAvailableAndStatus) {
-        List<ProductforBasket> productShopCards = new ArrayList<>();
+    public List<ProductForBasketDto> buildProductsShopCard(Map<String, Product> productsMap, Map<ProductColorDto, ImageProduct> imagesMap,
+														   List<ProductColorDto> productColorDtos,
+														   Map<ProductColorDto, CheckingProductAvailableAndStatusDto> productAvailableAndStatus) {
+        List<ProductForBasketDto> productShopCards = new ArrayList<>();
         productColorDtos.forEach(productColor -> {
             BigDecimal discount = BigDecimal.valueOf(productsMap.get(productColor.getProductSkuCode()).getDiscount());
-            ProductforBasket productShopCard = ProductforBasket.builder()
+            ProductForBasketDto productShopCard = ProductForBasketDto.builder()
                 .skuCode(productColor.getProductSkuCode())
                 .name(productsMap.get(productColor.getProductSkuCode()).getName())
                 .price(productsMap.get(productColor.getProductSkuCode()).getPrice())
                 .colorName(ColorsEnum.getColorNameByHex(productColor.getColorHex()))
+				.colorHex(productColor.getColorHex())
                 .availableProductQuantity(productAvailableAndStatus.get(productColor).getAvailableProductQuantity())
                 .quantityStatus(productAvailableAndStatus.get(productColor).getQuantityStatus())
                 .build();

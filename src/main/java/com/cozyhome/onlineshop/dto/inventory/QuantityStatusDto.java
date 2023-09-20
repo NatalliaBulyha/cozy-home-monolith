@@ -1,4 +1,4 @@
-package com.cozyhome.onlineshop.dto;
+package com.cozyhome.onlineshop.dto.inventory;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,20 +1,20 @@
 package com.cozyhome.onlineshop.productservice.service.impl;
 
-import com.cozyhome.onlineshop.dto.CheckingProductAvailableAndStatusDto;
-import com.cozyhome.onlineshop.dto.InventoryForBasketDto;
+import com.cozyhome.onlineshop.dto.inventory.CheckingProductAvailableAndStatusDto;
+import com.cozyhome.onlineshop.dto.inventory.InventoryForBasketDto;
 import com.cozyhome.onlineshop.dto.ProductDto;
 import com.cozyhome.onlineshop.dto.ProductStatusDto;
-import com.cozyhome.onlineshop.dto.ProductforBasket;
+import com.cozyhome.onlineshop.dto.ProductForBasketDto;
 import com.cozyhome.onlineshop.dto.filter.FilterDto;
 import com.cozyhome.onlineshop.dto.productcard.ProductCardDto;
 import com.cozyhome.onlineshop.dto.request.PageableDto;
 import com.cozyhome.onlineshop.dto.request.ProductColorDto;
 import com.cozyhome.onlineshop.dto.request.SortDto;
+import com.cozyhome.onlineshop.inventoryservice.service.InventoryService;
 import com.cozyhome.onlineshop.productservice.model.ImageProduct;
 import com.cozyhome.onlineshop.productservice.model.Product;
 import com.cozyhome.onlineshop.productservice.model.enums.ProductStatus;
 import com.cozyhome.onlineshop.productservice.repository.CategoryRepository;
-import com.cozyhome.onlineshop.productservice.repository.ImageProductRepository;
 import com.cozyhome.onlineshop.productservice.repository.ImageRepositoryCustom;
 import com.cozyhome.onlineshop.productservice.repository.ProductRepository;
 import com.cozyhome.onlineshop.productservice.repository.ProductRepositoryCustom;
@@ -22,7 +22,6 @@ import com.cozyhome.onlineshop.productservice.service.CategoryService;
 import com.cozyhome.onlineshop.productservice.service.ProductService;
 import com.cozyhome.onlineshop.productservice.service.builder.ProductBuilder;
 import com.cozyhome.onlineshop.productservice.service.builder.ProductFilterParametersBuilder;
-import com.cozyhome.onlineshop.productservice.service.feign.InventoryServiceFeignClient;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
@@ -45,13 +44,12 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepositoryCustom productRepositoryCustom;
     private final ImageRepositoryCustom imageRepositoryCustom;
-    private final ImageProductRepository imageProductRepository;
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
     private final ProductBuilder productBuilder;
     private final ProductFilterParametersBuilder productFilterParametersBuilder;
-    private final InventoryServiceFeignClient inventoryServiceFeignClient;
+    private final InventoryService inventoryService;
 
     private final boolean isMain = true;
 
@@ -128,14 +126,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductforBasket> getProductsForBasket(List<ProductColorDto> productColorDtos) {
+    public List<ProductForBasketDto> getProductsForBasket(List<ProductColorDto> productColorDtos) {
         Map<String, Product> productMap = new HashMap<>();
         Map<ProductColorDto, CheckingProductAvailableAndStatusDto> productAvailableAndStatusMap = new HashMap<>();
 
         List<String> skuCodes = productColorDtos.stream().map(ProductColorDto::getProductSkuCode).toList();
         List<Product> products = productRepository.findAllByStatusNotDeletedAndSkuCodeIn(skuCodes);
         Map<ProductColorDto, ImageProduct> imagesMap = imageRepositoryCustom.findImagesByMainPhotoTrueAndProductSkuCodeWithColorHexIn(productColorDtos);
-        List<InventoryForBasketDto> inventoryForBasket = inventoryServiceFeignClient.getProductAvailableStatus(productColorDtos);
+        List<InventoryForBasketDto> inventoryForBasket = inventoryService.getProductAvailableStatus(productColorDtos);
 
         products.forEach(product -> productMap.put(product.getSkuCode(), product));
         inventoryForBasket.forEach(inventory -> productAvailableAndStatusMap.put(inventory.getProductColorDto(), inventory.getCheckingProductAvailableAndStatusDto()));

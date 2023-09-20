@@ -4,7 +4,7 @@ import com.cozyhome.onlineshop.productservice.controller.swagger.CommonApiRespon
 import com.cozyhome.onlineshop.productservice.controller.swagger.SwaggerResponse;
 import com.cozyhome.onlineshop.dto.ProductDto;
 import com.cozyhome.onlineshop.dto.ProductStatusDto;
-import com.cozyhome.onlineshop.dto.ProductforBasket;
+import com.cozyhome.onlineshop.dto.ProductForBasketDto;
 import com.cozyhome.onlineshop.dto.filter.FilterDto;
 import com.cozyhome.onlineshop.dto.productcard.ProductCardDto;
 import com.cozyhome.onlineshop.dto.request.PageableDto;
@@ -75,5 +75,5 @@ public interface ProductController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION),
         @ApiResponse(responseCode = SwaggerResponse.Code.CODE_400, description = SwaggerResponse.Message.CODE_400) })
-    ResponseEntity<List<ProductforBasket>> getProductsForBasket(List<ProductColorDto> productColorDtos);
+    ResponseEntity<List<ProductForBasketDto>> getProductsForBasket(List<ProductColorDto> productColorDtos);
 }

@@ -2,7 +2,7 @@ package com.cozyhome.onlineshop.productservice.service;
 
 import com.cozyhome.onlineshop.dto.ProductDto;
 import com.cozyhome.onlineshop.dto.ProductStatusDto;
-import com.cozyhome.onlineshop.dto.ProductforBasket;
+import com.cozyhome.onlineshop.dto.ProductForBasketDto;
 import com.cozyhome.onlineshop.dto.filter.FilterDto;
 import com.cozyhome.onlineshop.dto.productcard.ProductCardDto;
 import com.cozyhome.onlineshop.dto.request.PageableDto;
@@ -28,6 +28,6 @@ public interface ProductService {
 
     List<ProductDto> getProductsByCollectionExcludeSkuCode(String collection, String skuCodeToExclude);
 
-    List<ProductforBasket> getProductsForBasket(List<ProductColorDto> dto);
+    List<ProductForBasketDto> getProductsForBasket(List<ProductColorDto> dto);
 
 }
