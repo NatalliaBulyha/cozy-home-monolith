@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import org.webjars.NotFoundException;
 
 import java.time.LocalDateTime;
 
@@ -26,7 +25,7 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class CozyHomeExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({DataNotFoundException.class, IllegalArgumentException.class, NotFoundException.class})
+    @ExceptionHandler({DataNotFoundException.class, IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handlerDataNotFoundException(Exception ex) {
         return bodyBuilder(ex.getMessage());
