@@ -215,7 +215,7 @@ public class ProductBuilder {
         return (float) reviews.stream().mapToInt(ReviewDto::getRating).average().getAsDouble();
     }
 
-	private Float roundFloatToOneDecimalPlace(Float floatValue) {
+	private float roundFloatToOneDecimalPlace(Float floatValue) {
 		float roundedFloat = 0.0f;
 		if (floatValue != null) {
 			roundedFloat = Float.parseFloat(ROUND_ONE_PLACE.format(floatValue));
