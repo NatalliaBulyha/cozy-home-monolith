@@ -137,8 +137,7 @@ public class ProductBuilder {
 			productCardDto.setImages(imageBuilder.buildProductCardImageDtos(images));
 		}
 
-		QuantityStatusDto colorsQuantityStatus = inventoryService
-				.getProductCardColorQuantityStatus(productSkuCode);
+		QuantityStatusDto colorsQuantityStatus = inventoryService.getProductCardColorQuantityStatus(productSkuCode);
 		if (colorsQuantityStatus.getStatus() != null) {
 			productCardDto.setQuantityStatus(colorsQuantityStatus.getStatus());
 		}
@@ -217,11 +216,9 @@ public class ProductBuilder {
     }
 
 	private Float roundFloatToOneDecimalPlace(Float floatValue) {
-		Float roundedFloat = 0.0f;
-		String format = "%.0f";
+		float roundedFloat = 0.0f;
 		if (floatValue != null) {
-//			roundedFloat = Float.valueOf(ROUND_ONE_PLACE.format(floatValue));
-			roundedFloat = Float.valueOf(String.format(format, floatValue));
+			roundedFloat = Float.parseFloat(ROUND_ONE_PLACE.format(floatValue));
 		}
 		return roundedFloat;
 	}
