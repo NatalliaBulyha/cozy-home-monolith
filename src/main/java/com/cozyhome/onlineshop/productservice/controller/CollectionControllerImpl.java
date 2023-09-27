@@ -1,9 +1,9 @@
-package com.cozyhome.onlineshop.productservice.controller.impl;
+package com.cozyhome.onlineshop.productservice.controller;
 
-import com.cozyhome.onlineshop.dto.MaterialDto;
+import com.cozyhome.onlineshop.dto.CollectionDto;
 import com.cozyhome.onlineshop.productservice.controller.swagger.CommonApiResponses;
 import com.cozyhome.onlineshop.productservice.controller.swagger.SwaggerResponse;
-import com.cozyhome.onlineshop.productservice.service.MaterialService;
+import com.cozyhome.onlineshop.productservice.service.CollectionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -20,19 +20,19 @@ import java.util.List;
 
 @CrossOrigin({ "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
         "${api.front.additional_url}" })
-@Tag(name = "Material")
+@Tag(name = "Collection")
 @CommonApiResponses
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("${api.basePath}/material")
-public class MaterialControllerImpl {
-    private final MaterialService materialService;
+@RequestMapping("${api.basePath}/collection")
+public class CollectionControllerImpl {
+    private final CollectionService collectionService;
 
-    @Operation(summary = "Fetch all materials", description = "Fetch all materials with id and name")
+    @Operation(summary = "Fetch all collections", description = "Fetch all collections with id and name")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @GetMapping
-    public ResponseEntity<List<MaterialDto>> getMaterials() {
-        return new ResponseEntity<>(materialService.getMaterials(), HttpStatus.OK);
+    public ResponseEntity<List<CollectionDto>> getCollections() {
+        return new ResponseEntity<>(collectionService.getCollections(), HttpStatus.OK);
     }
 }

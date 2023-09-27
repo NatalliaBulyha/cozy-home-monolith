@@ -1,4 +1,4 @@
-package com.cozyhome.onlineshop.productservice.controller.impl;
+package com.cozyhome.onlineshop.productservice.controller;
 
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.dto.ImageDto;
