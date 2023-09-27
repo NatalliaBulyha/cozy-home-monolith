@@ -30,7 +30,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +48,6 @@ public class ProductBuilder {
 	private final InventoryService inventoryService;
 
 	private static final BigDecimal NULL_PERCENT = new BigDecimal("0");
-	private static final DecimalFormat ROUND_ONE_PLACE = new DecimalFormat("0.0");
 
     @Value("${digits.after.decimal}")
     private int digitsAfterDecimal;
@@ -217,8 +215,9 @@ public class ProductBuilder {
 
 	private float roundFloatToOneDecimalPlace(Float floatValue) {
 		float roundedFloat = 0.0f;
+		String format = "%.1f";
 		if (floatValue != null) {
-			roundedFloat = Float.parseFloat(ROUND_ONE_PLACE.format(floatValue));
+			roundedFloat = Float.parseFloat(String.format(format, floatValue));
 		}
 		return roundedFloat;
 	}
