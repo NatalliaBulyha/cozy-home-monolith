@@ -32,7 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.basePath}/review")
-public class ReviewControllerImpl {
+public class ReviewController {
 
     private final ReviewService reviewService;
 
