@@ -18,26 +18,10 @@ public class Role implements GrantedAuthority{
 	@Id
     private String id;
 	@UniqueElements
-    private UserRole role;
+    private RoleE name;
     
     @Override
 	public String getAuthority() {
-		return role.getDescription();
-	}
-    
-    public enum UserRole{
-		ADMIN("admin"),
-		CUSTOMER("customer"),
-		MANAGER("manager");
-    	
-    	private String description;
-    	
-    	private UserRole(String description) {
-    		this.description = description;
-    	}
-    	
-    	public String getDescription() {
-    		return this.description;
-    	}
+		return name.toString();
 	}
 }

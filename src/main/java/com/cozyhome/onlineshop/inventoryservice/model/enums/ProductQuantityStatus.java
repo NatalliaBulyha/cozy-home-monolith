@@ -30,7 +30,6 @@ public enum ProductQuantityStatus {
     }
 
     public static String getStatusByAvailability(boolean isAvailable) {
-    	System.out.println("IS AVAILABLE: " + isAvailable);
         if (isAvailable) {
             return IN_STOCK.description;
         }

@@ -12,7 +12,7 @@ import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
-import com.cozyhome.onlineshop.userservice.model.Role;
+import com.cozyhome.onlineshop.userservice.model.RoleE;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +27,7 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
     private final Map<String, String> roleTargetUrlMap = new HashMap<String, String>();
 
     {
-        roleTargetUrlMap.put(Role.UserRole.ADMIN.getDescription(), "/home");
+        roleTargetUrlMap.put(RoleE.ADMIN.toString(), "/home");
     }
 
     @Override

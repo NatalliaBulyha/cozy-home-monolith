@@ -19,18 +19,13 @@ public class SecurityServiceImpl implements SecurityService {
 	@Override
 	public boolean isAuthenticated(String username, String password) {
 		try {
-            doAuthenticate(username, password);
+			log.info("[ON isAuthenticated]:: authenticating by UsernamePasswordAuthenticationToken...");
+	        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+	        log.info("[ON authenticate]:: user with username [ {} ] is authenticated successfully", username);
             return true;
         } catch (AuthenticationException e) {
             log.error("[ON isAuthenticated]:: Exception :: {}.", e);
             throw new BadCredentialsException(e.getMessage());
         }
 	}
-	
-	private void doAuthenticate(String username, String password) {
-        log.info("[ON authenticate]:: authenticating by UsernamePasswordAuthenticationToken...");
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        log.info("[ON authenticate]:: user with username [ {} ] is authenticated successfully", username);
-    }
-
 }

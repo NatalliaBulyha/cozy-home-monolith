@@ -11,5 +11,7 @@ import com.cozyhome.onlineshop.userservice.model.User;
 @Repository
 public interface UserRepository extends MongoRepository<User, ObjectId> {
 
-	Optional<User> getByUsername(String username);
+	Optional<User> getByEmail(String email);
+	
+	Boolean existsByEmail(String username);
 }

@@ -1,6 +1,5 @@
 package com.cozyhome.onlineshop.userservice.security;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -9,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.cozyhome.onlineshop.userservice.model.User;
+import com.cozyhome.onlineshop.userservice.model.UserStatusE;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -22,15 +22,15 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class AuthenticatedUser implements UserDetails {
+public class AuthenticatedUserDetails implements UserDetails {
 	
 	private User user;
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		final List<GrantedAuthority> authorities = new ArrayList();
-        authorities.add(new SimpleGrantedAuthority(user.getRole().getAuthority()));
-        return authorities;
+		List<SimpleGrantedAuthority> authorities = user.getRoles()
+				.stream().map(role -> new SimpleGrantedAuthority(role.getName().name())).toList();
+		return authorities;
 	}
 
 	@JsonIgnore
@@ -41,17 +41,17 @@ public class AuthenticatedUser implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return user.getUsername();
+		return user.getEmail();
 	}
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return user.getStatus().equals(User.UserStatus.BLOCKED) ? false : true;
+		return user.getStatus().equals(UserStatusE.BLOCKED) ? false : true;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return user.getStatus().equals(User.UserStatus.ACTIVE) ? true : false;
+		return user.getStatus().equals(UserStatusE.ACTIVE) ? true : false;
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class AuthenticatedUser implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		return user.getStatus().equals(User.UserStatus.ACTIVE) ? true : false;
+		return user.getStatus().equals(UserStatusE.ACTIVE) ? true : false;
 	}
 
 }

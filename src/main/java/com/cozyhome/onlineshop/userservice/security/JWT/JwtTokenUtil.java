@@ -1,8 +1,7 @@
 package com.cozyhome.onlineshop.userservice.security.JWT;
 
+import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +14,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -22,61 +23,59 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtTokenUtil {
 
 	@Value("${jwt.secret}")
-    private String secret;
-    @Value("${jwt.token.validity}")
-    private long tokenValiditi;
+	private String secret;
+	@Value("${jwt.token.validity}")
+	private int tokenValiditi;
 
-    public String getUsernameFromToken(String token) {
-        return getClaimFromToken(token, Claims::getSubject);
-    }
+	public String getUsernameFromToken(String token) {
+		return getClaimFromToken(token, Claims::getSubject);
+	}
 
-    public Date getExpirationDateFromToken(String token) {
-        return getClaimFromToken(token, Claims::getExpiration);
-    }
+	public Date getExpirationDateFromToken(String token) {
+		return getClaimFromToken(token, Claims::getExpiration);
+	}
 
-    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = getAllClaimsFromToken(token);
-        return claimsResolver.apply(claims);
-    }
+	public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+		final Claims claims = getAllClaimsFromToken(token);
+		return claimsResolver.apply(claims);
+	}
 
-    private Claims getAllClaimsFromToken(String token) {
-        log.info("[ON getAllClaimsFromToken]:: getting all claims from token using Jwts parser");
-        Claims claims = null;
-        try {
-            claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
-        } catch (JwtException e) {
-            log.error("[ON getAllClaimsFromToken]:: token is expired");
-            throw new InvalidTokenException(e.getLocalizedMessage(), e);
-        }
-        return claims;
-    }
+	private Key key() {
+		return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+	}
 
-    public String generateToken(String username) {
-        Map<String, Object> claims = new HashMap();
-        String token = doGenerateToken(claims, username);
-        log.info("[ON generateToken]:: token has generated successfully");
-        return token;
-    }
+	private Claims getAllClaimsFromToken(String token) {
+		log.info("[ON getAllClaimsFromToken]:: getting all claims from token using Jwts parser");
+		Claims claims = null;
+		try {
+			claims = Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(token).getBody();
+		} catch (JwtException e) {
+			log.error("[ON getAllClaimsFromToken]:: token is expired");
+			throw new InvalidTokenException(e.getLocalizedMessage(), e);
+		}
+		return claims;
+	}
 
-    private String doGenerateToken(Map<String, Object> claims, String subject) {
-        log.info("[ON doGenerateToken]:: token generating...");
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + tokenValiditi))
-                .signWith(SignatureAlgorithm.HS512, secret).compact();
-    }
+	public String generateToken(String username) {
+		String token = Jwts.builder().setSubject(username).setIssuedAt(new Date())
+				.setExpiration(new Date((new Date()).getTime() + tokenValiditi))
+				.signWith(key(), SignatureAlgorithm.HS256).compact();
+		log.info("[ON generateToken]:: token has generated successfully");
+		return token;
+	}
 
-    public boolean validateToken(String token, UserDetails userDetails) {
-        log.info("[ON validateToken]:: token validation...");
-        final String username = getUsernameFromToken(token);
-        boolean isValid = (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-        log.info("[ON validateToken]:: is token valid - {}", isValid);
-        return isValid;
-    }
+	public boolean validateToken(String token, UserDetails userDetails) {
+		log.info("[ON validateToken]:: token validation...");
+		final String username = getUsernameFromToken(token);
+		boolean isValid = (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+		log.info("[ON validateToken]:: is token valid - {}", isValid);
+		return isValid;
+	}
 
-    private boolean isTokenExpired(String token) {
-        final Date expiration = getExpirationDateFromToken(token);
-        boolean isExpired = expiration.before(new Date());
-        log.info("[ON isTokenExpired]:: is token expired - {}", isExpired);
-        return isExpired;
-    }
+	private boolean isTokenExpired(String token) {
+		final Date expiration = getExpirationDateFromToken(token);
+		boolean isExpired = expiration.before(new Date());
+		log.info("[ON isTokenExpired]:: is token expired - {}", isExpired);
+		return isExpired;
+	}
 }

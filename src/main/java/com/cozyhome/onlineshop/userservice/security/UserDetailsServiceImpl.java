@@ -21,15 +21,15 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 	private final UserRepository userRepository;
 	
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Optional<User> user = userRepository.getByUsername(username);
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		Optional<User> user = userRepository.getByEmail(email);
 		if(!user.isPresent()) {
-			log.warn("[ON loadUserByUsername]:: user with username::[ {} ] not found", username);
-            throw new UsernameNotFoundException("User not found for username - " + username);
+			log.warn("[ON loadUserByUsername]:: user with username::[ {} ] not found", email);
+            throw new UsernameNotFoundException("User not found for username - " + email);
 		}
-		log.info("[ON loadUserByUsername]:: loaded user with username [ {} ] and roles [ {} ]", user.get().getUsername(),
-                user.get().getRole());
-        return new AuthenticatedUser(user.get());
+		log.info("[ON loadUserByUsername]:: loaded user with username [ {} ] and roles [ {} ]", user.get().getEmail(),
+                user.get().getRoles());
+        return new AuthenticatedUserDetails(user.get());
 	}
 
 }
