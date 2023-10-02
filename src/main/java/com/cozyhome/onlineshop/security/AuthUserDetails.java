@@ -1,27 +1,25 @@
 package com.cozyhome.onlineshop.security;
 
-import com.cozyhome.onlineshop.userservice.model.Role;
-import com.cozyhome.onlineshop.userservice.model.User;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import com.cozyhome.onlineshop.userservice.model.RoleEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
 
 @Builder
 @Data
-//@AllArgsConstructor
-//@NoArgsConstructor
-public class AuthUserDetails {
-
-} /*implements UserDetails {
+@AllArgsConstructor
+@NoArgsConstructor
+public class AuthUserDetails implements UserDetails {
     private String email;
     private String password;
-    private Role role;
+    private RoleEnum role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -57,4 +55,4 @@ public class AuthUserDetails {
     public boolean isEnabled() {
         return true;
     }
-}*/
+}

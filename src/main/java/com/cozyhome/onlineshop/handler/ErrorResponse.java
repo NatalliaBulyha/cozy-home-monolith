@@ -13,8 +13,18 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ErrorResponse {
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "YYYY-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
+
+    private int status;
+
+    private String error;
+
     private String message;
+
+    private String path;
+
+    private int attemptsLeft;
+
+    private Long blockSeconds;
 }
