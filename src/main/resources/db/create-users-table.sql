@@ -17,10 +17,10 @@ CREATE TABLE IF NOT EXISTS roles (
     name                  varchar(50)  NOT NULL,
 );
 
-INSERT INTO roles (name)
+INSERT INTO roles (id, name)
 VALUES
-    ('ROLE_USER'),
-    ('ROLE_ADMIN');
+    ('11414692-0a17-454e-b4a7-ee6736fbabbb','ROLE_USER'),
+    ('a534d557-6555-4af1-a4db-36abfb6c3b38', 'ROLE_ADMIN');
 
 INSERT INTO users (username, password, email)
 VALUES

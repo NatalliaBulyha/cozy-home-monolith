@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,6 +48,7 @@ public class UserController {
     @Operation(summary = "Get all users.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_201_CREATED_DESCRIPTION) })
+    @Secured({"ADMIN"})
     @GetMapping("/admin/all-users")
     public ResponseEntity<List<UserAllInfoDto>> getAlUsers() {
         return new ResponseEntity<>(userService.findAllUsers(), HttpStatus.CREATED);
@@ -55,6 +57,7 @@ public class UserController {
     @Operation(summary = "Get users info by email.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_201_CREATED_DESCRIPTION) })
+    @Secured({"USER"})
     @GetMapping("/user-info")
     public ResponseEntity<UserInfoDto> getUserByEmail(String email) {
         return new ResponseEntity<>(userService.findUserByEmail(email), HttpStatus.CREATED);
