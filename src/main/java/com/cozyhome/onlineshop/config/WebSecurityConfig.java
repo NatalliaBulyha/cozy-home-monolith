@@ -29,11 +29,11 @@ public class WebSecurityConfig {
 	private final UserDetailsServiceImpl userDetailsService;
 	private final JwtAuthEntryPoint unauthorizedHandler;
 
-	private static final String LOGIN_URL = "/api/v1/auth/login";
-	private static final String SIGNUP_URL = "/api/v1/auth/signup";
+//	private static final String LOGIN_URL = "/api/v1/auth/login";
+//	private static final String SIGNUP_URL = "/api/v1/auth/signup";
 	private static final String GENERAL_ACCESS_URL = "/api/v1/**";
 	private static final String JWT_TOKEN_EXPIRED = "/api/v1/auth/expired-jwt";
-	private static final String ADMIN_PANEL_URL = "/api/v1/admin";
+//	private static final String ADMIN_PANEL_URL = "/api/v1/admin";
 
 	@Bean
 	public JwtTokenFilter authenticationJwtTokenFilter() {

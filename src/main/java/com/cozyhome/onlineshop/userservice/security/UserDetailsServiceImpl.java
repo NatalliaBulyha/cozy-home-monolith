@@ -30,6 +30,6 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 		log.info("[ON loadUserByUsername]:: loaded user with username [ {} ] and roles [ {} ]", user.get().getEmail(),
                 user.get().getRoles());
         return new AuthenticatedUserDetails(user.get());
-	}
+	}		
 
 }
