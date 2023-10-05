@@ -1,6 +1,7 @@
 package com.cozyhome.onlineshop.userservice.security.JWT;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -35,7 +36,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String username = null;
-        String jwtToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+        String jwtToken = jwtTokenUtil.resolveToken(request);
         if (jwtToken != null) {
             log.info("[ON doFilterInternal]:: jwtToken [{}]", jwtToken);
             try {

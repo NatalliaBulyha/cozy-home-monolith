@@ -10,6 +10,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cozyhome.onlineshop.dto.auth.LoginRequest;
@@ -27,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 @RestController
+@RequestMapping("${api.basePath}/auth")
 public class AuthController {
 
 	private final UserService userService;
@@ -36,7 +38,7 @@ public class AuthController {
 	private final String emailErrorMessage = "Error: Email is already in use!";
 	private final String registrationSuccessMessage = "User registered successfully!";
 
-	@PostMapping("${api.basePath}/auth/login")
+	@PostMapping("/login")
 	public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
 		String username = loginRequest.getUsername();
 		try {
@@ -53,17 +55,12 @@ public class AuthController {
 		}
 	}
 
-	@GetMapping("/api/test")
-	public ResponseEntity<String> test() {
-		return ResponseEntity.ok().body("Welcome, admin");
-	}
-
-	@GetMapping("${api.basePath}/auth/expired-jwt")
+	@GetMapping("/expired-jwt")
 	public ResponseEntity<String> showTokenExpired(HttpServletRequest request, HttpServletResponse response) {
 		return ResponseEntity.status(response.getStatus()).body("JWT Token expired.");
 	}
 
-	@PostMapping("${api.basePath}/auth/signup")
+	@PostMapping("/signup")
 	public ResponseEntity<MessageResponse> registerUser(@RequestBody SignupRequest signUpRequest) {
 
 		if (userService.existsByEmail(signUpRequest.getEmail())) {
@@ -73,7 +70,7 @@ public class AuthController {
 		return ResponseEntity.ok(new MessageResponse(registrationSuccessMessage));
 	}
 
-	@GetMapping("${api.basePath}/auth/logout")
+	@GetMapping("/logout")
 	public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		if (userDetails != null) {
