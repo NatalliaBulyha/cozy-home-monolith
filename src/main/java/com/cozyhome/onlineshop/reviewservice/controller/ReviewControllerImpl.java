@@ -53,7 +53,6 @@ public class ReviewControllerImpl {
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_201_CREATED_DESCRIPTION) })
     @PostMapping("/new")
-    @Secured({"ADMIN", "CUSTOMER", "MANAGER"})
     public ResponseEntity<ReviewDto> addNewReview(@RequestBody @Valid ReviewRequest review,
                                                   HttpServletRequest request) {
         String userId = (String) request.getAttribute(USER_ID_HEADER_NAME);
@@ -80,7 +79,6 @@ public class ReviewControllerImpl {
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_DELETED_DESCRIPTION) })
     @PostMapping
-    @Secured({"ADMIN", "CUSTOMER", "MANAGER"})
     public ResponseEntity<Void> removeReviewById(@RequestParam @ValidUUID String reviewId,
                                                  HttpServletRequest request) {
         String userId = (String) request.getAttribute(USER_ID_HEADER_NAME);
