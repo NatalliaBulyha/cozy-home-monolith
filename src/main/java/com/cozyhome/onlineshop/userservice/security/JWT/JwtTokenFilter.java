@@ -2,12 +2,12 @@ package com.cozyhome.onlineshop.userservice.security.JWT;
 
 import java.io.IOException;
 
+import com.cozyhome.onlineshop.userservice.security.AuthenticatedUserDetails;
+import com.cozyhome.onlineshop.userservice.security.service.ExtendedUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.csrf.InvalidCsrfTokenException;
 import org.springframework.stereotype.Component;
@@ -29,7 +29,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
 	@Autowired
-	private UserDetailsService userDetailsService;
+	private ExtendedUserDetailsService userDetailsService;
     @Value("${header.name.user-id}")
     private String userIdHeaderName;
 	
@@ -43,9 +43,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             try {
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
                 log.info("[ON doFilterInternal]:: username [ {} ]", username);
-
-                String userId = jwtTokenUtil.getClientIdFromToken(jwtToken);
-                request.setAttribute(userIdHeaderName, userId);
             } catch (InvalidTokenException | InvalidCsrfTokenException e) {  
                 request.setAttribute("exception", e.getLocalizedMessage());
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -55,8 +52,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             log.info("[ON doFilterInternal]:: starting token validation...");
-            UserDetails user = userDetailsService.loadUserByUsername(username);
+            AuthenticatedUserDetails user = userDetailsService.loadUserByUsername(username);
             if (jwtTokenUtil.validateToken(jwtToken, user)) {
+                request.setAttribute(userIdHeaderName, user.getUser().getId());
+
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null,
                         user.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

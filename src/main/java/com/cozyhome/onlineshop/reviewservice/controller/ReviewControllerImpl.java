@@ -12,16 +12,17 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,7 +45,7 @@ public class ReviewControllerImpl {
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @GetMapping
-    public ResponseEntity<List<ReviewDto>> getReviews() {
+    public ResponseEntity<List<ReviewAdminResponse>> getReviews() {
         return new ResponseEntity<>(reviewService.getReviews(), HttpStatus.OK);
     }
 
@@ -52,8 +53,10 @@ public class ReviewControllerImpl {
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_201_CREATED_DESCRIPTION) })
     @PostMapping("/new")
+    @Secured({"ADMIN", "CUSTOMER", "MANAGER"})
     public ResponseEntity<ReviewDto> addNewReview(@RequestBody @Valid ReviewRequest review,
-                                                  @RequestHeader(USER_ID_HEADER_NAME) String userId) {
+                                                  HttpServletRequest request) {
+        String userId = (String) request.getAttribute(USER_ID_HEADER_NAME);
         return new ResponseEntity<>(reviewService.addNewReview(review, userId), HttpStatus.CREATED);
     }
 
@@ -77,8 +80,11 @@ public class ReviewControllerImpl {
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_DELETED_DESCRIPTION) })
     @PostMapping
-    public ResponseEntity<Void> removeReviewById(@RequestParam @ValidUUID String reviewId) {
-        reviewService.removeReviewById(reviewId);
+    @Secured({"ADMIN", "CUSTOMER", "MANAGER"})
+    public ResponseEntity<Void> removeReviewById(@RequestParam @ValidUUID String reviewId,
+                                                 HttpServletRequest request) {
+        String userId = (String) request.getAttribute(USER_ID_HEADER_NAME);
+        reviewService.removeReviewById(reviewId, userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
  }

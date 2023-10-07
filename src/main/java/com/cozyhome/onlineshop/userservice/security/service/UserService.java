@@ -1,4 +1,4 @@
-package com.cozyhome.onlineshop.userservice.security;
+package com.cozyhome.onlineshop.userservice.security.service;
 
 import com.cozyhome.onlineshop.dto.auth.SignupRequest;
 

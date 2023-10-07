@@ -8,6 +8,9 @@ import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.reviewservice.model.Review;
 import com.cozyhome.onlineshop.reviewservice.repository.ReviewRepository;
 import com.cozyhome.onlineshop.reviewservice.service.builder.ReviewBuilder;
+import com.cozyhome.onlineshop.userservice.model.RoleE;
+import com.cozyhome.onlineshop.userservice.model.User;
+import com.cozyhome.onlineshop.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -23,13 +26,14 @@ public class ReviewServiceImpl implements ReviewService{
     private final ReviewRepository repository;
     private final ModelMapper mapper;
     private final ReviewBuilder reviewBuilder;
+    private final UserRepository userRepository;
     @Override
-    public List<ReviewDto> getReviews() {
+    public List<ReviewAdminResponse> getReviews() {
         List<Review> reviews = repository.findAll();
         if (reviews.isEmpty()) {
             throw new DataNotFoundException("The are no reviews.");
         }
-        return reviews.stream().map(review -> mapper.map(review, ReviewDto.class)).toList();
+        return reviews.stream().map(review -> mapper.map(review, ReviewAdminResponse.class)).toList();
     }
 
     @Override
@@ -52,9 +56,11 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public void removeReviewById(String reviewId) {
-        boolean exist = repository.existsById(UUID.fromString(reviewId));
-        if (exist) {
+    public void removeReviewById(String reviewId, String userId) {
+        Review review = repository.findById(UUID.fromString(reviewId))
+                .orElseThrow(() -> new DataNotExistException(String.format("Review with id = %s doesn't found", reviewId)));
+        List<User> admins = userRepository.findByRoles(RoleE.ADMIN);
+        if (userId.equals(review.getUserId()) || admins.stream().anyMatch(user -> user.getId().equals(userId))) {
             repository.deleteById(UUID.fromString(reviewId));
         } else {
             throw new DataNotExistException("Review with id = " + reviewId + " isn't exist.");

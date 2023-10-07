@@ -14,7 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.cozyhome.onlineshop.userservice.security.UserDetailsServiceImpl;
+import com.cozyhome.onlineshop.userservice.security.service.impl.UserDetailsServiceImpl;
 import com.cozyhome.onlineshop.userservice.security.JWT.JwtAuthEntryPoint;
 import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenFilter;
 
@@ -64,8 +64,15 @@ public class WebSecurityConfig {
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth.requestMatchers(GENERAL_ACCESS_URL, JWT_TOKEN_EXPIRED).permitAll())
-				/*.authorizeHttpRequests(auth -> auth.requestMatchers("/api/test").hasAnyAuthority("ADMIN")
-						.anyRequest().authenticated())*/;
+				.authorizeHttpRequests(auth -> auth.requestMatchers("/api/test").hasAnyAuthority("ADMIN")
+						.anyRequest().authenticated());
+
+		/*http
+				.csrf(AbstractHttpConfigurer::disable)
+				.authorizeHttpRequests(auth -> auth.requestMatchers(GENERAL_ACCESS_URL).permitAll()
+						.anyRequest().authenticated())
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler));*/
 
 		http.authenticationProvider(authenticationProvider());
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

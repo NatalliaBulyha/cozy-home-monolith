@@ -24,7 +24,7 @@ public class ReviewBuilder {
                 .orElseThrow(() -> new DataNotFoundException(String.format("User with id = %s doesn't found", userId)));
             return ReviewDto.builder()
                     .rating((byte) review.getRating())
-                    .userName(user.getId())
+                    .userName(user.getFirstName() + " " + user.getLastName())
                     .review(review.getComment())
                     .data(review.getModifiedAt().toLocalDate())
                     .build();

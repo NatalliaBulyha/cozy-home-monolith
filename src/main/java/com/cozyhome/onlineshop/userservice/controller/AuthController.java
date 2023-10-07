@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cozyhome.onlineshop.dto.auth.LoginRequest;
 import com.cozyhome.onlineshop.dto.auth.MessageResponse;
 import com.cozyhome.onlineshop.dto.auth.SignupRequest;
-import com.cozyhome.onlineshop.userservice.security.SecurityService;
-import com.cozyhome.onlineshop.userservice.security.UserService;
+import com.cozyhome.onlineshop.userservice.security.service.SecurityService;
+import com.cozyhome.onlineshop.userservice.security.service.UserService;
 import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenUtil;
 
 import jakarta.servlet.http.HttpServletRequest;

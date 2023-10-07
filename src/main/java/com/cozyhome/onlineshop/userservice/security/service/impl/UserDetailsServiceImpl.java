@@ -1,9 +1,9 @@
-package com.cozyhome.onlineshop.userservice.security;
+package com.cozyhome.onlineshop.userservice.security.service.impl;
 
 import java.util.Optional;
 
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import com.cozyhome.onlineshop.userservice.security.AuthenticatedUserDetails;
+import com.cozyhome.onlineshop.userservice.security.service.ExtendedUserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService{
+public class UserDetailsServiceImpl implements ExtendedUserDetailsService {
 
 	private final UserRepository userRepository;
 	
 	@Override
-	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+	public AuthenticatedUserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		Optional<User> user = userRepository.getByEmail(email);
 		if(!user.isPresent()) {
 			log.warn("[ON loadUserByUsername]:: user with username::[ {} ] not found", email);
