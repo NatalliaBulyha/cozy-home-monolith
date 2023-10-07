@@ -10,6 +10,7 @@ import com.cozyhome.onlineshop.dto.productcard.ColorQuantityStatusDto;
 import com.cozyhome.onlineshop.dto.productcard.ProductCardDto;
 import com.cozyhome.onlineshop.dto.review.ReviewDto;
 import com.cozyhome.onlineshop.dto.request.ProductColorDto;
+import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.inventoryservice.service.InventoryService;
 import com.cozyhome.onlineshop.productservice.model.Category;
 import com.cozyhome.onlineshop.productservice.model.Color;
@@ -24,6 +25,7 @@ import com.cozyhome.onlineshop.productservice.repository.ImageRepositoryCustom;
 import com.cozyhome.onlineshop.reviewservice.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -103,9 +105,11 @@ public class ProductBuilder {
 
 	public ProductCardDto buildProductCardDto(Product product, String colorId) {
 		final String productSkuCode = product.getSkuCode();
+		ObjectId id = product.getSubCategory().getParentId();
 
-		String categoryName = categoryRepository.findById(product.getSubCategory().getParentId()).map(Category::getName)
-				.orElse("");
+		String categoryName = categoryRepository.findById(id)
+				.map(Category::getName)
+				.orElseThrow(() -> new DataNotFoundException(String.format("Category with id = %s doesn't found", id)));
 
 		ProductCardDto productCardDto = ProductCardDto.builder().categoryName(categoryName)
 				.subCategoryName(product.getSubCategory().getName()).skuCode(productSkuCode).name(product.getName())

@@ -33,17 +33,13 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public ReviewDto addNewReview(ReviewRequest reviewRequest) {
+    public ReviewDto addNewReview(ReviewRequest reviewRequest, String userId) {
         Review review = mapper.map(reviewRequest, Review.class);
+        review.setUserId(userId);
         review.setCreatedAt(LocalDateTime.now());
         review.setModifiedAt(LocalDateTime.now());
         Review savedReview = repository.save(review);
-        return ReviewDto.builder()
-                .data(savedReview.getModifiedAt().toLocalDate())
-                .review(savedReview.getComment())
-                .userName(savedReview.getUserName())
-                .rating((byte) savedReview.getRating())
-                .build();
+        return reviewBuilder.buildReviewResponse(savedReview);
     }
 
     @Override

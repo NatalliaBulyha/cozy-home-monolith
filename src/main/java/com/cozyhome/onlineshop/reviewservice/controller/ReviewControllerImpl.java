@@ -14,12 +14,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,6 +37,8 @@ import java.util.List;
 public class ReviewControllerImpl {
 
     private final ReviewService reviewService;
+    @Value("${header.name.user-id}")
+    static final String USER_ID_HEADER_NAME = "userId";
 
     @Operation(summary = "Fetch all reviews.")
     @ApiResponses(value = {
@@ -48,8 +52,9 @@ public class ReviewControllerImpl {
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_201_CREATED_DESCRIPTION) })
     @PostMapping("/new")
-    public ResponseEntity<ReviewDto> addNewReview(@RequestBody @Valid ReviewRequest review) {
-        return new ResponseEntity<>(reviewService.addNewReview(review), HttpStatus.CREATED);
+    public ResponseEntity<ReviewDto> addNewReview(@RequestBody @Valid ReviewRequest review,
+                                                  @RequestHeader(USER_ID_HEADER_NAME) String userId) {
+        return new ResponseEntity<>(reviewService.addNewReview(review, userId), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Fetch review for product.")

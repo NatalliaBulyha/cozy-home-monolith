@@ -9,7 +9,7 @@ import java.util.List;
 public interface ReviewService {
     List<ReviewDto> getReviews();
 
-    ReviewDto addNewReview(ReviewRequest review);
+    ReviewDto addNewReview(ReviewRequest review, String userId);
 
     List<ReviewDto> getReviewsForProduct(String productSkuCode);
 

@@ -1,10 +1,9 @@
 package com.cozyhome.onlineshop.userservice.security.JWT;
 
 import java.io.IOException;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,6 +30,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 	private JwtTokenUtil jwtTokenUtil;
 	@Autowired
 	private UserDetailsService userDetailsService;
+    @Value("${header.name.user-id}")
+    private String userIdHeaderName;
 	
 	@Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -41,7 +42,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             log.info("[ON doFilterInternal]:: jwtToken [{}]", jwtToken);
             try {
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
-                log.info("[ON doFilterInternal]:: username [ {} ]", username);	
+                log.info("[ON doFilterInternal]:: username [ {} ]", username);
+
+                String userId = jwtTokenUtil.getClientIdFromToken(jwtToken);
+                request.setAttribute(userIdHeaderName, userId);
             } catch (InvalidTokenException | InvalidCsrfTokenException e) {  
                 request.setAttribute("exception", e.getLocalizedMessage());
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

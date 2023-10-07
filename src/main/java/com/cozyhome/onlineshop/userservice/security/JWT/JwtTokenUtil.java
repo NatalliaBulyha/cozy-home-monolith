@@ -2,7 +2,6 @@ package com.cozyhome.onlineshop.userservice.security.JWT;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.Map;
 import java.util.function.Function;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,7 +29,8 @@ public class JwtTokenUtil {
 	private String secret;
 	@Value("${jwt.token.validity}")
 	private int tokenValiditi;
-
+	@Value("${header.name.user-id}")
+	private String userIdHeaderName;
 	private final static String TOKEN_PREFIX = "Bearer ";
 
 	public String getUsernameFromToken(String token) {
@@ -68,6 +68,10 @@ public class JwtTokenUtil {
 			return bearer.substring(TOKEN_PREFIX.length());
 		}
 		return null;
+	}
+
+	public String getClientIdFromToken(String jwtToken) {
+		return getAllClaimsFromToken(jwtToken).get(userIdHeaderName).toString();
 	}
 
 	private Key key() {
