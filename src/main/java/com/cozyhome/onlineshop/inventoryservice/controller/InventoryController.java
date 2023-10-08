@@ -21,14 +21,6 @@ import java.util.Map;
 @RestController
 public class InventoryController {
 	private final InventoryService inventoryService;
-
-//no method - change to shopping cart
-//	@RequestMapping(method = RequestMethod.POST, value = "/default_color_quantity_status/product_color")
-//	public ResponseEntity<QuantityStatusDto> getDefaultColorQuantityStatus(@RequestBody ProductColorDto productColorDto){
-//		String status = inventoryService.getQuantityStatusByProductColor(productColorDto);	
-//		QuantityStatusDto response = new QuantityStatusDto(status);
-//		return new ResponseEntity<>(response, HttpStatus.OK);
-//	}
 	
 	//for product card
 	@GetMapping("/color_quantity_status/product_skuCode")

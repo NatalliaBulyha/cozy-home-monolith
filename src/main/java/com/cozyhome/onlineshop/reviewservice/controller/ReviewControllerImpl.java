@@ -6,6 +6,7 @@ import com.cozyhome.onlineshop.dto.review.ReviewRequest;
 import com.cozyhome.onlineshop.productservice.controller.swagger.CommonApiResponses;
 import com.cozyhome.onlineshop.productservice.controller.swagger.SwaggerResponse;
 import com.cozyhome.onlineshop.reviewservice.service.ReviewService;
+import com.cozyhome.onlineshop.userservice.model.Role;
 import com.cozyhome.onlineshop.validation.ValidSkuCode;
 import com.cozyhome.onlineshop.validation.ValidUUID;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 @Validated
 @CommonApiResponses
@@ -40,6 +42,8 @@ public class ReviewControllerImpl {
     private final ReviewService reviewService;
     @Value("${header.name.user-id}")
     private String userIdName;
+    @Value("${header.name.user-role}")
+    private String userRoleAttributeName;
 
     @Operation(summary = "Fetch all reviews.")
     @ApiResponses(value = {
@@ -84,7 +88,8 @@ public class ReviewControllerImpl {
     public ResponseEntity<Void> removeReviewById(@RequestParam @ValidUUID String reviewId,
                                                  HttpServletRequest request) {
         String userId = (String) request.getAttribute(userIdName);
-        reviewService.removeReviewById(reviewId, userId);
+        Set<Role> roles = (Set<Role>) request.getAttribute(userRoleAttributeName);
+        reviewService.removeReviewById(reviewId, userId, roles);
         return new ResponseEntity<>(HttpStatus.OK);
     }
  }

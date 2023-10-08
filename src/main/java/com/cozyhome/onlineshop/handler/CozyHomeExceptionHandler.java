@@ -1,5 +1,6 @@
 package com.cozyhome.onlineshop.handler;
 
+import com.cozyhome.onlineshop.exception.AuthenticationException;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.UnexpectedTypeException;
@@ -8,6 +9,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -27,13 +30,25 @@ public class CozyHomeExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({DataNotFoundException.class, IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handlerDataNotFoundException(Exception ex) {
+    public ErrorResponse handleDataNotFoundException(Exception ex) {
         return bodyBuilder(ex.getMessage());
     }
 
     @ExceptionHandler({ConstraintViolationException.class, UnexpectedTypeException.class, MethodArgumentTypeMismatchException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handlerValidationException(Exception ex) {
+    public ErrorResponse handleValidationException(Exception ex) {
+        return bodyBuilder(ex.getMessage());
+    }
+
+    @ExceptionHandler({BadCredentialsException.class, AuthenticationException.class})
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleAuthenticationException(Exception ex) {
+        return bodyBuilder(ex.getMessage());
+    }
+
+    @ExceptionHandler({AccessDeniedException.class})
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleForbiddenException(Exception ex) {
         return bodyBuilder(ex.getMessage());
     }
     @Override

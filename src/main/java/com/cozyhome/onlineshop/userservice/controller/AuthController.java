@@ -1,10 +1,19 @@
 package com.cozyhome.onlineshop.userservice.controller;
 
+import com.cozyhome.onlineshop.dto.auth.LoginRequest;
+import com.cozyhome.onlineshop.dto.auth.MessageResponse;
+import com.cozyhome.onlineshop.dto.auth.SignupRequest;
+import com.cozyhome.onlineshop.exception.AuthenticationException;
+import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenUtil;
+import com.cozyhome.onlineshop.userservice.security.service.SecurityService;
+import com.cozyhome.onlineshop.userservice.security.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -13,18 +22,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.cozyhome.onlineshop.dto.auth.LoginRequest;
-import com.cozyhome.onlineshop.dto.auth.MessageResponse;
-import com.cozyhome.onlineshop.dto.auth.SignupRequest;
-import com.cozyhome.onlineshop.userservice.security.service.SecurityService;
-import com.cozyhome.onlineshop.userservice.security.service.UserService;
-import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenUtil;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -42,18 +39,14 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
 		String username = loginRequest.getUsername();
-		try {
-			String token = null;
 			boolean isAuthenticated = securityService.isAuthenticated(username, loginRequest.getPassword());
-			if (!isAuthenticated) {
+			if (isAuthenticated) {
+				String token = jwtTokenUtil.generateToken(username);
+				return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).build();
+			} else {
 				log.warn("[ON login]:: Authentication failed for user: {}", username);
+				throw new AuthenticationException("Authentication failed for user");
 			}
-			token = jwtTokenUtil.generateToken(username);
-			return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).build();
-		} catch (BadCredentialsException e) {
-			log.error("[ON login]:: Authentication error: {}", e.getLocalizedMessage());
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		}
 	}
 
 	@GetMapping("/expired-jwt")
