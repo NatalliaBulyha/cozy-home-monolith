@@ -87,4 +87,4 @@ public class ReviewSecuredController {
         reviewService.removeReviewById(new ReviewToRemoveDto(reviewId, userId, roles));
         return new ResponseEntity<>(HttpStatus.OK);
     }
- }
+}
