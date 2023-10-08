@@ -1,7 +1,7 @@
 package com.cozyhome.onlineshop.dto.productcard;
 
 import com.cozyhome.onlineshop.dto.CollectionDto;
-import com.cozyhome.onlineshop.dto.review.ReviewDto;
+import com.cozyhome.onlineshop.dto.review.ReviewResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,7 +29,7 @@ public class ProductCardDto {
     private float averageRating;
 
     private byte countOfReviews;
-    private List<ReviewDto> reviews;
+    private List<ReviewResponse> reviews;
 
     private List<ProductCardImageDto> images;
 

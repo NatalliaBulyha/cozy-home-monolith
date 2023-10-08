@@ -33,8 +33,8 @@ public class Review {
     private LocalDateTime createdAt;
     @Column(name = "modified_at")
     private LocalDateTime modifiedAt;
-    @Column(name = "user_name")
-    private String userName;
+    @Column(name = "user_id")
+    private String userId;
     @Column(name = "product_sku_code")
     private String productSkuCode;
 }

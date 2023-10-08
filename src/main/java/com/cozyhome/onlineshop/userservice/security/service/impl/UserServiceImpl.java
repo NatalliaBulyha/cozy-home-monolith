@@ -1,9 +1,10 @@
-package com.cozyhome.onlineshop.userservice.security;
+package com.cozyhome.onlineshop.userservice.security.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.cozyhome.onlineshop.userservice.security.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,33 +34,37 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void saveUser(SignupRequest signupRequest) {
-		User user = User.builder().email(signupRequest.getEmail()).password(encoder.encode(signupRequest.getPassword()))
-				.firstName(signupRequest.getFirstName()).lastName(signupRequest.getLastName())
-				.phoneNumber(signupRequest.getPhoneNumber()).createdAt(LocalDateTime.now()).status(UserStatusE.ACTIVE)
+		User user = User.builder()
+				.email(signupRequest.getEmail())
+				.password(encoder.encode(signupRequest.getPassword()))
+				.firstName(signupRequest.getFirstName())
+				.lastName(signupRequest.getLastName())
+				.phoneNumber(signupRequest.getPhoneNumber())
+				.createdAt(LocalDateTime.now()).status(UserStatusE.ACTIVE)
 				.build();
 
 		Set<String> userRoles = signupRequest.getRoles();
 		Set<Role> roles = new HashSet<Role>();
 
 		if (userRoles == null) {
-			Role userRole = roleRepository.getByName(RoleE.CUSTOMER)
+			Role userRole = roleRepository.getByName(RoleE.ROLE_CUSTOMER)
 					.orElseThrow(() -> new RuntimeException(roleErrorMessage));
 			roles.add(userRole);
 		} else {
 			userRoles.forEach(role -> {
 				switch (role) {
 				case admin:
-					Role adminRole = roleRepository.getByName(RoleE.ADMIN)
+					Role adminRole = roleRepository.getByName(RoleE.ROLE_ADMIN)
 							.orElseThrow(() -> new RuntimeException(roleErrorMessage));
 					roles.add(adminRole);
 					break;
 				case manager:
-					Role managerRole = roleRepository.getByName(RoleE.MANAGER)
+					Role managerRole = roleRepository.getByName(RoleE.ROLE_MANAGER)
 							.orElseThrow(() -> new RuntimeException(roleErrorMessage));
 					roles.add(managerRole);
 					break;
 				default:
-					Role userRole = roleRepository.getByName(RoleE.CUSTOMER)
+					Role userRole = roleRepository.getByName(RoleE.ROLE_CUSTOMER)
 							.orElseThrow(() -> new RuntimeException(roleErrorMessage));
 					roles.add(userRole);
 				}

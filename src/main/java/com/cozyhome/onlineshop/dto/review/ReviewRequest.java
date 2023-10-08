@@ -19,8 +19,6 @@ public class ReviewRequest {
     private byte rating;
     @Size(max = 500, message = "comment must be to 500 characters.")
     private String comment;
-    @Size(max = 50, message = "name must be to 50 characters.")
-    private String userName;
     @ValidSkuCode
     private String productSkuCode;
 }

@@ -1,4 +1,4 @@
-package com.cozyhome.onlineshop.userservice.security;
+package com.cozyhome.onlineshop.userservice.security.service;
 
 public interface SecurityService {
 

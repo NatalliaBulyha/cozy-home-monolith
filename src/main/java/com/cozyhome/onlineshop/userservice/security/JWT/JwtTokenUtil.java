@@ -2,7 +2,6 @@ package com.cozyhome.onlineshop.userservice.security.JWT;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.Map;
 import java.util.function.Function;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,7 +29,8 @@ public class JwtTokenUtil {
 	private String secret;
 	@Value("${jwt.token.validity}")
 	private int tokenValiditi;
-
+	@Value("${header.name.user-id}")
+	private String userIdAttributeName;
 	private final static String TOKEN_PREFIX = "Bearer ";
 
 	public String getUsernameFromToken(String token) {
@@ -47,9 +47,12 @@ public class JwtTokenUtil {
 	}
 
 	public String generateToken(String username) {
-		String token = Jwts.builder().setSubject(username).setIssuedAt(new Date())
+		String token = Jwts.builder()
+				.setSubject(username)
+				.setIssuedAt(new Date())
 				.setExpiration(new Date((new Date()).getTime() + tokenValiditi))
-				.signWith(key(), SignatureAlgorithm.HS256).compact();
+				.signWith(key(), SignatureAlgorithm.HS256)
+				.compact();
 		log.info("[ON generateToken]:: token has generated successfully");
 		return token;
 	}
@@ -78,7 +81,11 @@ public class JwtTokenUtil {
 		log.info("[ON getAllClaimsFromToken]:: getting all claims from token using Jwts parser");
 		Claims claims = null;
 		try {
-			claims = Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(token).getBody();
+			claims = Jwts.parserBuilder()
+					.setSigningKey(key())
+					.build()
+					.parseClaimsJws(token)
+					.getBody();
 		} catch (JwtException e) {
 			log.error("[ON getAllClaimsFromToken]:: token is expired");
 			throw new InvalidTokenException(e.getLocalizedMessage(), e);

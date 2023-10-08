@@ -3,6 +3,7 @@ package com.cozyhome.onlineshop.userservice.controller;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cozyhome.onlineshop.dto.auth.LoginRequest;
 import com.cozyhome.onlineshop.dto.auth.MessageResponse;
 import com.cozyhome.onlineshop.dto.auth.SignupRequest;
-import com.cozyhome.onlineshop.userservice.security.SecurityService;
-import com.cozyhome.onlineshop.userservice.security.UserService;
+import com.cozyhome.onlineshop.userservice.security.service.SecurityService;
+import com.cozyhome.onlineshop.userservice.security.service.UserService;
 import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,6 +57,7 @@ public class AuthController {
 	}
 
 	@GetMapping("/expired-jwt")
+	@Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
 	public ResponseEntity<String> showTokenExpired(HttpServletRequest request, HttpServletResponse response) {
 		return ResponseEntity.status(response.getStatus()).body("JWT Token expired.");
 	}

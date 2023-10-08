@@ -21,6 +21,6 @@ public class ReviewAdminResponse {
     private LocalDateTime createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "YYYY-MM-dd")
     private LocalDateTime modifiedAt;
-    private String userName;
+    private String userId;
     private String productSkuCode;
 }

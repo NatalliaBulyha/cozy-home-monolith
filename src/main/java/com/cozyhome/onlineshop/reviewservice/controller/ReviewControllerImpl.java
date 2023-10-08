@@ -1,6 +1,6 @@
 package com.cozyhome.onlineshop.reviewservice.controller;
 
-import com.cozyhome.onlineshop.dto.review.ReviewDto;
+import com.cozyhome.onlineshop.dto.review.ReviewResponse;
 import com.cozyhome.onlineshop.dto.review.ReviewAdminResponse;
 import com.cozyhome.onlineshop.dto.review.ReviewRequest;
 import com.cozyhome.onlineshop.productservice.controller.swagger.CommonApiResponses;
@@ -12,10 +12,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,12 +38,14 @@ import java.util.List;
 public class ReviewControllerImpl {
 
     private final ReviewService reviewService;
+    @Value("${header.name.user-id}")
+    private String userIdName;
 
     @Operation(summary = "Fetch all reviews.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @GetMapping
-    public ResponseEntity<List<ReviewDto>> getReviews() {
+    public ResponseEntity<List<ReviewAdminResponse>> getReviews() {
         return new ResponseEntity<>(reviewService.getReviews(), HttpStatus.OK);
     }
 
@@ -48,15 +53,18 @@ public class ReviewControllerImpl {
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_201_CREATED_DESCRIPTION) })
     @PostMapping("/new")
-    public ResponseEntity<ReviewDto> addNewReview(@RequestBody @Valid ReviewRequest review) {
-        return new ResponseEntity<>(reviewService.addNewReview(review), HttpStatus.CREATED);
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
+    public ResponseEntity<ReviewResponse> addNewReview(@RequestBody @Valid ReviewRequest review,
+                                                       HttpServletRequest request) {
+        String userId = (String) request.getAttribute(userIdName);
+        return new ResponseEntity<>(reviewService.addNewReview(review, userId), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Fetch review for product.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @GetMapping("/product")
-    public ResponseEntity<List<ReviewDto>> getReviewsForProduct(@RequestParam @ValidSkuCode String productSkuCode) {
+    public ResponseEntity<List<ReviewResponse>> getReviewsForProduct(@RequestParam @ValidSkuCode String productSkuCode) {
         return new ResponseEntity<>(reviewService.getReviewsForProduct(productSkuCode), HttpStatus.OK);
     }
 
@@ -72,8 +80,11 @@ public class ReviewControllerImpl {
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_DELETED_DESCRIPTION) })
     @PostMapping
-    public ResponseEntity<Void> removeReviewById(@RequestParam @ValidUUID String reviewId) {
-        reviewService.removeReviewById(reviewId);
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
+    public ResponseEntity<Void> removeReviewById(@RequestParam @ValidUUID String reviewId,
+                                                 HttpServletRequest request) {
+        String userId = (String) request.getAttribute(userIdName);
+        reviewService.removeReviewById(reviewId, userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
  }

@@ -1,5 +1,6 @@
-package com.cozyhome.onlineshop.userservice.security;
+package com.cozyhome.onlineshop.userservice.security.service.impl;
 
+import com.cozyhome.onlineshop.userservice.security.service.SecurityService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
