@@ -49,12 +49,6 @@ public class AuthController {
 			}
 	}
 
-	@GetMapping("/expired-jwt")
-	@Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
-	public ResponseEntity<String> showTokenExpired(HttpServletRequest request, HttpServletResponse response) {
-		return ResponseEntity.status(response.getStatus()).body("JWT Token expired.");
-	}
-
 	@PostMapping("/signup")
 	public ResponseEntity<MessageResponse> registerUser(@RequestBody SignupRequest signUpRequest) {
 

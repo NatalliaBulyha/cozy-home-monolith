@@ -30,7 +30,7 @@ public class WebSecurityConfig {
 	private final JwtAuthEntryPoint unauthorizedHandler;
 	@Value("${api.basePath}/**")
 	private String GENERAL_ACCESS_URL;
-	private static final String JWT_TOKEN_EXPIRED = "/api/v1/auth/expired-jwt";
+	private static final String SWAGGER_URL = "/swagger-ui/**";
 
 	@Bean
 	public JwtTokenFilter authenticationJwtTokenFilter() {
@@ -60,7 +60,7 @@ public class WebSecurityConfig {
 		http.csrf(csrf -> csrf.disable())
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authorizeHttpRequests(auth -> auth.requestMatchers(GENERAL_ACCESS_URL, JWT_TOKEN_EXPIRED).permitAll()
+				.authorizeHttpRequests(auth -> auth.requestMatchers(GENERAL_ACCESS_URL, SWAGGER_URL).permitAll()
 						.anyRequest().authenticated());
 
 		http.authenticationProvider(authenticationProvider());
