@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +38,7 @@ public class ProductSecuredController {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION),
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_400, description = SwaggerResponse.Message.CODE_400) })
     @PostMapping("/basket")
+    @Secured({"ROLE_CUSTOMER"})
     public ResponseEntity<List<ProductForBasketDto>> getProductsForBasket(@RequestBody @Valid List<ProductColorDto> productColorDtos){
         return ResponseEntity.ok().body(productService.getProductsForBasket(productColorDtos));
     }
