@@ -2,9 +2,9 @@ package com.cozyhome.onlineshop.userservice.security.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
-import com.cozyhome.onlineshop.userservice.security.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,7 @@ import com.cozyhome.onlineshop.userservice.model.User;
 import com.cozyhome.onlineshop.userservice.model.UserStatusE;
 import com.cozyhome.onlineshop.userservice.repository.RoleRepository;
 import com.cozyhome.onlineshop.userservice.repository.UserRepository;
+import com.cozyhome.onlineshop.userservice.security.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,13 +34,14 @@ public class UserServiceImpl implements UserService {
 	private final String roleErrorMessage = "Error: Role is not found.";
 
 	@Override
-	public void saveUser(SignupRequest signupRequest) {
+	public void saveUser(SignupRequest signupRequest, String activationToken) {
 		User user = User.builder()
 				.email(signupRequest.getEmail())
 				.password(encoder.encode(signupRequest.getPassword()))
 				.firstName(signupRequest.getFirstName())
 				.lastName(signupRequest.getLastName())
 				.phoneNumber(signupRequest.getPhoneNumber())
+				.activationToken(activationToken)
 				.createdAt(LocalDateTime.now()).status(UserStatusE.ACTIVE)
 				.build();
 
@@ -77,6 +79,17 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public boolean existsByEmail(String email) {		
 		return userRepository.existsByEmail(email);
+	}
+
+	@Override
+	public User activateUser(String activationToken) {
+		Optional<User> user = userRepository.getByActivationToken(activationToken);
+		if(!user.isPresent()) {
+			log.warn("[ON activateUser]:: user with activationToken::[ {} ] not found", activationToken);
+            throw new IllegalArgumentException("User not found for activationToken - " + activationToken);
+		}		
+		log.info("[ON activateUser]:: loaded user with username [ {} ]", user.get().getEmail());
+		return user.get();
 	}
 
 }

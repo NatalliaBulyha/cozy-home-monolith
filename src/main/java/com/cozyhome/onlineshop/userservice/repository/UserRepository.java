@@ -20,5 +20,7 @@ public interface UserRepository extends MongoRepository<User, ObjectId> {
 	boolean existsByEmail(String username);
 
 	List<User> findByRoles(RoleE role);
+	
+	Optional<User> getByActivationToken(String activationToken);
 
 }
