@@ -41,10 +41,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             String jwtToken = jwtTokenUtil.resolveToken(request);
             if (jwtToken != null) {
                 log.info("[ON doFilterInternal]:: jwtToken [{}]", jwtToken);
-
                     username = jwtTokenUtil.getUsernameFromToken(jwtToken);
                     log.info("[ON doFilterInternal]:: username [ {} ]", username);
-
             }
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 log.info("[ON doFilterInternal]:: starting token validation...");
