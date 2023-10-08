@@ -44,8 +44,7 @@ public class User {
 	@UniqueElements
 	private String phoneNumber;
 	
-	@UniqueElements
-	private String activationToken;
+	private boolean isActivated;
 
 	@DBRef
 	private Set<Role> roles;

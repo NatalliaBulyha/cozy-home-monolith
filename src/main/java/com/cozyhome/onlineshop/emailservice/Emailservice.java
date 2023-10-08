@@ -4,6 +4,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import com.cozyhome.onlineshop.dto.EmailMessageDto;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,12 +16,12 @@ public class Emailservice {
 
 	private final JavaMailSender mailSender;
 	
-	public void sendActivationEmail(String emailTo, String link) {		
+	public void sendEmail(EmailMessageDto emailMessageDto) {		
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(emailTo);
-        message.setSubject("Cozy Home - Activate Your Account");
-        message.setText("Please click the following link to activate your account: " + link);
-        log.info("[ON sendActivationEmail] :: The message has been sent to: " + emailTo);
+        message.setTo(emailMessageDto.getMailTo());
+        message.setSubject(emailMessageDto.getSubject());
+        message.setText(emailMessageDto.getText());
+        log.info("[ON sendActivationEmail] :: The message has been sent to: " + emailMessageDto.getMailTo());
         mailSender.send(message);
     }
 }

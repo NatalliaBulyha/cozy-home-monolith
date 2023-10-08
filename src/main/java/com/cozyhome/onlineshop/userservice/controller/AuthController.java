@@ -1,9 +1,7 @@
 package com.cozyhome.onlineshop.userservice.controller;
 
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,14 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cozyhome.onlineshop.dto.auth.EmailRequest;
 import com.cozyhome.onlineshop.dto.auth.LoginRequest;
 import com.cozyhome.onlineshop.dto.auth.MessageResponse;
 import com.cozyhome.onlineshop.dto.auth.SignupRequest;
-import com.cozyhome.onlineshop.emailservice.Emailservice;
 import com.cozyhome.onlineshop.exception.AuthenticationException;
 import com.cozyhome.onlineshop.userservice.model.User;
 import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenUtil;
 import com.cozyhome.onlineshop.userservice.security.service.SecurityService;
+import com.cozyhome.onlineshop.userservice.security.service.SecurityTokenService;
 import com.cozyhome.onlineshop.userservice.security.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,13 +38,10 @@ public class AuthController {
 	private final UserService userService;
 	private final SecurityService securityService;
 	private final JwtTokenUtil jwtTokenUtil;
-	private final Emailservice emailService;
+	private final SecurityTokenService securityTokenService;
 
 	private final String emailErrorMessage = "Error: Email is already in use!";
 	private final String registrationSuccessMessage = "User registered successfully!";
-	
-	@Value("${activation.link}")
-	private String link;
 
 	@PostMapping("/login")
 	public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
@@ -62,27 +58,20 @@ public class AuthController {
 
 	@PostMapping("/signup")
 	public ResponseEntity<MessageResponse> registerUser(@RequestBody SignupRequest signUpRequest) {
-		if (userService.existsByEmail(signUpRequest.getEmail())) {
+		String email = signUpRequest.getEmail();
+		if (userService.existsByEmail(email)) {
 			return ResponseEntity.badRequest().body(new MessageResponse(emailErrorMessage));
-		}		
-		final String activationToken = generateActivationToken();		
-		userService.saveUser(signUpRequest, activationToken);	
-		
-		String activationLink = link + activationToken;
-        emailService.sendActivationEmail(signUpRequest.getEmail(), activationLink);
-
+		}
+		User savedUser = userService.saveUser(signUpRequest);
+		securityTokenService.createActivationUserToken(savedUser);
 		return ResponseEntity.ok(new MessageResponse(registrationSuccessMessage));
 	}
 
 	@GetMapping("/activate")
-	public ResponseEntity<MessageResponse> activate(@RequestParam String activationToken) {
-		User user = userService.activateUser(activationToken);
-		String token = jwtTokenUtil.generateToken(user.getEmail());
-		return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).build();
-	}
-
-	private String generateActivationToken() {
-		return UUID.randomUUID().toString();
+	public ResponseEntity<MessageResponse> activateUser(@RequestParam String activationToken) {
+		User activatedUser = userService.activateUser(activationToken);
+		String token = jwtTokenUtil.generateToken(activatedUser.getEmail());
+		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.AUTHORIZATION, token).body(new MessageResponse("success"));
 	}
 
 	@GetMapping("/logout")
@@ -95,6 +84,19 @@ public class AuthController {
 		} else {
 			return ResponseEntity.ok("No user is logged in");
 		}
+	}
+
+	@PostMapping("/login/forgot")
+	public ResponseEntity<MessageResponse> forgetPassword(@RequestBody EmailRequest emailRequest, HttpServletRequest httpRequest) {
+		securityTokenService.createPasswordResetToken(emailRequest.getEmail(), httpRequest.getRemoteAddr());
+		return ResponseEntity.ok(new MessageResponse("success"));
+	}
+
+	@PostMapping("/login/reset")
+	public ResponseEntity<MessageResponse> resetPassword(@RequestParam String resetPasswordToken, @RequestBody String newPassword) {
+		User user = userService.resetPassword(resetPasswordToken, newPassword);
+		String token = jwtTokenUtil.generateToken(user.getEmail());
+		return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).build();
 	}
 
 }

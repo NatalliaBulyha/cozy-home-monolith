@@ -21,6 +21,6 @@ public interface UserRepository extends MongoRepository<User, ObjectId> {
 
 	List<User> findByRoles(RoleE role);
 	
-	Optional<User> getByActivationToken(String activationToken);
+	Optional<User> findByEmail(String email);
 
 }

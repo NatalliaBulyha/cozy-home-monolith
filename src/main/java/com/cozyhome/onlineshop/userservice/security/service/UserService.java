@@ -5,9 +5,12 @@ import com.cozyhome.onlineshop.userservice.model.User;
 
 public interface UserService {
 	
-	void saveUser(SignupRequest signuRequest, String activationToken);
+	User saveUser(SignupRequest signuRequest);
 
 	boolean existsByEmail(String email);
 	
 	User activateUser(String activationToken);
+	
+	User resetPassword(String token, String newPassword);
+	
 }
