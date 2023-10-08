@@ -28,9 +28,8 @@ public class WebSecurityConfig {
 
 	private final UserDetailsServiceImpl userDetailsService;
 	private final JwtAuthEntryPoint unauthorizedHandler;
-	private static final String GENERAL_ACCESS_URL = "/api/v1/**";
-	@Value("${api.secure.basePath}/**")
-	private String GENERAL_SECURE_ACCESS_URL = "/api-secure/v1/**";
+	@Value("${api.basePath}/**")
+	private String GENERAL_ACCESS_URL;
 	private static final String JWT_TOKEN_EXPIRED = "/api/v1/auth/expired-jwt";
 
 	@Bean
