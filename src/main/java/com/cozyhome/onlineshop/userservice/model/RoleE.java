@@ -2,7 +2,7 @@ package com.cozyhome.onlineshop.userservice.model;
 
 public enum RoleE {
 
-	ADMIN,
-	CUSTOMER,
-	MANAGER; 
+	ROLE_ADMIN,
+	ROLE_CUSTOMER,
+	ROLE_MANAGER;
 }

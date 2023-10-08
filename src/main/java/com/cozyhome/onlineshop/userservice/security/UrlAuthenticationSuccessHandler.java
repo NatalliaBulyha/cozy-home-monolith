@@ -27,7 +27,7 @@ public class UrlAuthenticationSuccessHandler implements AuthenticationSuccessHan
     private final Map<String, String> roleTargetUrlMap = new HashMap<String, String>();
 
     {
-        roleTargetUrlMap.put(RoleE.ADMIN.toString(), "/home");
+        roleTargetUrlMap.put(RoleE.ROLE_ADMIN.toString(), "/home");
     }
 
     @Override

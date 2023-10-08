@@ -1,6 +1,6 @@
 package com.cozyhome.onlineshop.reviewservice.service.builder;
 
-import com.cozyhome.onlineshop.dto.review.ReviewDto;
+import com.cozyhome.onlineshop.dto.review.ReviewResponse;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.reviewservice.model.Review;
 import com.cozyhome.onlineshop.userservice.model.User;
@@ -14,15 +14,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewBuilder {
     private final UserRepository userRepository;
-    public List<ReviewDto> buildReviewsResponse(List<Review> reviews) {
+    public List<ReviewResponse> buildReviewsResponse(List<Review> reviews) {
         return reviews.stream().map(this::buildReviewResponse).toList();
     }
 
-    public ReviewDto buildReviewResponse(Review review) {
+    public ReviewResponse buildReviewResponse(Review review) {
         String userId = review.getUserId();
         User user = userRepository.getUserById(userId)
                 .orElseThrow(() -> new DataNotFoundException(String.format("User with id = %s doesn't found", userId)));
-            return ReviewDto.builder()
+            return ReviewResponse.builder()
                     .rating((byte) review.getRating())
                     .userName(user.getFirstName() + " " + user.getLastName())
                     .review(review.getComment())

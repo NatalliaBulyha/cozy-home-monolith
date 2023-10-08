@@ -8,7 +8,7 @@ import com.cozyhome.onlineshop.dto.ProductForBasketDto;
 import com.cozyhome.onlineshop.dto.inventory.QuantityStatusDto;
 import com.cozyhome.onlineshop.dto.productcard.ColorQuantityStatusDto;
 import com.cozyhome.onlineshop.dto.productcard.ProductCardDto;
-import com.cozyhome.onlineshop.dto.review.ReviewDto;
+import com.cozyhome.onlineshop.dto.review.ReviewResponse;
 import com.cozyhome.onlineshop.dto.request.ProductColorDto;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.inventoryservice.service.InventoryService;
@@ -148,7 +148,7 @@ public class ProductBuilder {
 			productCardDto.setColors(convertMapToColorDtoList(colorsQuantityStatus.getColorQuantityStatus()));
 		}
 
-		List<ReviewDto> reviews = reviewService.getReviewsForProduct(productSkuCode);
+		List<ReviewResponse> reviews = reviewService.getReviewsForProduct(productSkuCode);
 		if (!reviews.isEmpty()) {
 			productCardDto.setReviews(reviews);
 			productCardDto.setCountOfReviews((byte) reviews.size());
@@ -213,8 +213,8 @@ public class ProductBuilder {
         return productShopCards;
     }
 
-    private float countAverageRating(List<ReviewDto> reviews) {
-        return (float) reviews.stream().mapToInt(ReviewDto::getRating).average().getAsDouble();
+    private float countAverageRating(List<ReviewResponse> reviews) {
+        return (float) reviews.stream().mapToInt(ReviewResponse::getRating).average().getAsDouble();
     }
 
 	private float roundFloatToOneDecimalPlace(Float floatValue) {

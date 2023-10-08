@@ -1,6 +1,6 @@
 package com.cozyhome.onlineshop.reviewservice.service;
 
-import com.cozyhome.onlineshop.dto.review.ReviewDto;
+import com.cozyhome.onlineshop.dto.review.ReviewResponse;
 import com.cozyhome.onlineshop.dto.review.ReviewAdminResponse;
 import com.cozyhome.onlineshop.dto.review.ReviewRequest;
 import com.cozyhome.onlineshop.exception.DataNotExistException;
@@ -37,7 +37,7 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public ReviewDto addNewReview(ReviewRequest reviewRequest, String userId) {
+    public ReviewResponse addNewReview(ReviewRequest reviewRequest, String userId) {
         Review review = mapper.map(reviewRequest, Review.class);
         review.setUserId(userId);
         review.setCreatedAt(LocalDateTime.now());
@@ -47,7 +47,7 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public List<ReviewDto> getReviewsForProduct(String productSkuCode) {
+    public List<ReviewResponse> getReviewsForProduct(String productSkuCode) {
         List<Review> reviews = repository.findReviewsByProductSkuCode(productSkuCode);
         if (reviews.isEmpty()) {
             return new ArrayList<>();
@@ -59,7 +59,7 @@ public class ReviewServiceImpl implements ReviewService{
     public void removeReviewById(String reviewId, String userId) {
         Review review = repository.findById(UUID.fromString(reviewId))
                 .orElseThrow(() -> new DataNotExistException(String.format("Review with id = %s doesn't found", reviewId)));
-        List<User> admins = userRepository.findByRoles(RoleE.ADMIN);
+        List<User> admins = userRepository.findByRoles(RoleE.ROLE_ADMIN);
         if (userId.equals(review.getUserId()) || admins.stream().anyMatch(user -> user.getId().equals(userId))) {
             repository.deleteById(UUID.fromString(reviewId));
         } else {

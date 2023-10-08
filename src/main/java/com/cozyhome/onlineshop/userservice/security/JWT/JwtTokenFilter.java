@@ -31,7 +31,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 	@Autowired
 	private ExtendedUserDetailsService userDetailsService;
     @Value("${header.name.user-id}")
-    private String userIdHeaderName;
+    private String userIdAttributeName;
 	
 	@Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -54,7 +54,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             log.info("[ON doFilterInternal]:: starting token validation...");
             AuthenticatedUserDetails user = userDetailsService.loadUserByUsername(username);
             if (jwtTokenUtil.validateToken(jwtToken, user)) {
-                request.setAttribute(userIdHeaderName, user.getUser().getId());
+                request.setAttribute(userIdAttributeName, user.getUser().getId());
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null,
                         user.getAuthorities());

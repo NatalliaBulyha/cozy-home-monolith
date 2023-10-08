@@ -28,12 +28,8 @@ public class WebSecurityConfig {
 
 	private final UserDetailsServiceImpl userDetailsService;
 	private final JwtAuthEntryPoint unauthorizedHandler;
-
-//	private static final String LOGIN_URL = "/api/v1/auth/login";
-//	private static final String SIGNUP_URL = "/api/v1/auth/signup";
 	private static final String GENERAL_ACCESS_URL = "/api/v1/**";
 	private static final String JWT_TOKEN_EXPIRED = "/api/v1/auth/expired-jwt";
-//	private static final String ADMIN_PANEL_URL = "/api/v1/admin";
 
 	@Bean
 	public JwtTokenFilter authenticationJwtTokenFilter() {
@@ -63,16 +59,8 @@ public class WebSecurityConfig {
 		http.csrf(csrf -> csrf.disable())
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authorizeHttpRequests(auth -> auth.requestMatchers(GENERAL_ACCESS_URL, JWT_TOKEN_EXPIRED).permitAll())
-				.authorizeHttpRequests(auth -> auth.requestMatchers("/api/test").hasAnyAuthority("ADMIN")
+				.authorizeHttpRequests(auth -> auth.requestMatchers(GENERAL_ACCESS_URL, JWT_TOKEN_EXPIRED).permitAll()
 						.anyRequest().authenticated());
-
-		/*http
-				.csrf(AbstractHttpConfigurer::disable)
-				.authorizeHttpRequests(auth -> auth.requestMatchers(GENERAL_ACCESS_URL).permitAll()
-						.anyRequest().authenticated())
-				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler));*/
 
 		http.authenticationProvider(authenticationProvider());
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

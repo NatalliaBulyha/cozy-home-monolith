@@ -47,24 +47,24 @@ public class UserServiceImpl implements UserService {
 		Set<Role> roles = new HashSet<Role>();
 
 		if (userRoles == null) {
-			Role userRole = roleRepository.getByName(RoleE.CUSTOMER)
+			Role userRole = roleRepository.getByName(RoleE.ROLE_CUSTOMER)
 					.orElseThrow(() -> new RuntimeException(roleErrorMessage));
 			roles.add(userRole);
 		} else {
 			userRoles.forEach(role -> {
 				switch (role) {
 				case admin:
-					Role adminRole = roleRepository.getByName(RoleE.ADMIN)
+					Role adminRole = roleRepository.getByName(RoleE.ROLE_ADMIN)
 							.orElseThrow(() -> new RuntimeException(roleErrorMessage));
 					roles.add(adminRole);
 					break;
 				case manager:
-					Role managerRole = roleRepository.getByName(RoleE.MANAGER)
+					Role managerRole = roleRepository.getByName(RoleE.ROLE_MANAGER)
 							.orElseThrow(() -> new RuntimeException(roleErrorMessage));
 					roles.add(managerRole);
 					break;
 				default:
-					Role userRole = roleRepository.getByName(RoleE.CUSTOMER)
+					Role userRole = roleRepository.getByName(RoleE.ROLE_CUSTOMER)
 							.orElseThrow(() -> new RuntimeException(roleErrorMessage));
 					roles.add(userRole);
 				}

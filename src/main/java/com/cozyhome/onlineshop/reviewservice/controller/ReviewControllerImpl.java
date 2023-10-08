@@ -1,6 +1,6 @@
 package com.cozyhome.onlineshop.reviewservice.controller;
 
-import com.cozyhome.onlineshop.dto.review.ReviewDto;
+import com.cozyhome.onlineshop.dto.review.ReviewResponse;
 import com.cozyhome.onlineshop.dto.review.ReviewAdminResponse;
 import com.cozyhome.onlineshop.dto.review.ReviewRequest;
 import com.cozyhome.onlineshop.productservice.controller.swagger.CommonApiResponses;
@@ -39,7 +39,7 @@ public class ReviewControllerImpl {
 
     private final ReviewService reviewService;
     @Value("${header.name.user-id}")
-    static final String USER_ID_HEADER_NAME = "userId";
+    private String userIdName;
 
     @Operation(summary = "Fetch all reviews.")
     @ApiResponses(value = {
@@ -53,9 +53,10 @@ public class ReviewControllerImpl {
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_201_CREATED_DESCRIPTION) })
     @PostMapping("/new")
-    public ResponseEntity<ReviewDto> addNewReview(@RequestBody @Valid ReviewRequest review,
-                                                  HttpServletRequest request) {
-        String userId = (String) request.getAttribute(USER_ID_HEADER_NAME);
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
+    public ResponseEntity<ReviewResponse> addNewReview(@RequestBody @Valid ReviewRequest review,
+                                                       HttpServletRequest request) {
+        String userId = (String) request.getAttribute(userIdName);
         return new ResponseEntity<>(reviewService.addNewReview(review, userId), HttpStatus.CREATED);
     }
 
@@ -63,7 +64,7 @@ public class ReviewControllerImpl {
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @GetMapping("/product")
-    public ResponseEntity<List<ReviewDto>> getReviewsForProduct(@RequestParam @ValidSkuCode String productSkuCode) {
+    public ResponseEntity<List<ReviewResponse>> getReviewsForProduct(@RequestParam @ValidSkuCode String productSkuCode) {
         return new ResponseEntity<>(reviewService.getReviewsForProduct(productSkuCode), HttpStatus.OK);
     }
 
@@ -79,9 +80,10 @@ public class ReviewControllerImpl {
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_DELETED_DESCRIPTION) })
     @PostMapping
+    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     public ResponseEntity<Void> removeReviewById(@RequestParam @ValidUUID String reviewId,
                                                  HttpServletRequest request) {
-        String userId = (String) request.getAttribute(USER_ID_HEADER_NAME);
+        String userId = (String) request.getAttribute(userIdName);
         reviewService.removeReviewById(reviewId, userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
