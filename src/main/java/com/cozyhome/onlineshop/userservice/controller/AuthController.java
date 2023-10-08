@@ -9,11 +9,11 @@ import com.cozyhome.onlineshop.userservice.security.service.SecurityService;
 import com.cozyhome.onlineshop.userservice.security.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -37,7 +37,7 @@ public class AuthController {
 	private final String registrationSuccessMessage = "User registered successfully!";
 
 	@PostMapping("/login")
-	public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+	public ResponseEntity<String> login(@RequestBody @Valid LoginRequest loginRequest) {
 		String username = loginRequest.getUsername();
 			boolean isAuthenticated = securityService.isAuthenticated(username, loginRequest.getPassword());
 			if (isAuthenticated) {
@@ -50,7 +50,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/signup")
-	public ResponseEntity<MessageResponse> registerUser(@RequestBody SignupRequest signUpRequest) {
+	public ResponseEntity<MessageResponse> registerUser(@RequestBody @Valid SignupRequest signUpRequest) {
 
 		if (userService.existsByEmail(signUpRequest.getEmail())) {
 			return ResponseEntity.badRequest().body(new MessageResponse(emailErrorMessage));
