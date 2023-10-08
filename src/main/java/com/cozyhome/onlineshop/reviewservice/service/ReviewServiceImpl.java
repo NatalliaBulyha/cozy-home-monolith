@@ -62,7 +62,7 @@ public class ReviewServiceImpl implements ReviewService{
                 || reviewRemoveDto.getRoles().stream().anyMatch(role -> role.getName().equals(RoleE.ROLE_ADMIN))) {
             repository.deleteById(UUID.fromString(reviewRemoveDto.getReviewId()));
         } else {
-            throw new AccessDeniedException("You do not have the ability to delete another person's review");
+            throw new AccessDeniedException("You can only delete your own reviews.");
         }
     }
 
