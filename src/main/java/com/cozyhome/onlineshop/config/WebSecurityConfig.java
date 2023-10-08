@@ -28,8 +28,9 @@ public class WebSecurityConfig {
 
 	private final UserDetailsServiceImpl userDetailsService;
 	private final JwtAuthEntryPoint unauthorizedHandler;
-	@Value("${api.basePath}")
-	private static String GENERAL_ACCESS_URL;
+	@Value("${api.basePath}/**")
+	private String GENERAL_ACCESS_URL;
+	private static final String JWT_TOKEN_EXPIRED = "/api/v1/auth/expired-jwt";
 	private static final String[] SWAGGER_URL = {
 			"/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html"
 	};
@@ -62,8 +63,7 @@ public class WebSecurityConfig {
 		http.csrf(csrf -> csrf.disable())
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authorizeHttpRequests(auth -> auth.requestMatchers(GENERAL_ACCESS_URL + "/**").permitAll()
-						.requestMatchers(SWAGGER_URL).permitAll()
+				.authorizeHttpRequests(auth -> auth.requestMatchers(GENERAL_ACCESS_URL, JWT_TOKEN_EXPIRED).permitAll()
 						.anyRequest().authenticated());
 
 		http.authenticationProvider(authenticationProvider());
