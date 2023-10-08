@@ -23,13 +23,13 @@ public class InventoryController {
 	private final InventoryService inventoryService;
 	
 	//for product card
-	@GetMapping("/color_quantity_status/product_skuCode")
+	@GetMapping("/color-quantity-status/product-skuCode")
 	public ResponseEntity<QuantityStatusDto> getColorQuantityStatusBySkuCode(@RequestParam String productSkuCode){
 		return ResponseEntity.ok(inventoryService.getProductCardColorQuantityStatus(productSkuCode));
 	}	
 	
 	//for preview
-	@PostMapping("/quantity_status_map/product_skuCode_list")
+	@PostMapping("/quantity-status-map/product-skuCode-list")
 	public ResponseEntity<Map<String, String>> getProductQuantityStatusMap(@RequestBody List<String> productSkuCodeList){
 		return ResponseEntity.ok(inventoryService.getQuantityStatusBySkuCodeList(productSkuCodeList));
 	}

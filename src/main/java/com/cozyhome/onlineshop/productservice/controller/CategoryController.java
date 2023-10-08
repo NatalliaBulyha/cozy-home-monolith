@@ -27,7 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.basePath}/category")
-public class CategoryControllerImpl {
+public class CategoryController {
 	private final CategoryService categoryService;
 
 	@Operation(summary = "Fetch all categories", description = "Fetch all categories with id, name, spriteIcon")

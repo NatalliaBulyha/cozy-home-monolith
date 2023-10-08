@@ -39,7 +39,7 @@ import java.util.List;
 @RestController
 @Validated
 @RequestMapping("${api.basePath}/image")
-public class ImageControllerImpl {
+public class ImageController {
 	private final ResourceLoader resourceLoader;
 	private final ImageService imageService;
 
@@ -63,7 +63,7 @@ public class ImageControllerImpl {
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION),
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_400, description = SwaggerResponse.Message.CODE_400)})
-	@PostMapping("/product_color")
+	@PostMapping("/product-color")
 	public ResponseEntity<ImageDto> getPreviewImageForProductByColor(@RequestBody @Valid ProductColorDto productColor) {
 		return ResponseEntity.ok().body(imageService.getPreviewImageForProductByColor(productColor));
 	}
@@ -72,7 +72,7 @@ public class ImageControllerImpl {
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION),
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_400, description = SwaggerResponse.Message.CODE_400)})
-	@PostMapping ("/pop_up_image")
+	@PostMapping ("/popup-image")
     public ResponseEntity<List<PopUpImageDto>> getPopUpImageForProductByColor(@RequestBody @Valid ProductColorDto productColor) {
         return ResponseEntity.ok().body(imageService.getPopUpImageForProductByColor(productColor));
     }
@@ -81,7 +81,7 @@ public class ImageControllerImpl {
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION),
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_400, description = SwaggerResponse.Message.CODE_400)})
-	@PostMapping ("/product_card_image")
+	@PostMapping ("/product-card-image")
 	public ResponseEntity<List<ProductCardImageDto>> getProductCardImagesByColor(@RequestBody @Valid ProductColorDto productColor){
 		return ResponseEntity.ok().body(imageService.getProductCardImagesByColor(productColor));
 	}
