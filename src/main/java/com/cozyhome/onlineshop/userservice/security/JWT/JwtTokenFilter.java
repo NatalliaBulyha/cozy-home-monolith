@@ -32,6 +32,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 	private ExtendedUserDetailsService userDetailsService;
     @Value("${header.name.user-id}")
     private String userIdAttributeName;
+    @Value("${header.name.user-role}")
+    private String userRoleAttributeName;
 	
 	@Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -55,6 +57,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             AuthenticatedUserDetails user = userDetailsService.loadUserByUsername(username);
             if (jwtTokenUtil.validateToken(jwtToken, user)) {
                 request.setAttribute(userIdAttributeName, user.getUser().getId());
+                request.setAttribute(userRoleAttributeName, user.getUser().getRoles());
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null,
                         user.getAuthorities());

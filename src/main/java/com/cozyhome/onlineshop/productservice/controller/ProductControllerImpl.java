@@ -2,7 +2,6 @@ package com.cozyhome.onlineshop.productservice.controller;
 
 import com.cozyhome.onlineshop.dto.ProductDto;
 import com.cozyhome.onlineshop.dto.ProductStatusDto;
-import com.cozyhome.onlineshop.dto.ProductForBasketDto;
 import com.cozyhome.onlineshop.dto.filter.FilterDto;
 import com.cozyhome.onlineshop.dto.productcard.ProductCardDto;
 import com.cozyhome.onlineshop.dto.request.PageableDto;
@@ -120,14 +119,5 @@ public class ProductControllerImpl {
     public ResponseEntity<List<ProductDto>> getProductsByCollection(@RequestParam String collectionId,
                                                                     @RequestParam @ValidSkuCode String productSkuCode){
         return ResponseEntity.ok().body(productService.getProductsByCollectionExcludeSkuCode(collectionId, productSkuCode));
-    }
-
-    @Operation(summary = "Get products information for basket by product sku code and color hex", description = "Get list of products information for basket by product sku code and color hex.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION),
-            @ApiResponse(responseCode = SwaggerResponse.Code.CODE_400, description = SwaggerResponse.Message.CODE_400) })
-    @PostMapping("/basket")
-    public ResponseEntity<List<ProductForBasketDto>> getProductsForBasket(@RequestBody @Valid List<ProductColorDto> productColorDtos){
-        return ResponseEntity.ok().body(productService.getProductsForBasket(productColorDtos));
     }
 }

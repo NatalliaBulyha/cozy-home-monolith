@@ -66,9 +66,9 @@ public class JwtTokenUtil {
 	}
 
 	public String resolveToken(HttpServletRequest request) {
-		String bearer = request.getHeader(AUTHORIZATION);
-		if (bearer != null && bearer.startsWith(TOKEN_PREFIX)) {
-			return bearer.substring(TOKEN_PREFIX.length());
+		String bearerToken = request.getHeader(AUTHORIZATION);
+		if (bearerToken != null && bearerToken.startsWith(TOKEN_PREFIX)) {
+			return bearerToken.substring(TOKEN_PREFIX.length());
 		}
 		return null;
 	}
