@@ -30,9 +30,6 @@ public class WebSecurityConfig {
 
 	private final UserDetailsServiceImpl userDetailsService;
 	private final JwtAuthEntryPoint unauthorizedHandler;
-	@Value("${api.basePath}/**")
-	private String GENERAL_ACCESS_URL;
-	private static final String JWT_TOKEN_EXPIRED = "/api/v1/auth/expired-jwt";
 
 	@Value("${api.auth.whitelist}")
 	private final String[] AUTH_WHITELIST;
