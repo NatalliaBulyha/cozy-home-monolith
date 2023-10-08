@@ -1,5 +1,6 @@
 package com.cozyhome.onlineshop.reviewservice.service;
 
+import com.cozyhome.onlineshop.dto.review.ReviewRemoveDto;
 import com.cozyhome.onlineshop.dto.review.ReviewResponse;
 import com.cozyhome.onlineshop.dto.review.ReviewAdminResponse;
 import com.cozyhome.onlineshop.dto.review.ReviewRequest;
@@ -7,7 +8,6 @@ import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.reviewservice.model.Review;
 import com.cozyhome.onlineshop.reviewservice.repository.ReviewRepository;
 import com.cozyhome.onlineshop.reviewservice.service.builder.ReviewBuilder;
-import com.cozyhome.onlineshop.userservice.model.Role;
 import com.cozyhome.onlineshop.userservice.model.RoleE;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -55,11 +54,13 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public void removeReviewById(String reviewId, String userId, Set<Role> roles) {
-        Review review = repository.findById(UUID.fromString(reviewId))
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Review with id = %s doesn't found", reviewId)));
-        if (userId.equals(review.getUserId()) || roles.stream().anyMatch(role -> role.getName().equals(RoleE.ROLE_ADMIN))) {
-            repository.deleteById(UUID.fromString(reviewId));
+    public void removeReviewById(ReviewRemoveDto reviewRemoveDto) {
+        Review review = repository.findById(UUID.fromString(reviewRemoveDto.getReviewId()))
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Review with id = %s doesn't found",
+                        reviewRemoveDto.getReviewId())));
+        if (reviewRemoveDto.getUserId().equals(review.getUserId())
+                || reviewRemoveDto.getRoles().stream().anyMatch(role -> role.getName().equals(RoleE.ROLE_ADMIN))) {
+            repository.deleteById(UUID.fromString(reviewRemoveDto.getReviewId()));
         } else {
             throw new AccessDeniedException("You do not have the ability to delete another person's review");
         }
