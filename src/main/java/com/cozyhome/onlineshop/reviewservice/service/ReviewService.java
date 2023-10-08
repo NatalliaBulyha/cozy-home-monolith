@@ -1,6 +1,6 @@
 package com.cozyhome.onlineshop.reviewservice.service;
 
-import com.cozyhome.onlineshop.dto.review.ReviewRemoveDto;
+import com.cozyhome.onlineshop.dto.review.ReviewToRemoveDto;
 import com.cozyhome.onlineshop.dto.review.ReviewResponse;
 import com.cozyhome.onlineshop.dto.review.ReviewAdminResponse;
 import com.cozyhome.onlineshop.dto.review.ReviewRequest;
@@ -14,7 +14,7 @@ public interface ReviewService {
 
     List<ReviewResponse> getReviewsForProduct(String productSkuCode);
 
-    void removeReviewById(ReviewRemoveDto reviewRemoveDto);
+    void removeReviewById(ReviewToRemoveDto reviewRemoveDto);
 
     List<ReviewAdminResponse> getReviewsForProductAllInf(String productSkuCode);
 }

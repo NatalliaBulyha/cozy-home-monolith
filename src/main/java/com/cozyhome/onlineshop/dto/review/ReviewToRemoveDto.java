@@ -10,7 +10,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class ReviewRemoveDto {
+public class ReviewToRemoveDto {
     private String reviewId;
     private String userId;
     private Set<Role> roles;

@@ -1,7 +1,7 @@
 package com.cozyhome.onlineshop.reviewservice.controller;
 
 import com.cozyhome.onlineshop.dto.review.ReviewAdminResponse;
-import com.cozyhome.onlineshop.dto.review.ReviewRemoveDto;
+import com.cozyhome.onlineshop.dto.review.ReviewToRemoveDto;
 import com.cozyhome.onlineshop.dto.review.ReviewRequest;
 import com.cozyhome.onlineshop.dto.review.ReviewResponse;
 import com.cozyhome.onlineshop.productservice.controller.swagger.CommonApiResponses;
@@ -84,7 +84,7 @@ public class ReviewSecuredController {
                                                  HttpServletRequest request) {
         String userId = (String) request.getAttribute(userIdName);
         Set<Role> roles = (Set<Role>) request.getAttribute(userRoleAttributeName);
-        reviewService.removeReviewById(new ReviewRemoveDto(reviewId, userId, roles));
+        reviewService.removeReviewById(new ReviewToRemoveDto(reviewId, userId, roles));
         return new ResponseEntity<>(HttpStatus.OK);
     }
  }

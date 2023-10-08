@@ -1,6 +1,6 @@
 package com.cozyhome.onlineshop.reviewservice.service;
 
-import com.cozyhome.onlineshop.dto.review.ReviewRemoveDto;
+import com.cozyhome.onlineshop.dto.review.ReviewToRemoveDto;
 import com.cozyhome.onlineshop.dto.review.ReviewResponse;
 import com.cozyhome.onlineshop.dto.review.ReviewAdminResponse;
 import com.cozyhome.onlineshop.dto.review.ReviewRequest;
@@ -54,7 +54,7 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public void removeReviewById(ReviewRemoveDto reviewRemoveDto) {
+    public void removeReviewById(ReviewToRemoveDto reviewRemoveDto) {
         Review review = repository.findById(UUID.fromString(reviewRemoveDto.getReviewId()))
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Review with id = %s doesn't found",
                         reviewRemoveDto.getReviewId())));
