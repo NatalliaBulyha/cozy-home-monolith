@@ -1,5 +1,6 @@
 package com.cozyhome.onlineshop.dto.user;
 
+import com.cozyhome.onlineshop.validation.ValidConditionalPassword;
 import com.cozyhome.onlineshop.validation.ValidEmail;
 import com.cozyhome.onlineshop.validation.ValidPassword;
 import com.cozyhome.onlineshop.validation.ValidPhoneNumber;
@@ -12,12 +13,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Data
+@ValidConditionalPassword
 public class UserInformationRequest {
     @ValidEmail
     private String email;
-    @ValidPassword
     private String oldPassword;
-    @ValidPassword
     private String newPassword;
     private String firstName;
     private String lastName;
