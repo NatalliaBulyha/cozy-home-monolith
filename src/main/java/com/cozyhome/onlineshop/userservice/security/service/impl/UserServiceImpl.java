@@ -141,10 +141,11 @@ public class UserServiceImpl implements UserService {
 		if (!user.getEmail().equals(userInformationDto.getEmail())) {
 			user.setEmail(userInformationDto.getEmail());
 		}
-		if (!user.getPassword().equals(userInformationDto.getOldPassword()) && !userInformationDto.getNewPassword().isEmpty()) {
+		if (user.getPassword().equals(userInformationDto.getOldPassword())
+				&& !user.getPassword().equals(userInformationDto.getNewPassword())) {
 			user.setPassword(userInformationDto.getNewPassword());
 		}
-		User updatedUser = userRepository.insert(user);
+		User updatedUser = userRepository.save(user);
 
 		return modelMapper.map(updatedUser, UserInformationResponse.class);
 	}

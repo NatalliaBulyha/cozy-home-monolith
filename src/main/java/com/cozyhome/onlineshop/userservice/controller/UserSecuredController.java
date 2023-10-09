@@ -17,6 +17,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,7 +39,7 @@ public class UserSecuredController {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @Secured({"ROLE_CUSTOMER"})
     @PutMapping("/profile/update")
-    public ResponseEntity<UserInformationResponse> updateUserData(@Valid UserInformationRequest userInformationDto,
+    public ResponseEntity<UserInformationResponse> updateUserData(@RequestBody @Valid UserInformationRequest userInformationDto,
                                                                   HttpServletRequest request) {
         String userId = (String) request.getAttribute(userIdName);
         return ResponseEntity.ok(userService.updateUserData(userInformationDto, userId));
