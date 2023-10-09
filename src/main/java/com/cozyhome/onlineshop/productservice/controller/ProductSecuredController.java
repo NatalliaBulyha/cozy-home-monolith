@@ -33,13 +33,5 @@ public class ProductSecuredController {
 
 	private final ProductService productService;
 
-    @Operation(summary = "Get products information for basket by product sku code and color hex", description = "Get list of products information for basket by product sku code and color hex.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION),
-            @ApiResponse(responseCode = SwaggerResponse.Code.CODE_400, description = SwaggerResponse.Message.CODE_400) })
-    @PostMapping("/basket")
-    @Secured({"ROLE_CUSTOMER"})
-    public ResponseEntity<List<ProductForBasketDto>> getProductsForBasket(@RequestBody @Valid List<ProductColorDto> productColorDtos){
-        return ResponseEntity.ok().body(productService.getProductsForBasket(productColorDtos));
-    }
+
 }
