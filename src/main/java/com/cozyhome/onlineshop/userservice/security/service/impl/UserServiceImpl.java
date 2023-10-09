@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.cozyhome.onlineshop.dto.user.UserInformationDto;
+import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -115,8 +116,26 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void updateUserData(UserInformationDto userInformationDto) {
+	public void updateUserData(UserInformationDto userInformationDto, String userId) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new DataNotFoundException("User not found."));
 
+		if (!user.getLastName().equals(userInformationDto.getLastName())) {
+			user.setLastName(userInformationDto.getLastName());
+		}
+		if (!user.getFirstName().equals(userInformationDto.getFirstName())) {
+			user.setFirstName(userInformationDto.getFirstName());
+		}
+		if (!user.getPhoneNumber().equals(userInformationDto.getPhoneNumber())) {
+			user.setPhoneNumber(userInformationDto.getPhoneNumber());
+		}
+		if (!user.getEmail().equals(userInformationDto.getEmail())) {
+			user.setEmail(userInformationDto.getEmail());
+		}
+		if (!user.getPassword().equals(userInformationDto.getOldPassword()) && !userInformationDto.getNewPassword().isEmpty()) {
+			user.setPassword(userInformationDto.getNewPassword());
+		}
+		userRepository.insert(user);
 	}
 
 }

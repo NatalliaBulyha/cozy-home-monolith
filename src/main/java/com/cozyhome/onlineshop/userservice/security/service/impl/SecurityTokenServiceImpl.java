@@ -47,13 +47,21 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
 	public void createActivationUserToken(User user) {
 		String activationToken = generateRandomToken();
 		String link = activationLink + activationToken;
-		SecurityToken token = SecurityToken.builder().token(activationToken).user(user)
-				.expiration(calculateExpiryDate()).tokenType(TokenTypeE.ACTIVATE_USER).build();
+		SecurityToken token = SecurityToken.builder()
+				.token(activationToken)
+				.user(user)
+				.expiration(calculateExpiryDate())
+				.tokenType(TokenTypeE.ACTIVATE_USER)
+				.build();
 		log.info("[ON createActivationUserToken] :: Token is created "+ token);
 		securityTokenRepository.save(token);
 
-		EmailMessageDto activationEmail = EmailMessageDto.builder().link(link).mailTo(user.getEmail())
-				.subject(activationEmailSubject).text(activationEmailText + link).build();
+		EmailMessageDto activationEmail = EmailMessageDto.builder()
+				.link(link)
+				.mailTo(user.getEmail())
+				.subject(activationEmailSubject)
+				.text(activationEmailText + link)
+				.build();
 		emailService.sendEmail(activationEmail);
 	}
 
@@ -64,15 +72,22 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
 		if (user.isPresent()) {
 			String token = generateRandomToken();
 			String link = resetPasswordEmailLink + token;
-			PasswordResetToken passwordResetToken = PasswordResetToken.builder().token(token).user(user.get())
-					.expiration(calculateExpiryDate()).tokenType(TokenTypeE.RESET_PASSWORD)
+			PasswordResetToken passwordResetToken = PasswordResetToken.builder()
+					.token(token)
+					.user(user.get())
+					.expiration(calculateExpiryDate())
+					.tokenType(TokenTypeE.RESET_PASSWORD)
 					.ipAddress(ipAddress)
 					.build();
 			log.info("[ON createPasswordResetToken] :: Token is created "+ token);
 			securityTokenRepository.save(passwordResetToken);
 
-			EmailMessageDto activationEmail = EmailMessageDto.builder().link(link).mailTo(user.get().getEmail())
-					.subject(resetPasswordEmailSubject).text(resetPasswordEmailText + link).build();
+			EmailMessageDto activationEmail = EmailMessageDto.builder()
+					.link(link)
+					.mailTo(user.get().getEmail())
+					.subject(resetPasswordEmailSubject)
+					.text(resetPasswordEmailText + link)
+					.build();
 			emailService.sendEmail(activationEmail);
 		}
 	}

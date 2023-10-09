@@ -8,8 +8,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -30,15 +32,19 @@ import java.util.List;
 @Validated
 @RequestMapping("${api.secure.basePath}/user")
 public class UserSecuredController {
+    @Value("${header.name.user-id}")
+    private String userIdName;
     private final UserService userService;
 
     @Operation(summary = "change of user information")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
-    @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
+    @Secured({"ROLE_CUSTOMER"})
     @GetMapping("/update")
-    public ResponseEntity<Void> updateUserData(@Valid UserInformationDto userInformationDto) {
-        userService.updateUserData(userInformationDto);
+    public ResponseEntity<Void> updateUserData(@Valid UserInformationDto userInformationDto,
+                                               HttpServletRequest request) {
+        String userId = (String) request.getAttribute(userIdName);
+        userService.updateUserData(userInformationDto, userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -10,5 +10,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 public class UserInformationDto {
-
+    private String email;
+    private String oldPassword;
+    private String newPassword;
+    private String firstName;
+    private String lastName;
+    private String phoneNumber;
 }
