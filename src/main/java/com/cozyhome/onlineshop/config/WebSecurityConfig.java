@@ -1,6 +1,7 @@
 package com.cozyhome.onlineshop.config;
 
 import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenFilter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @RequiredArgsConstructor
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
@@ -28,10 +30,9 @@ public class WebSecurityConfig {
 
 	private final UserDetailsServiceImpl userDetailsService;
 	private final JwtAuthEntryPoint unauthorizedHandler;
-	private static final String GENERAL_ACCESS_URL = "/api/v1/**";
-	@Value("${api.secure.basePath}/**")
-	private String GENERAL_SECURE_ACCESS_URL = "/api-secure/v1/**";
-	private static final String JWT_TOKEN_EXPIRED = "/api/v1/auth/expired-jwt";
+
+	@Value("${api.auth.whitelist}")
+	private final String[] AUTH_WHITELIST;
 
 	@Bean
 	public JwtTokenFilter authenticationJwtTokenFilter() {
@@ -61,7 +62,7 @@ public class WebSecurityConfig {
 		http.csrf(csrf -> csrf.disable())
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authorizeHttpRequests(auth -> auth.requestMatchers(GENERAL_ACCESS_URL, JWT_TOKEN_EXPIRED).permitAll()
+				.authorizeHttpRequests(auth -> auth.requestMatchers(AUTH_WHITELIST).permitAll()
 						.anyRequest().authenticated());
 
 		http.authenticationProvider(authenticationProvider());

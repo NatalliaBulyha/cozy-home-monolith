@@ -38,7 +38,7 @@ import java.util.List;
 @RestController
 @Validated
 @RequestMapping("${api.basePath}/product")
-public class ProductControllerImpl {
+public class ProductController {
 
 	private final ProductService productService;
 
@@ -64,7 +64,7 @@ public class ProductControllerImpl {
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION),
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_400, description = SwaggerResponse.Message.CODE_400) })
-    @GetMapping("/homepage/category_status")
+    @GetMapping("/homepage/category-status")
     public ResponseEntity<List<ProductDto>> getRandomProductsByStatusAndCategoryId(@RequestParam Byte status,
                                                                                    @RequestParam @ValidId String categoryId,
                                                                                    @RequestParam int countOfProducts) {

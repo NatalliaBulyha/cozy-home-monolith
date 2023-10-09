@@ -2,6 +2,8 @@ package com.cozyhome.onlineshop.handler;
 
 import com.cozyhome.onlineshop.exception.AuthenticationException;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
+import com.cozyhome.onlineshop.exception.InvalidTokenException;
+import io.jsonwebtoken.JwtException;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.UnexpectedTypeException;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +48,7 @@ public class CozyHomeExceptionHandler extends ResponseEntityExceptionHandler {
         return bodyBuilder(ex.getMessage());
     }
 
-    @ExceptionHandler({AccessDeniedException.class})
+    @ExceptionHandler({AccessDeniedException.class, JwtException.class, InvalidTokenException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleForbiddenException(Exception ex) {
         return bodyBuilder(ex.getMessage());

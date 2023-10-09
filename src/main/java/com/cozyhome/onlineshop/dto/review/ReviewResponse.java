@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @Builder
 @Data
 public class ReviewResponse {
+    private String reviewId;
     private byte rating;
     private String review;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "YYYY-MM-dd")

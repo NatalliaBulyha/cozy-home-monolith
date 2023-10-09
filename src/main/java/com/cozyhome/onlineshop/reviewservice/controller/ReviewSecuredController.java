@@ -1,8 +1,9 @@
 package com.cozyhome.onlineshop.reviewservice.controller;
 
-import com.cozyhome.onlineshop.dto.review.ReviewResponse;
 import com.cozyhome.onlineshop.dto.review.ReviewAdminResponse;
+import com.cozyhome.onlineshop.dto.review.ReviewToRemoveDto;
 import com.cozyhome.onlineshop.dto.review.ReviewRequest;
+import com.cozyhome.onlineshop.dto.review.ReviewResponse;
 import com.cozyhome.onlineshop.productservice.controller.swagger.CommonApiResponses;
 import com.cozyhome.onlineshop.productservice.controller.swagger.SwaggerResponse;
 import com.cozyhome.onlineshop.reviewservice.service.ReviewService;
@@ -36,8 +37,8 @@ import java.util.Set;
 @Tag(name = "Review")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("${api.basePath}/review")
-public class ReviewControllerImpl {
+@RequestMapping("${api.secure.basePath}/review")
+public class ReviewSecuredController {
 
     private final ReviewService reviewService;
     @Value("${header.name.user-id}")
@@ -45,11 +46,12 @@ public class ReviewControllerImpl {
     @Value("${header.name.user-role}")
     private String userRoleAttributeName;
 
-    @Operation(summary = "Fetch all reviews.")
+    @Operation(summary = "Fetch all reviews. For the ADMIN.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @GetMapping
-    public ResponseEntity<List<ReviewAdminResponse>> getReviews() {
+    @Secured({"ROLE_ADMIN"})
+    public ResponseEntity<List<ReviewAdminResponse>> getAllReviewsAllInfo() {
         return new ResponseEntity<>(reviewService.getReviews(), HttpStatus.OK);
     }
 
@@ -64,18 +66,11 @@ public class ReviewControllerImpl {
         return new ResponseEntity<>(reviewService.addNewReview(review, userId), HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Fetch review for product.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
-    @GetMapping("/product")
-    public ResponseEntity<List<ReviewResponse>> getReviewsForProduct(@RequestParam @ValidSkuCode String productSkuCode) {
-        return new ResponseEntity<>(reviewService.getReviewsForProduct(productSkuCode), HttpStatus.OK);
-    }
-
     @Operation(summary = "Fetch information about review for the product. For the ADMIN.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @GetMapping("/admin/product")
+    @Secured({"ROLE_ADMIN"})
     public ResponseEntity<List<ReviewAdminResponse>> getReviewsForProductAllInf(@RequestParam @ValidSkuCode String productSkuCode) {
         return new ResponseEntity<>(reviewService.getReviewsForProductAllInf(productSkuCode), HttpStatus.OK);
     }
@@ -89,7 +84,7 @@ public class ReviewControllerImpl {
                                                  HttpServletRequest request) {
         String userId = (String) request.getAttribute(userIdName);
         Set<Role> roles = (Set<Role>) request.getAttribute(userRoleAttributeName);
-        reviewService.removeReviewById(reviewId, userId, roles);
+        reviewService.removeReviewById(new ReviewToRemoveDto(reviewId, userId, roles));
         return new ResponseEntity<>(HttpStatus.OK);
     }
- }
+}

@@ -23,6 +23,7 @@ public class ReviewBuilder {
         User user = userRepository.getUserById(userId)
                 .orElseThrow(() -> new DataNotFoundException(String.format("User with id = %s doesn't found", userId)));
             return ReviewResponse.builder()
+                    .reviewId(review.getId().toString())
                     .rating((byte) review.getRating())
                     .userName(user.getFirstName() + " " + user.getLastName())
                     .review(review.getComment())

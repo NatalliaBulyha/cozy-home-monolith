@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.cozyhome.onlineshop.userservice.security.InvalidTokenException;
+import com.cozyhome.onlineshop.exception.InvalidTokenException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -79,7 +79,7 @@ public class JwtTokenUtil {
 
 	private Claims getAllClaimsFromToken(String token) {
 		log.info("[ON getAllClaimsFromToken]:: getting all claims from token using Jwts parser");
-		Claims claims = null;
+		Claims claims;
 		try {
 			claims = Jwts.parserBuilder()
 					.setSigningKey(key())
@@ -88,7 +88,7 @@ public class JwtTokenUtil {
 					.getBody();
 		} catch (JwtException e) {
 			log.error("[ON getAllClaimsFromToken]:: token is expired");
-			throw new InvalidTokenException(e.getLocalizedMessage(), e);
+			throw new InvalidTokenException("Token is invalid.");
 		}
 		return claims;
 	}
