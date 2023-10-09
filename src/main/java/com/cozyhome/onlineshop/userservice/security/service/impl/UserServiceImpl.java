@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.cozyhome.onlineshop.dto.user.UserInformationDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -111,6 +112,11 @@ public class UserServiceImpl implements UserService {
 
         securityTokenRepository.delete(resetToken);	
         return user;
+	}
+
+	@Override
+	public void updateUserData(UserInformationDto userInformationDto) {
+
 	}
 
 }

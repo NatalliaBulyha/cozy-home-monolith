@@ -41,7 +41,8 @@ public class CategoryController {
 	@Operation(summary = "Fetch all categories with subcategories for catalog", description = "Fetch all categories with subcategories and images for categories")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
-	@GetMapping("/categories")	public ResponseEntity<List<CategoryWithSubCategoriesDto>> getCategoriesWithSubcategoriesAndPhoto() {
+	@GetMapping("/categories")
+	public ResponseEntity<List<CategoryWithSubCategoriesDto>> getCategoriesWithSubcategoriesAndPhoto() {
 		return new ResponseEntity<>(categoryService.getCategoriesWithPhoto(), HttpStatus.OK);
 	}
 
