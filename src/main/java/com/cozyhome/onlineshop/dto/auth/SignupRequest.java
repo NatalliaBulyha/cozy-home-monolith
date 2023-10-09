@@ -4,8 +4,8 @@ import java.util.Set;
 
 import com.cozyhome.onlineshop.validation.ValidEmail;
 import com.cozyhome.onlineshop.validation.ValidPassword;
+import com.cozyhome.onlineshop.validation.ValidPhoneNumber;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,8 +25,7 @@ public class SignupRequest {
 	private String firstName;
 	@NotBlank
 	private String lastName;
-	@Pattern(regexp = "\\+38 \\(\\d{3}\\) \\d{3} - \\d{2} - \\d{2}",
-			message = "Invalid phone number. Phone number must be +38 (***) *** - ** - **.")
+	@ValidPhoneNumber
 	private String phoneNumber;
 	private Set<String> roles;
 

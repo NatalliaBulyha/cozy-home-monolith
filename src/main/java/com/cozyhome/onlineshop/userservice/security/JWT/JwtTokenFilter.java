@@ -30,7 +30,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private String userIdAttributeName;
     @Value("${header.name.user-role}")
     private String userRoleAttributeName;
-    @Value("${api.basePath}/")
+    @Value("${api.basePath}")
     private String noAuthPathUrl;
 	
 	@Override

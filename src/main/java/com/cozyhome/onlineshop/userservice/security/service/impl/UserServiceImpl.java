@@ -5,6 +5,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.cozyhome.onlineshop.dto.auth.NewPasswordRequest;
+import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
+import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
+import com.cozyhome.onlineshop.exception.DataNotFoundException;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +36,7 @@ public class UserServiceImpl implements UserService {
 	private final RoleRepository roleRepository;
 	private final PasswordEncoder encoder;
 	private final SecurityTokenRepository securityTokenRepository;
+	private final ModelMapper modelMapper;
 
 	private final String admin = "admin";
 	private final String manager = "manager";
@@ -117,6 +122,32 @@ public class UserServiceImpl implements UserService {
 
         securityTokenRepository.delete(resetToken);	
         return user;
+	}
+
+	@Override
+	public UserInformationResponse updateUserData(UserInformationRequest userInformationDto, String userId) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new DataNotFoundException("User not found."));
+
+		if (!user.getLastName().equals(userInformationDto.getLastName())) {
+			user.setLastName(userInformationDto.getLastName());
+		}
+		if (!user.getFirstName().equals(userInformationDto.getFirstName())) {
+			user.setFirstName(userInformationDto.getFirstName());
+		}
+		if (!user.getPhoneNumber().equals(userInformationDto.getPhoneNumber())) {
+			user.setPhoneNumber(userInformationDto.getPhoneNumber());
+		}
+		if (!user.getEmail().equals(userInformationDto.getEmail())) {
+			user.setEmail(userInformationDto.getEmail());
+		}
+		if (user.getPassword().equals(userInformationDto.getOldPassword())
+				&& !user.getPassword().equals(userInformationDto.getNewPassword())) {
+			user.setPassword(userInformationDto.getNewPassword());
+		}
+		User updatedUser = userRepository.save(user);
+
+		return modelMapper.map(updatedUser, UserInformationResponse.class);
 	}
 
 }

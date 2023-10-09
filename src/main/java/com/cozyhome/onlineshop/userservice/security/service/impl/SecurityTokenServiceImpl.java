@@ -25,23 +25,23 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Service
 public class SecurityTokenServiceImpl implements SecurityTokenService {
-    private final Emailservice emailService;
-    private final UserRepository userRepository;
-    private final SecurityTokenRepository securityTokenRepository;
+	private final Emailservice emailService;
+	private final UserRepository userRepository;
+	private final SecurityTokenRepository securityTokenRepository;
 
-    @Value("${activation.message.link}")
-    private String activationLink;
-    @Value("${activation.message.subject}")
-    private String activationEmailSubject;
-    @Value("${activation.message.text}")
-    private String activationEmailText;
+	@Value("${activation.message.link}")
+	private String activationLink;
+	@Value("${activation.message.subject}")
+	private String activationEmailSubject;
+	@Value("${activation.message.text}")
+	private String activationEmailText;
 
-    @Value("${reset-password.message.link}")
-    private String resetPasswordEmailLink;
-    @Value("${reset-password.message.subject}")
-    private String resetPasswordEmailSubject;
-    @Value("${reset-password.message.text}")
-    private String resetPasswordEmailText;
+	@Value("${reset-password.message.link}")
+	private String resetPasswordEmailLink;
+	@Value("${reset-password.message.subject}")
+	private String resetPasswordEmailSubject;
+	@Value("${reset-password.message.text}")
+	private String resetPasswordEmailText;
 
     @Override
     public void createActivationUserToken(User user) {
@@ -91,12 +91,12 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         emailService.sendEmail(activationEmail);
     }
 
-    private LocalDateTime calculateExpiryDate() {
-        return LocalDateTime.now().plus(24, ChronoUnit.HOURS);
-    }
+	private LocalDateTime calculateExpiryDate() {
+		return LocalDateTime.now().plus(24, ChronoUnit.HOURS);
+	}
 
-    private String generateRandomToken() {
-        return UUID.randomUUID().toString();
-    }
+	private String generateRandomToken() {
+		return UUID.randomUUID().toString();
+	}
 
 }
