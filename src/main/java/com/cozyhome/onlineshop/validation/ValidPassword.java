@@ -19,7 +19,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({ TYPE, FIELD, ANNOTATION_TYPE, PARAMETER })
 @Retention(RUNTIME)
 public @interface ValidPassword {
-    String message() default "Invalid password. Password must have: minimum 8 characters in length, " +
+    String message() default "Invalid password. Password must have: minimum 6 characters in length, " +
             "at least one special character: #?!@$%^&*-, at least one uppercase English letter, " +
             "at least one lowercase English letter, at least one digit.";
 

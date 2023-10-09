@@ -3,6 +3,7 @@ package com.cozyhome.onlineshop.userservice.controller;
 import com.cozyhome.onlineshop.dto.auth.EmailRequest;
 import com.cozyhome.onlineshop.dto.auth.LoginRequest;
 import com.cozyhome.onlineshop.dto.auth.MessageResponse;
+import com.cozyhome.onlineshop.dto.auth.NewPasswordRequest;
 import com.cozyhome.onlineshop.dto.auth.SignupRequest;
 import com.cozyhome.onlineshop.exception.AuthenticationException;
 import com.cozyhome.onlineshop.userservice.model.User;
@@ -11,7 +12,7 @@ import com.cozyhome.onlineshop.userservice.security.service.SecurityService;
 import com.cozyhome.onlineshop.userservice.security.service.SecurityTokenService;
 import com.cozyhome.onlineshop.userservice.security.service.UserService;
 
-import com.cozyhome.onlineshop.validation.ValidPassword;
+import com.cozyhome.onlineshop.validation.ValidUUID;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -71,7 +72,7 @@ public class AuthController {
 	}
 
 	@GetMapping("/activate")
-	public ResponseEntity<MessageResponse> activateUser(@RequestParam String activationToken) {
+	public ResponseEntity<MessageResponse> activateUser(@RequestParam @ValidUUID String activationToken) {
 		User activatedUser = userService.activateUser(activationToken);
 		String token = jwtTokenUtil.generateToken(activatedUser.getEmail());
 		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.AUTHORIZATION, token).body(new MessageResponse("success"));
@@ -96,7 +97,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/login/reset")
-	public ResponseEntity<MessageResponse> resetPassword(@RequestParam String resetPasswordToken, @RequestBody @ValidPassword String newPassword) {
+	public ResponseEntity<MessageResponse> resetPassword(@RequestParam @ValidUUID String resetPasswordToken, @RequestBody @Valid NewPasswordRequest newPassword) {
 		User user = userService.resetPassword(resetPasswordToken, newPassword);
 		String token = jwtTokenUtil.generateToken(user.getEmail());
 		return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).build();
