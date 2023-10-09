@@ -17,5 +17,7 @@ public interface UserService {
 	User resetPassword(String token, NewPasswordRequest newPassword);
 
 	UserInformationResponse updateUserData(UserInformationRequest userInformationDto, String userId);
+
+	UserInformationResponse getUserInfo(String userId);
 	
 }

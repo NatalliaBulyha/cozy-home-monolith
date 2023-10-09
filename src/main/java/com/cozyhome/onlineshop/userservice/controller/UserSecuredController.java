@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,15 +35,25 @@ public class UserSecuredController {
     private String userIdName;
     private final UserService userService;
 
-    @Operation(summary = "change of user information")
+    @Operation(summary = "Change of user information")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @Secured({"ROLE_CUSTOMER"})
     @PutMapping("/profile/update")
-    public ResponseEntity<UserInformationResponse> updateUserData(@RequestBody @Valid UserInformationRequest userInformationDto,
+    public ResponseEntity<UserInformationResponse> updateUserInfo(@RequestBody @Valid UserInformationRequest userInformationDto,
                                                                   HttpServletRequest request) {
         String userId = (String) request.getAttribute(userIdName);
         return ResponseEntity.ok(userService.updateUserData(userInformationDto, userId));
+    }
+
+    @Operation(summary = "Get user information")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
+    @Secured({"ROLE_CUSTOMER"})
+    @GetMapping("/profile")
+    public ResponseEntity<UserInformationResponse> getUserInfo(HttpServletRequest request) {
+        String userId = (String) request.getAttribute(userIdName);
+        return ResponseEntity.ok(userService.getUserInfo(userId));
     }
 
 }
