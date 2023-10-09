@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Data
-public class UserInformationDto {
+public class UserInformationRequest {
     @ValidEmail
     private String email;
     @ValidPassword

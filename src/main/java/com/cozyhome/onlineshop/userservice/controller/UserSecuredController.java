@@ -1,6 +1,7 @@
 package com.cozyhome.onlineshop.userservice.controller;
 
-import com.cozyhome.onlineshop.dto.user.UserInformationDto;
+import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
+import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
 import com.cozyhome.onlineshop.productservice.controller.swagger.SwaggerResponse;
 import com.cozyhome.onlineshop.userservice.security.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,12 +12,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,12 +37,11 @@ public class UserSecuredController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @Secured({"ROLE_CUSTOMER"})
-    @GetMapping("/update")
-    public ResponseEntity<Void> updateUserData(@Valid UserInformationDto userInformationDto,
-                                               HttpServletRequest request) {
+    @PutMapping("/profile/update")
+    public ResponseEntity<UserInformationResponse> updateUserData(@Valid UserInformationRequest userInformationDto,
+                                                                  HttpServletRequest request) {
         String userId = (String) request.getAttribute(userIdName);
-        userService.updateUserData(userInformationDto, userId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok(userService.updateUserData(userInformationDto, userId));
     }
 
 }

@@ -5,8 +5,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.cozyhome.onlineshop.dto.auth.NewPasswordRequest;
-import com.cozyhome.onlineshop.dto.user.UserInformationDto;
+import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
+import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +36,7 @@ public class UserServiceImpl implements UserService {
 	private final RoleRepository roleRepository;
 	private final PasswordEncoder encoder;
 	private final SecurityTokenRepository securityTokenRepository;
+	private final ModelMapper modelMapper;
 
 	private final String admin = "admin";
 	private final String manager = "manager";
@@ -122,7 +125,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void updateUserData(UserInformationDto userInformationDto, String userId) {
+	public UserInformationResponse updateUserData(UserInformationRequest userInformationDto, String userId) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new DataNotFoundException("User not found."));
 
@@ -141,7 +144,9 @@ public class UserServiceImpl implements UserService {
 		if (!user.getPassword().equals(userInformationDto.getOldPassword()) && !userInformationDto.getNewPassword().isEmpty()) {
 			user.setPassword(userInformationDto.getNewPassword());
 		}
-		userRepository.insert(user);
+		User updatedUser = userRepository.insert(user);
+
+		return modelMapper.map(updatedUser, UserInformationResponse.class);
 	}
 
 }

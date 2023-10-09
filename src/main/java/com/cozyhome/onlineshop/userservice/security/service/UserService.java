@@ -2,7 +2,8 @@ package com.cozyhome.onlineshop.userservice.security.service;
 
 import com.cozyhome.onlineshop.dto.auth.NewPasswordRequest;
 import com.cozyhome.onlineshop.dto.auth.SignupRequest;
-import com.cozyhome.onlineshop.dto.user.UserInformationDto;
+import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
+import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
 import com.cozyhome.onlineshop.userservice.model.User;
 
 public interface UserService {
@@ -15,6 +16,6 @@ public interface UserService {
 	
 	User resetPassword(String token, NewPasswordRequest newPassword);
 
-	void updateUserData(UserInformationDto userInformationDto, String userId);
+	UserInformationResponse updateUserData(UserInformationRequest userInformationDto, String userId);
 	
 }
