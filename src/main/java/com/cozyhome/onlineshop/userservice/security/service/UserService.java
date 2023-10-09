@@ -14,5 +14,7 @@ public interface UserService {
 	User activateUser(String activationToken);
 	
 	User resetPassword(String token, NewPasswordRequest newPassword);
+
+	void updateUserData(UserInformationDto userInformationDto, String userId);
 	
 }
