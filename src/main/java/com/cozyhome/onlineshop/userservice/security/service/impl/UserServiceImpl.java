@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.cozyhome.onlineshop.dto.auth.NewPasswordRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -38,13 +39,18 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User saveUser(SignupRequest signupRequest) {
-		User user = User.builder().email(signupRequest.getEmail()).password(encoder.encode(signupRequest.getPassword()))
-				.firstName(signupRequest.getFirstName()).lastName(signupRequest.getLastName())
-				.phoneNumber(signupRequest.getPhoneNumber()).createdAt(LocalDateTime.now()).status(UserStatusE.ACTIVE)
+		User user = User.builder()
+				.email(signupRequest.getEmail())
+				.password(encoder.encode(signupRequest.getPassword()))
+				.firstName(signupRequest.getFirstName())
+				.lastName(signupRequest.getLastName())
+				.phoneNumber(signupRequest.getPhoneNumber())
+				.createdAt(LocalDateTime.now())
+				.status(UserStatusE.ACTIVE)
 				.build();
 
 		Set<String> userRoles = signupRequest.getRoles();
-		Set<Role> roles = new HashSet<Role>();
+		Set<Role> roles = new HashSet<>();
 
 		if (userRoles == null) {
 			Role userRole = roleRepository.getByName(RoleE.ROLE_CUSTOMER)
@@ -98,7 +104,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User resetPassword(String token, String newPassword) {
+	public User resetPassword(String token, NewPasswordRequest newPassword) {
 		PasswordResetToken resetToken = (PasswordResetToken) securityTokenRepository.findByToken(token);
 
         if (resetToken == null || resetToken.isExpired()) {
@@ -106,7 +112,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = resetToken.getUser();
-        user.setPassword(encoder.encode(newPassword));
+        user.setPassword(encoder.encode(newPassword.getPassword()));
         userRepository.save(user);
 
         securityTokenRepository.delete(resetToken);	

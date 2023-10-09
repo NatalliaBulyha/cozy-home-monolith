@@ -4,8 +4,10 @@ import com.cozyhome.onlineshop.dto.inventory.InventoryForBasketDto;
 import com.cozyhome.onlineshop.dto.inventory.QuantityStatusDto;
 import com.cozyhome.onlineshop.dto.request.ProductColorDto;
 import com.cozyhome.onlineshop.inventoryservice.service.InventoryService;
+import com.cozyhome.onlineshop.validation.ValidSkuCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
+@Validated
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/inventory")
 @RestController
@@ -24,7 +27,7 @@ public class InventoryController {
 	
 	//for product card
 	@GetMapping("/color-quantity-status/product-skuCode")
-	public ResponseEntity<QuantityStatusDto> getColorQuantityStatusBySkuCode(@RequestParam String productSkuCode){
+	public ResponseEntity<QuantityStatusDto> getColorQuantityStatusBySkuCode(@RequestParam @ValidSkuCode String productSkuCode){
 		return ResponseEntity.ok(inventoryService.getProductCardColorQuantityStatus(productSkuCode));
 	}	
 	
