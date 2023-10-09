@@ -1,5 +1,6 @@
 package com.cozyhome.onlineshop.userservice.controller;
 
+import com.cozyhome.onlineshop.dto.auth.EmailRequest;
 import com.cozyhome.onlineshop.dto.auth.LoginRequest;
 import com.cozyhome.onlineshop.dto.auth.MessageResponse;
 import com.cozyhome.onlineshop.dto.auth.SignupRequest;
@@ -10,25 +11,29 @@ import com.cozyhome.onlineshop.userservice.security.service.SecurityService;
 import com.cozyhome.onlineshop.userservice.security.service.SecurityTokenService;
 import com.cozyhome.onlineshop.userservice.security.service.UserService;
 
+import com.cozyhome.onlineshop.validation.ValidPassword;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("${api.basePath}/auth")
 public class AuthController {
@@ -55,12 +60,9 @@ public class AuthController {
 	}
 
 	@PostMapping("/signup")
-	public ResponseEntity<MessageResponse> registerUser(@RequestBody SignupRequest signUpRequest) {
+	public ResponseEntity<MessageResponse> registerUser(@RequestBody @Valid SignupRequest signUpRequest) {
 		String email = signUpRequest.getEmail();
 		if (userService.existsByEmail(email)) {
-	public ResponseEntity<MessageResponse> registerUser(@RequestBody @Valid SignupRequest signUpRequest) {
-
-		if (userService.existsByEmail(signUpRequest.getEmail())) {
 			return ResponseEntity.badRequest().body(new MessageResponse(emailErrorMessage));
 		}
 		User savedUser = userService.saveUser(signUpRequest);
@@ -88,13 +90,13 @@ public class AuthController {
 	}
 
 	@PostMapping("/login/forgot")
-	public ResponseEntity<MessageResponse> forgetPassword(@RequestBody EmailRequest emailRequest, HttpServletRequest httpRequest) {
+	public ResponseEntity<MessageResponse> forgetPassword(@RequestBody @Valid EmailRequest emailRequest, HttpServletRequest httpRequest) {
 		securityTokenService.createPasswordResetToken(emailRequest.getEmail(), httpRequest.getRemoteAddr());
 		return ResponseEntity.ok(new MessageResponse("success"));
 	}
 
 	@PostMapping("/login/reset")
-	public ResponseEntity<MessageResponse> resetPassword(@RequestParam String resetPasswordToken, @RequestBody String newPassword) {
+	public ResponseEntity<MessageResponse> resetPassword(@RequestParam String resetPasswordToken, @RequestBody @ValidPassword String newPassword) {
 		User user = userService.resetPassword(resetPasswordToken, newPassword);
 		String token = jwtTokenUtil.generateToken(user.getEmail());
 		return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).build();
