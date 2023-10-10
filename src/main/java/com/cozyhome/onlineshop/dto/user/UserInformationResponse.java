@@ -1,9 +1,12 @@
 package com.cozyhome.onlineshop.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,4 +17,6 @@ public class UserInformationResponse {
     private String firstName;
     private String lastName;
     private String phoneNumber;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "YYYY-MM-dd")
+    private LocalDate birthday;
 }

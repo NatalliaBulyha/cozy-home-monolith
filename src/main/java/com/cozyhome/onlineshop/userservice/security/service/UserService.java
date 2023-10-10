@@ -8,7 +8,7 @@ import com.cozyhome.onlineshop.userservice.model.User;
 
 public interface UserService {
 	
-	User saveUser(SignupRequest signupRequest);
+	void saveUser(SignupRequest signupRequest);
 
 	boolean existsByEmail(String email);
 	

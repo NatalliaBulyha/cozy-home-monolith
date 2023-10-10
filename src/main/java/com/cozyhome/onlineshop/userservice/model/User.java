@@ -1,5 +1,6 @@
 package com.cozyhome.onlineshop.userservice.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -36,6 +37,8 @@ public class User {
 	
 	@JsonIgnore
 	private String password;
+
+	private LocalDate birthday;
 
 	private String firstName;
 

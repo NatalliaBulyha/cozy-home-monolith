@@ -81,8 +81,7 @@ public class AuthController {
 		if (userService.existsByEmail(email)) {
 			return ResponseEntity.badRequest().body(new MessageResponse(emailErrorMessage));
 		}
-		User savedUser = userService.saveUser(signUpRequest);
-		securityTokenService.createActivationUserToken(savedUser);
+		userService.saveUser(signUpRequest);
 		return ResponseEntity.ok(new MessageResponse(registrationSuccessMessage));
 	}
 
