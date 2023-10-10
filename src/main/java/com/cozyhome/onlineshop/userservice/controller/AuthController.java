@@ -19,16 +19,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -92,22 +87,7 @@ public class AuthController {
 	public ResponseEntity<MessageResponse> activateUser(@RequestParam @ValidUUID String activationToken) {
 		User activatedUser = userService.activateUser(activationToken);
 		String token = jwtTokenUtil.generateToken(activatedUser.getEmail());
-		return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.AUTHORIZATION, token).body(new MessageResponse("success"));
-	}
-
-	@Operation(summary = "Logout.", description = "Logout.")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
-	@GetMapping("/logout")
-	public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if (userDetails != null) {
-			SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
-			logoutHandler.logout(request, response, SecurityContextHolder.getContext().getAuthentication());
-			return ResponseEntity.ok("Logout successful");
-		} else {
-			return ResponseEntity.ok("No user is logged in");
-		}
+		return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).body(new MessageResponse("success"));
 	}
 
 	@Operation(summary = "User is sent a link to change his password",

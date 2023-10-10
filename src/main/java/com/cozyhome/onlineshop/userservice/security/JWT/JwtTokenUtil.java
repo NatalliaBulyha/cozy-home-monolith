@@ -4,7 +4,9 @@ import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
 
+import com.cozyhome.onlineshop.userservice.security.service.TokenBlackListService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -23,14 +25,15 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtTokenUtil {
+
+	private final TokenBlackListService tokenBlackListService;
 
 	@Value("${jwt.secret}")
 	private String secret;
 	@Value("${jwt.token.validity}")
 	private int tokenValiditi;
-	@Value("${header.name.user-id}")
-	private String userIdAttributeName;
 	private final static String TOKEN_PREFIX = "Bearer ";
 
 	public String getUsernameFromToken(String token) {
@@ -71,6 +74,10 @@ public class JwtTokenUtil {
 			return bearerToken.substring(TOKEN_PREFIX.length());
 		}
 		return null;
+	}
+
+	public boolean checkTokenBlackList(String jwtToken) {
+		return tokenBlackListService.checkTokenBlackList(jwtToken);
 	}
 
 	private Key key() {

@@ -3,6 +3,8 @@ package com.cozyhome.onlineshop.userservice.controller;
 import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
 import com.cozyhome.onlineshop.productservice.controller.swagger.SwaggerResponse;
+import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenUtil;
+import com.cozyhome.onlineshop.userservice.security.service.TokenBlackListService;
 import com.cozyhome.onlineshop.userservice.security.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,6 +36,8 @@ public class UserSecuredController {
     @Value("${header.name.user-id}")
     private String userIdName;
     private final UserService userService;
+    private final TokenBlackListService tokenBlackListService;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @Operation(summary = "Change of user information")
     @ApiResponses(value = {
@@ -54,6 +58,16 @@ public class UserSecuredController {
     public ResponseEntity<UserInformationResponse> getUserInfo(HttpServletRequest request) {
         String userId = (String) request.getAttribute(userIdName);
         return ResponseEntity.ok(userService.getUserInfo(userId));
+    }
+
+    @Operation(summary = "Logout.", description = "Logout.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
+    @GetMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        String jwtToken = jwtTokenUtil.resolveToken(request);
+        tokenBlackListService.saveTokenToBlackList(jwtToken);
+        return ResponseEntity.ok().build();
     }
 
 }

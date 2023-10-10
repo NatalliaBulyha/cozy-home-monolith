@@ -2,6 +2,7 @@ package com.cozyhome.onlineshop.userservice.security.JWT;
 
 import java.io.IOException;
 
+import com.cozyhome.onlineshop.exception.AuthenticationException;
 import com.cozyhome.onlineshop.userservice.security.AuthenticatedUserDetails;
 import com.cozyhome.onlineshop.userservice.security.service.ExtendedUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +42,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             String jwtToken = jwtTokenUtil.resolveToken(request);
             if (jwtToken != null) {
                 log.info("[ON doFilterInternal]:: jwtToken [{}]", jwtToken);
-                    username = jwtTokenUtil.getUsernameFromToken(jwtToken);
-                    log.info("[ON doFilterInternal]:: username [ {} ]", username);
+                if (jwtTokenUtil.checkTokenBlackList(jwtToken)) {
+                    throw new AuthenticationException("User logged out. Access denied.");
+                }
+                username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+                log.info("[ON doFilterInternal]:: username [ {} ]", username);
             }
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 log.info("[ON doFilterInternal]:: starting token validation...");
