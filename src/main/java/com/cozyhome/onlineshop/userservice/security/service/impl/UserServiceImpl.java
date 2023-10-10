@@ -135,7 +135,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserInformationResponse updateUserData(UserInformationRequest userInformationDto, String userId) {
 		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new DataNotFoundException("User not found."));
+				.orElseThrow(() -> new DataNotFoundException(
+						String.format("User with email = %s not found.", userInformationDto.getEmail())));
 
 		if (!user.getLastName().equals(userInformationDto.getLastName())) {
 			user.setLastName(userInformationDto.getLastName());
@@ -159,14 +160,13 @@ public class UserServiceImpl implements UserService {
 			user.setPassword(userInformationDto.getNewPassword());
 		}
 		User updatedUser = userRepository.save(user);
-
 		return userBuilder.buildUserInformationResponse(updatedUser);
 	}
 
 	@Override
 	public UserInformationResponse getUserInfo(String userId) {
 		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new DataNotFoundException("User not found."));
+				.orElseThrow(() -> new DataNotFoundException(String.format("User with id = %s not found.", userId)));
 		return userBuilder.buildUserInformationResponse(user);
 	}
 
