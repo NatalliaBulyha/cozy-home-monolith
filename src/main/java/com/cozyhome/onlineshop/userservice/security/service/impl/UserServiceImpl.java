@@ -1,5 +1,6 @@
 package com.cozyhome.onlineshop.userservice.security.service.impl;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -8,7 +9,8 @@ import com.cozyhome.onlineshop.dto.auth.NewPasswordRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
-import org.modelmapper.ModelMapper;
+import com.cozyhome.onlineshop.userservice.security.service.SecurityTokenService;
+import com.cozyhome.onlineshop.userservice.security.service.builder.UserBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,14 +38,15 @@ public class UserServiceImpl implements UserService {
 	private final RoleRepository roleRepository;
 	private final PasswordEncoder encoder;
 	private final SecurityTokenRepository securityTokenRepository;
-	private final ModelMapper modelMapper;
+	private final SecurityTokenService securityTokenService;
+	private final UserBuilder userBuilder;
 
 	private final String admin = "admin";
 	private final String manager = "manager";
 	private final String roleErrorMessage = "Error: Role is not found.";
 
 	@Override
-	public User saveUser(SignupRequest signupRequest) {
+	public void saveUser(SignupRequest signupRequest) {
 		User user = User.builder()
 				.email(signupRequest.getEmail())
 				.password(encoder.encode(signupRequest.getPassword()))
@@ -53,6 +56,11 @@ public class UserServiceImpl implements UserService {
 				.createdAt(LocalDateTime.now())
 				.status(UserStatusE.ACTIVE)
 				.build();
+
+		if (signupRequest.getBirthday() != null && !signupRequest.getBirthday().isEmpty()) {
+			LocalDate birthday = LocalDate.parse(signupRequest.getBirthday());
+			user.setBirthday(birthday);
+		}
 
 		Set<String> userRoles = signupRequest.getRoles();
 		Set<Role> roles = new HashSet<>();
@@ -83,7 +91,7 @@ public class UserServiceImpl implements UserService {
 		}
 		user.setRoles(roles);
 		User savedUser = userRepository.save(user);
-		return savedUser;
+		securityTokenService.createActivationUserToken(savedUser);
 	}
 
 	@Override
@@ -141,20 +149,25 @@ public class UserServiceImpl implements UserService {
 		if (!user.getEmail().equals(userInformationDto.getEmail())) {
 			user.setEmail(userInformationDto.getEmail());
 		}
+		if (!userInformationDto.getBirthday().isEmpty()) {
+			LocalDate birthday = LocalDate.parse(userInformationDto.getBirthday());
+			user.setBirthday(birthday);
+		}
 		if (user.getPassword().equals(userInformationDto.getOldPassword())
+				&& userInformationDto.getNewPassword() != null && !userInformationDto.getNewPassword().isEmpty()
 				&& !user.getPassword().equals(userInformationDto.getNewPassword())) {
 			user.setPassword(userInformationDto.getNewPassword());
 		}
 		User updatedUser = userRepository.save(user);
 
-		return modelMapper.map(updatedUser, UserInformationResponse.class);
+		return userBuilder.buildUserInformationResponse(updatedUser);
 	}
 
 	@Override
 	public UserInformationResponse getUserInfo(String userId) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new DataNotFoundException("User not found."));
-		return modelMapper.map(user, UserInformationResponse.class);
+		return userBuilder.buildUserInformationResponse(user);
 	}
 
 }
