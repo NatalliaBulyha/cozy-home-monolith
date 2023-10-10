@@ -8,6 +8,7 @@ import java.util.Set;
 import com.cozyhome.onlineshop.dto.auth.NewPasswordRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
+import com.cozyhome.onlineshop.exception.DataAlreadyExistException;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.userservice.security.service.SecurityTokenService;
 import com.cozyhome.onlineshop.userservice.security.service.builder.UserBuilder;
@@ -139,6 +140,10 @@ public class UserServiceImpl implements UserService {
 						String.format("User with email = %s not found.", userInformationDto.getEmail())));
 
 		if (!user.getLastName().equals(userInformationDto.getLastName())) {
+			if (userRepository.existsByEmail(userInformationDto.getEmail()) ) {
+				throw new DataAlreadyExistException(String.format("Email is already in use by another user. " +
+						"Forbidden to change mail to %s.", userInformationDto.getEmail()));
+			}
 			user.setLastName(userInformationDto.getLastName());
 		}
 		if (!user.getFirstName().equals(userInformationDto.getFirstName())) {
