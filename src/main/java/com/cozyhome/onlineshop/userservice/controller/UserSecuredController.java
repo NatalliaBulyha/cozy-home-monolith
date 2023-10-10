@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @Validated
+@Slf4j
 @RequestMapping("${api.secure.basePath}/user")
 public class UserSecuredController {
     @Value("${header.name.user-id}")
@@ -67,6 +69,7 @@ public class UserSecuredController {
     public ResponseEntity<String> logout(HttpServletRequest request) {
         String jwtToken = jwtTokenUtil.resolveToken(request);
         tokenBlackListService.saveTokenToBlackList(jwtToken);
+        log.warn("[ON UserSecuredController:logout]:: JwtToken {} was added to Black List.", jwtToken);
         return ResponseEntity.ok().build();
     }
 

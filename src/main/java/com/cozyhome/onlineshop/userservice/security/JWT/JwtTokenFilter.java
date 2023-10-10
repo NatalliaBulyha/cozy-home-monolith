@@ -43,6 +43,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             if (jwtToken != null) {
                 log.info("[ON doFilterInternal]:: jwtToken [{}]", jwtToken);
                 if (jwtTokenUtil.checkTokenBlackList(jwtToken)) {
+                    log.warn("[ON doFilterInternal]:: Token is in Black List. Access denied");
                     throw new AuthenticationException("User logged out. Access denied.");
                 }
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
