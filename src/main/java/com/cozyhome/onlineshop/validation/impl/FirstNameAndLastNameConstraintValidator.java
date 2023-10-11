@@ -4,7 +4,7 @@ import com.cozyhome.onlineshop.validation.ValidFirstNameAndLastName;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class EmailConstraintValidatorConstraintValidator implements ConstraintValidator<ValidFirstNameAndLastName, String> {
+public class FirstNameAndLastNameConstraintValidator implements ConstraintValidator<ValidFirstNameAndLastName, String> {
     @Override
     public void initialize(ValidFirstNameAndLastName constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
@@ -12,6 +12,6 @@ public class EmailConstraintValidatorConstraintValidator implements ConstraintVa
 
     @Override
     public boolean isValid(String name, ConstraintValidatorContext constraintValidatorContext) {
-        return name != null && name.matches("^.{2,32}$");
+        return name != null && name.matches("^[a-zA-Z]{2,32}$");
     }
 }
