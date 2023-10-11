@@ -51,7 +51,7 @@ public class AuthController {
 	private final String emailErrorMessage = "Error: Email is already in use!";
 	private final String registrationSuccessMessage = "User registered successfully!";
 
-	@Operation(summary = "Existing user login", description = "Existing user login by email and password")
+	@Operation(summary = "User login", description = "Allows an existing user to log in using his email and password.")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
 	@PostMapping("/login")
@@ -67,7 +67,7 @@ public class AuthController {
 		}
 	}
 
-	@Operation(summary = "New user registration", description = "Registering new user and sending e-mail with a link to activate e-mail.")
+	@Operation(summary = "User registration", description = "Registers a new user and sends an email with a link to activate his account.")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
 	@PostMapping("/signup")
@@ -90,8 +90,8 @@ public class AuthController {
 		return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).body(new MessageResponse("success"));
 	}
 
-	@Operation(summary = "User is sent a link to change his password",
-			description = "If user doesn't remember his password during logging, link to change his password is sent to his e-mail.")
+	@Operation(summary = "Send a password reset link to the user",
+			description = "Sends a password reset link to the user's email address if the user have forgotten his password.")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
 	@PostMapping("/login/forgot")
@@ -100,8 +100,8 @@ public class AuthController {
 		return ResponseEntity.ok(new MessageResponse("success"));
 	}
 
-	@Operation(summary = "User enters new password",
-			description = "User follows the link previously sent to his e-mail and enters new password")
+	@Operation(summary = "Reset user password",
+			description = "User follows the link previously sent to his e-mail and enters a new password")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
 	@PostMapping("/login/reset")

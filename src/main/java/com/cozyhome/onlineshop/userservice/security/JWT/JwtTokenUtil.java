@@ -1,17 +1,17 @@
 package com.cozyhome.onlineshop.userservice.security.JWT;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
 
-import com.cozyhome.onlineshop.userservice.security.service.TokenBlackListService;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.cozyhome.onlineshop.exception.InvalidTokenException;
+import com.cozyhome.onlineshop.userservice.repository.TokenBlackListRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -19,16 +19,16 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtTokenUtil {
 
-	private final TokenBlackListService tokenBlackListService;
+	private final TokenBlackListRepository tokenBlackListRepository;
 
 	@Value("${jwt.secret}")
 	private String secret;
@@ -60,7 +60,7 @@ public class JwtTokenUtil {
 		return token;
 	}
 
-	public boolean validateToken(String token, UserDetails userDetails) {
+	public boolean isTokenValid(String token, UserDetails userDetails) {
 		log.info("[ON validateToken]:: token validation...");
 		final String username = getUsernameFromToken(token);
 		boolean isValid = (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
@@ -76,8 +76,8 @@ public class JwtTokenUtil {
 		return null;
 	}
 
-	public boolean checkTokenBlackList(String jwtToken) {
-		return tokenBlackListService.checkTokenBlackList(jwtToken);
+	public boolean isTokenInBlackList(String jwtToken) {
+		return tokenBlackListRepository.existsById(jwtToken);
 	}
 
 	private Key key() {

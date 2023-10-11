@@ -1,7 +1,7 @@
 package com.cozyhome.onlineshop.userservice.security.service;
 
 public interface TokenBlackListService {
-    void saveTokenToBlackList(String jwtToken);
+	
+	void saveTokenToBlackList(String jwtToken);
 
-    boolean checkTokenBlackList(String jwtToken);
 }

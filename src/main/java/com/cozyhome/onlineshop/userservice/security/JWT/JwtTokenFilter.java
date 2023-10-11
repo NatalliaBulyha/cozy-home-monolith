@@ -32,7 +32,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Value("${header.name.user-role}")
     private String userRoleAttributeName;
     @Value("${api.basePath}")
-    private String noAuthPathUrl;
+    private String basePathUrl;
 	
 	@Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -42,7 +42,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             String jwtToken = jwtTokenUtil.resolveToken(request);
             if (jwtToken != null) {
                 log.info("[ON doFilterInternal]:: jwtToken [{}]", jwtToken);
-                if (jwtTokenUtil.checkTokenBlackList(jwtToken)) {
+                if (jwtTokenUtil.isTokenInBlackList(jwtToken)) {
                     log.warn("[ON doFilterInternal]:: Token is in Black List. Access denied");
                     throw new AuthenticationException("User logged out. Access denied.");
                 }
@@ -52,7 +52,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 log.info("[ON doFilterInternal]:: starting token validation...");
                 AuthenticatedUserDetails user = userDetailsService.loadUserByUsername(username);
-                if (jwtTokenUtil.validateToken(jwtToken, user)) {
+                if (jwtTokenUtil.isTokenValid(jwtToken, user)) {
                     request.setAttribute(userIdAttributeName, user.getUser().getId());
                     request.setAttribute(userRoleAttributeName, user.getUser().getRoles());
 
@@ -70,7 +70,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private boolean shouldFilter(HttpServletRequest request) {
         String requestUri = request.getRequestURI();
-        return  !requestUri.toLowerCase().startsWith(noAuthPathUrl);
+        return  !requestUri.toLowerCase().startsWith(basePathUrl);
     }
 	
 }

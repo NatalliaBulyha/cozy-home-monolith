@@ -41,7 +41,7 @@ public class UserSecuredController {
     private final TokenBlackListService tokenBlackListService;
     private final JwtTokenUtil jwtTokenUtil;
 
-    @Operation(summary = "Change of user information")
+    @Operation(summary = "Update user information")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @Secured({"ROLE_CUSTOMER"})
@@ -65,11 +65,12 @@ public class UserSecuredController {
     @Operation(summary = "Logout.", description = "Logout.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
+    @Secured({"ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_ADMIN"})
     @GetMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
         String jwtToken = jwtTokenUtil.resolveToken(request);
         tokenBlackListService.saveTokenToBlackList(jwtToken);
-        log.warn("[ON UserSecuredController:logout]:: JwtToken {} was added to Black List.", jwtToken);
+        log.warn("[ON logout] :: JwtToken {} was added to Black List.", jwtToken);
         return ResponseEntity.ok().build();
     }
 
