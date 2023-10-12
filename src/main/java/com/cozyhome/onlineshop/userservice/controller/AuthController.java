@@ -51,7 +51,7 @@ public class AuthController {
 	private final String emailErrorMessage = "Error: Email is already in use!";
 	private final String registrationSuccessMessage = "User registered successfully!";
 
-	@Operation(summary = "User login", description = "Allows an existing user to log in using his email and password.")
+	@Operation(summary = "Existing user login", description = "Allows an existing user to log in using his email and password.")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
 	@PostMapping("/login")
@@ -67,7 +67,7 @@ public class AuthController {
 		}
 	}
 
-	@Operation(summary = "User registration", description = "Registers a new user and sends an email with a link to activate his account.")
+	@Operation(summary = "New user registration", description = "Registers a new user and sends an email with a link to activate his account.")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
 	@PostMapping("/signup")
@@ -90,7 +90,7 @@ public class AuthController {
 		return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).body(new MessageResponse("success"));
 	}
 
-	@Operation(summary = "Send a password reset link to the user",
+	@Operation(summary = "Send a password reset link to the user's email address",
 			description = "Sends a password reset link to the user's email address if the user have forgotten his password.")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
