@@ -19,7 +19,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({ TYPE, FIELD, ANNOTATION_TYPE, PARAMETER })
 @Retention(RUNTIME)
 public @interface ValidOptionalFieldBirthday {
-    String message() default "Invalid date of birth. Date of birth must have format yyyy-MM-dd.";
+    String message() default "Invalid date of birth. Date of birth must have format yyyy-MM-dd and age must be over 14.";
 
     Class<?>[] groups() default {};
 
