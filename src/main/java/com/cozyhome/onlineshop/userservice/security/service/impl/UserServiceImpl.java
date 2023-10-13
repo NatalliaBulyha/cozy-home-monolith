@@ -8,6 +8,7 @@ import java.util.Set;
 import com.cozyhome.onlineshop.dto.auth.NewPasswordRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
+import com.cozyhome.onlineshop.exception.AuthenticationException;
 import com.cozyhome.onlineshop.exception.DataAlreadyExistException;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.userservice.security.service.SecurityTokenService;
@@ -163,6 +164,8 @@ public class UserServiceImpl implements UserService {
 				&& userInformationDto.getNewPassword() != null && !userInformationDto.getNewPassword().isEmpty()
 				&& !user.getPassword().equals(userInformationDto.getNewPassword())) {
 			user.setPassword(userInformationDto.getNewPassword());
+		} else {
+			throw new AuthenticationException("Wrong old password entered.");
 		}
 		User updatedUser = userRepository.save(user);
 		return userBuilder.buildUserInformationResponse(updatedUser);
