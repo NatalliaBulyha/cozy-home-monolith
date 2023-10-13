@@ -5,7 +5,7 @@ import com.cozyhome.onlineshop.dto.auth.LoginRequest;
 import com.cozyhome.onlineshop.dto.auth.MessageResponse;
 import com.cozyhome.onlineshop.dto.auth.NewPasswordRequest;
 import com.cozyhome.onlineshop.dto.auth.SignupRequest;
-import com.cozyhome.onlineshop.exception.AuthenticationException;
+import com.cozyhome.onlineshop.exception.AuthException;
 import com.cozyhome.onlineshop.productservice.controller.swagger.SwaggerResponse;
 import com.cozyhome.onlineshop.userservice.model.User;
 import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenUtil;
@@ -63,7 +63,7 @@ public class AuthController {
 			return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).build();
 		} else {
 			log.warn("[ON login]:: Authentication failed for user: {}", username);
-			throw new AuthenticationException("Authentication failed for user");
+			throw new AuthException("Authentication failed for user");
 		}
 	}
 

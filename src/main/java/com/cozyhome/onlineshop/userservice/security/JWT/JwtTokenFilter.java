@@ -2,7 +2,7 @@ package com.cozyhome.onlineshop.userservice.security.JWT;
 
 import java.io.IOException;
 
-import com.cozyhome.onlineshop.exception.AuthenticationException;
+import com.cozyhome.onlineshop.exception.AuthException;
 import com.cozyhome.onlineshop.userservice.security.AuthenticatedUserDetails;
 import com.cozyhome.onlineshop.userservice.security.service.ExtendedUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 log.info("[ON doFilterInternal]:: jwtToken [{}]", jwtToken);
                 if (jwtTokenUtil.checkTokenBlackList(jwtToken)) {
                     log.warn("[ON doFilterInternal]:: Token is in Black List. Access denied");
-                    throw new AuthenticationException("User logged out. Access denied.");
+                    throw new AuthException("User logged out. Access denied.");
                 }
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
                 log.info("[ON doFilterInternal]:: username [ {} ]", username);
