@@ -59,14 +59,14 @@ public class AuthController {
 		String username = loginRequest.getUsername();
 		boolean isAuthenticated = securityService.isAuthenticated(username, loginRequest.getPassword());
 		HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.add("Access-Control-Allow-Headers", "Content-Type, Authorization");
+		responseHeaders.add("Access-Control-Allow-Headers", "Content-Type, Authorization");
+		responseHeaders.add("Access-Control-Expose-Headers", "Authorization");
 
 		if (isAuthenticated) {
 			String token = jwtTokenUtil.generateToken(username);
-			return ResponseEntity.ok()
-                    .header(HttpHeaders.AUTHORIZATION, token)
-                    .headers(responseHeaders)
-                    .build();
+			responseHeaders.add(HttpHeaders.AUTHORIZATION, token);
+
+			return ResponseEntity.ok().headers(responseHeaders).build();
 		} else {
 			log.warn("[ON login]:: Authentication failed for user: {}", username);
 			throw new AuthenticationException("Authentication failed for user");
@@ -96,22 +96,22 @@ public class AuthController {
 		return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).body(new MessageResponse("success"));
 	}
 
-	@Operation(summary = "Send a password reset link to the user's email address",
-			description = "Sends a password reset link to the user's email address if the user have forgotten his password.")
+	@Operation(summary = "Send a password reset link to the user's email address", description = "Sends a password reset link to the user's email address if the user have forgotten his password.")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
 	@PostMapping("/login/forgot")
-	public ResponseEntity<MessageResponse> forgetPassword(@RequestBody @Valid EmailRequest emailRequest, HttpServletRequest httpRequest) {
+	public ResponseEntity<MessageResponse> forgetPassword(@RequestBody @Valid EmailRequest emailRequest,
+			HttpServletRequest httpRequest) {
 		securityTokenService.createPasswordResetToken(emailRequest.getEmail(), httpRequest.getRemoteAddr());
 		return ResponseEntity.ok(new MessageResponse("success"));
 	}
 
-	@Operation(summary = "Reset user password",
-			description = "User follows the link previously sent to his e-mail and enters a new password")
+	@Operation(summary = "Reset user password", description = "User follows the link previously sent to his e-mail and enters a new password")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
 	@PostMapping("/login/reset")
-	public ResponseEntity<MessageResponse> resetPassword(@RequestParam @ValidUUID String resetPasswordToken, @RequestBody @Valid NewPasswordRequest newPassword) {
+	public ResponseEntity<MessageResponse> resetPassword(@RequestParam @ValidUUID String resetPasswordToken,
+			@RequestBody @Valid NewPasswordRequest newPassword) {
 		User user = userService.resetPassword(resetPasswordToken, newPassword);
 		String token = jwtTokenUtil.generateToken(user.getEmail());
 		return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).build();
