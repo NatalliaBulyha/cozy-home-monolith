@@ -58,9 +58,15 @@ public class AuthController {
 	public ResponseEntity<String> login(@RequestBody @Valid LoginRequest loginRequest) {
 		String username = loginRequest.getUsername();
 		boolean isAuthenticated = securityService.isAuthenticated(username, loginRequest.getPassword());
+		HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.add("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
 		if (isAuthenticated) {
 			String token = jwtTokenUtil.generateToken(username);
-			return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token).build();
+			return ResponseEntity.ok()
+                    .header(HttpHeaders.AUTHORIZATION, token)
+                    .headers(responseHeaders)
+                    .build();
 		} else {
 			log.warn("[ON login]:: Authentication failed for user: {}", username);
 			throw new AuthenticationException("Authentication failed for user");
