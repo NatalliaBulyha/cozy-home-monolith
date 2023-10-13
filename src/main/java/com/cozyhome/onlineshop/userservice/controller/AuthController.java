@@ -1,5 +1,16 @@
 package com.cozyhome.onlineshop.userservice.controller;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.cozyhome.onlineshop.dto.auth.EmailRequest;
 import com.cozyhome.onlineshop.dto.auth.LoginRequest;
 import com.cozyhome.onlineshop.dto.auth.MessageResponse;
@@ -12,8 +23,8 @@ import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenUtil;
 import com.cozyhome.onlineshop.userservice.security.service.SecurityService;
 import com.cozyhome.onlineshop.userservice.security.service.SecurityTokenService;
 import com.cozyhome.onlineshop.userservice.security.service.UserService;
-
 import com.cozyhome.onlineshop.validation.ValidUUID;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -22,16 +33,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin({ "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
 		"${api.front.additional_url}", "${api.front.main.url}" })
@@ -58,15 +59,10 @@ public class AuthController {
 	public ResponseEntity<String> login(@RequestBody @Valid LoginRequest loginRequest) {
 		String username = loginRequest.getUsername();
 		boolean isAuthenticated = securityService.isAuthenticated(username, loginRequest.getPassword());
-		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.add("Access-Control-Allow-Headers", "Content-Type, Authorization");
-		responseHeaders.add("Access-Control-Expose-Headers", "Authorization");
 
 		if (isAuthenticated) {
 			String token = jwtTokenUtil.generateToken(username);
-			responseHeaders.add(HttpHeaders.AUTHORIZATION, token);
-
-			return ResponseEntity.ok().headers(responseHeaders).build();
+			return ResponseEntity.ok().body(token);
 		} else {
 			log.warn("[ON login]:: Authentication failed for user: {}", username);
 			throw new AuthenticationException("Authentication failed for user");
