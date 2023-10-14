@@ -12,7 +12,8 @@ public class OptionalFieldBirthdayConstraintValidator implements ConstraintValid
 
     @Override
     public boolean isValid(String birthday, ConstraintValidatorContext constraintValidatorContext) {
-        if (birthday != null && !birthday.isEmpty()) {
+    	
+        if (birthday != null) {
             return birthday.matches("^(?:19|20)\\d{2}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])$");
         }
 

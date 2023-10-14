@@ -2,6 +2,7 @@ package com.cozyhome.onlineshop.handler;
 
 import com.cozyhome.onlineshop.exception.AuthenticationException;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
+import com.cozyhome.onlineshop.exception.InvalidOldPasswordException;
 import com.cozyhome.onlineshop.exception.InvalidTokenException;
 import io.jsonwebtoken.JwtException;
 import jakarta.validation.ConstraintViolationException;
@@ -53,6 +54,13 @@ public class CozyHomeExceptionHandler extends ResponseEntityExceptionHandler {
     public ErrorResponse handleForbiddenException(Exception ex) {
         return bodyBuilder(ex.getMessage());
     }
+    
+    @ExceptionHandler({InvalidOldPasswordException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleInvalidOldPasswordException(Exception ex) {
+        return bodyBuilder(ex.getMessage());
+    }
+    
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers, HttpStatusCode status, WebRequest request) {

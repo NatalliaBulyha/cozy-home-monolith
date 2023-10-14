@@ -2,6 +2,7 @@ package com.cozyhome.onlineshop.userservice.security.service;
 
 import com.cozyhome.onlineshop.dto.auth.NewPasswordRequest;
 import com.cozyhome.onlineshop.dto.auth.SignupRequest;
+import com.cozyhome.onlineshop.dto.user.PasswordChangeRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
 import com.cozyhome.onlineshop.userservice.model.User;
@@ -19,5 +20,7 @@ public interface UserService {
 	UserInformationResponse updateUserData(UserInformationRequest userInformationDto, String userId);
 
 	UserInformationResponse getUserInfo(String userId);
+	
+	void changePassword(String email, PasswordChangeRequest dto);
 	
 }
