@@ -6,7 +6,6 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 public class OptionalFieldsPasswordConstraintValidator implements ConstraintValidator<ValidOptionalFieldsPassword, UserInformationRequest> {
-    private final String regex = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$";
 
     @Override
     public void initialize(ValidOptionalFieldsPassword constraintAnnotation) {
@@ -17,6 +16,7 @@ public class OptionalFieldsPasswordConstraintValidator implements ConstraintVali
     public boolean isValid(UserInformationRequest request, ConstraintValidatorContext constraintValidatorContext) {
         if (request.getNewPassword() != null && !request.getNewPassword().isEmpty()
         && request.getOldPassword() != null && !request.getOldPassword().isEmpty()) {
+            String regex = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$";
             return request.getNewPassword().matches(regex) && request.getOldPassword().matches(regex);
         } else if (request.getNewPassword() == null || request.getNewPassword().isEmpty()
                 && (request.getOldPassword() == null || request.getOldPassword().isEmpty())) {
