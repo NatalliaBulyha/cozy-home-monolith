@@ -12,6 +12,9 @@ public class FirstNameAndLastNameConstraintValidator implements ConstraintValida
 
     @Override
     public boolean isValid(String name, ConstraintValidatorContext constraintValidatorContext) {
-        return name != null && name.matches("^[a-zA-Z]{2,32}$");
+        if (name == null) {
+            return false;
+        }
+        return name.matches("^[а-яА-Яa-zA-ZґҐєЄіІїЇ]{2,32}$");
     }
 }

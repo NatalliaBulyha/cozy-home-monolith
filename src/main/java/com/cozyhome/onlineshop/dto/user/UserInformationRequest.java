@@ -22,9 +22,11 @@ public class UserInformationRequest {
     private String newPassword;
     @ValidOptionalFieldBirthday
     private String birthday;
-    @ValidFirstNameAndLastName
+    @ValidFirstNameAndLastName(message = "Invalid firstName. FirstName must be not null, greater than " +
+            "or equal to 2 and less than or equal to 32, letters only.")
     private String firstName;
-    @ValidFirstNameAndLastName
+    @ValidFirstNameAndLastName(message = "Invalid lastName. LastName must be not null, greater than " +
+            "or equal to 2 and less than or equal to 32, letters only.")
     private String lastName;
     @ValidPhoneNumber
     private String phoneNumber;
