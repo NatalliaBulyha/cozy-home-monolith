@@ -160,12 +160,14 @@ public class UserServiceImpl implements UserService {
 			LocalDate birthday = LocalDate.parse(userInformationDto.getBirthday());
 			user.setBirthday(birthday);
 		}
-		if (userInformationDto.getOldPassword() != null && !userInformationDto.getOldPassword().isEmpty()
-				&& encoder.matches(userInformationDto.getOldPassword(), user.getPassword())) {
-			user.setPassword(encoder.encode(userInformationDto.getNewPassword()));
-		} else {
-			throw new AuthenticationException("Wrong old password entered.");
+		if (userInformationDto.getOldPassword() != null && !userInformationDto.getOldPassword().isEmpty()) {
+			if (encoder.matches(userInformationDto.getOldPassword(), user.getPassword())) {
+				user.setPassword(encoder.encode(userInformationDto.getNewPassword()));
+			} else {
+				throw new AuthenticationException("Wrong old password entered.");
+			}
 		}
+
 		User updatedUser = userRepository.save(user);
 		return userBuilder.buildUserInformationResponse(updatedUser);
 	}
