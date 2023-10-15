@@ -1,4 +1,4 @@
-package com.cozyhome.onlineshop.basketservice.model;
+package com.cozyhome.onlineshop.shoppingcartservice.model;
 
 import com.cozyhome.onlineshop.inventoryservice.model.ProductColor;
 

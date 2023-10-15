@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.lookup;
@@ -98,5 +100,31 @@ public class ImageRepositoryCustomImpl implements ImageRepositoryCustom {
         }
         return imagesMap;
     }
+
+	@Override
+	public Map<ProductColorDto, ImageProduct> findMainImagesByProductColorList(List<ProductColorDto> productColorDtos) {
+		List<String> skuCodeList = extractValues(productColorDtos, ProductColorDto::getProductSkuCode);		
+		List<String> colorHexList = extractValues(productColorDtos, ProductColorDto::getColorHex);		
+		
+		Aggregation aggregation = Aggregation.newAggregation(
+			    match(Criteria.where("product.$id").in(skuCodeList)
+			        .and("color.$id").in(colorHexList)
+			        .and("mainPhoto").is(true))
+			);		
+		List<ImageProduct> results = mongoTemplate.aggregate(aggregation, ImageProduct.class, ImageProduct.class)
+				.getMappedResults();				
+	    
+		return buildMap(results);
+	}
+	
+	private <T> List<T> extractValues(List<ProductColorDto> list, Function<ProductColorDto, T> function){
+		return list.stream().map(function).toList();
+	}
+	
+	private Map<ProductColorDto, ImageProduct> buildMap(List<ImageProduct> imageProductList){
+		return imageProductList.stream()
+	            .collect(Collectors.toMap(imageProduct -> new ProductColorDto(imageProduct.getProduct().getSkuCode(), imageProduct.getColor().getId()), 
+	            		imageProduct -> imageProduct));
+	}
 
 }

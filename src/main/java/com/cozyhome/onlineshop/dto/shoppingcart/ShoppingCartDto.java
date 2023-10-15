@@ -14,8 +14,8 @@ public class ShoppingCartDto {
     private BigDecimal price;
     private BigDecimal priceWithDiscount;
     private String imagePath;
-    private String colorName;
     private String colorHex;
-    private int Quantity;
+    private String colorName;
+    private int quantity;
     private String quantityStatus;
 }

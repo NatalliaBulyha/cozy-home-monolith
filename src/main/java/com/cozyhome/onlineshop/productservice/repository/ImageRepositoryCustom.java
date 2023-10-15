@@ -21,4 +21,6 @@ public interface ImageRepositoryCustom {
 
     Map<ProductColorDto, ImageProduct> findImagesByMainPhotoTrueAndProductSkuCodeWithColorHexIn(List<ProductColorDto> productColorDtos);
 
+    Map<ProductColorDto, ImageProduct> findMainImagesByProductColorList(List<ProductColorDto> productColorDtos);
+
 }
