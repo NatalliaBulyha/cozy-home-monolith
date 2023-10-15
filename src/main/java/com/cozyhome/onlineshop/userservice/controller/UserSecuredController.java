@@ -29,8 +29,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@CrossOrigin({ "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
-        "${api.front.additional_url}", "${api.front.main.url}" })
+@CrossOrigin(origins = { "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
+		"${api.front.additional_url}", "${api.front.main.url}" }, allowedHeaders = { "Authorization" },
+	    exposedHeaders = { "Access-Control-Allow-Methods" })
 @Tag(name = "User")
 @ApiResponse
 @RequiredArgsConstructor
