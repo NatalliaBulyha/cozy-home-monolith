@@ -26,7 +26,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin(origins = { "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
-		"${api.front.additional_url}", "${api.front.main.url}" }, allowedHeaders = { "Authorization" })
+		"${api.front.additional_url}", "${api.front.main.url}" }, allowedHeaders = { "Authorization" },
+	    exposedHeaders = { "Access-Control-Allow-Methods" })
 @Tag(name = "User")
 @ApiResponse
 @RequiredArgsConstructor
