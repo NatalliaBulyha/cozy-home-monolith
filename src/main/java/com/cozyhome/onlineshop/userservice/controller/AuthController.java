@@ -110,6 +110,5 @@ public class AuthController {
 		User user = userService.resetPassword(resetPasswordToken, newPassword);
 		String token = jwtTokenUtil.generateToken(user.getEmail());
 		return ResponseEntity.ok().body(new TokenResponseDto(token));
-	}
-	
+	}	
 }
