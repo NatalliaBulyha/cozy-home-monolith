@@ -111,4 +111,5 @@ public class AuthController {
 		String token = jwtTokenUtil.generateToken(user.getEmail());
 		return ResponseEntity.ok().body(new TokenResponseDto(token));
 	}
+	
 }
