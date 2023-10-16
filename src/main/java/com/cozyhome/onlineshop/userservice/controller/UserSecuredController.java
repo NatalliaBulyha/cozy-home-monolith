@@ -84,6 +84,7 @@ public class UserSecuredController {
     @PostMapping("/delete-account")
     public ResponseEntity<String> deleteUser(@RequestBody @Valid EmailRequest emailRequest) {
         userService.deleteUser(emailRequest.getEmail());
+        log.info("[ON deleteUser] :: user deleted successfully!");
         return ResponseEntity.ok().build();
     }
 }

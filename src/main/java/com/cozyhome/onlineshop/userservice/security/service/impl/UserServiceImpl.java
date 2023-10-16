@@ -178,6 +178,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void deleteUser(String email) {
 		User user = userRepository.getByEmail(email).orElseThrow(() -> new IllegalArgumentException("Not user found by the email " + email));
+		log.info("[ON deleteUser] :: request to delete user with email {}", email);
 		userRepository.delete(user);		
 	}
 
