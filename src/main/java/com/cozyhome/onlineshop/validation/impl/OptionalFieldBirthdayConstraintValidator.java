@@ -20,7 +20,7 @@ public class OptionalFieldBirthdayConstraintValidator implements ConstraintValid
                 return false;
             }
 
-            return LocalDate.parse(birthday).isBefore(LocalDate.now().minusYears(14));
+            return LocalDate.parse(birthday).isBefore(LocalDate.now());
         }
 
         return true;
