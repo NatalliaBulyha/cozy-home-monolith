@@ -1,6 +1,7 @@
 package com.cozyhome.onlineshop.userservice.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -111,4 +112,14 @@ public class AuthController {
 		String token = jwtTokenUtil.generateToken(user.getEmail());
 		return ResponseEntity.ok().body(new TokenResponseDto(token));
 	}
+	
+	@Operation(summary = "Delete user.", description = "Delete user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
+    @PostMapping("/delete-account")
+    public ResponseEntity<String> deleteUser(@RequestBody EmailRequest emailRequest) {
+        userService.deleteUser(emailRequest.getEmail());
+        log.info("[ON deleteUser] :: user deleted successfully!");
+        return ResponseEntity.ok().build();
+    }
 }
