@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Data
-public class ShoppingCartLineDto {
+public class BasketRecordDto {
 
 	@ValidSkuCode
 	private String skuCode;
@@ -16,5 +16,5 @@ public class ShoppingCartLineDto {
 	private String colorHex;
 	
 	@Positive(message = "Quantity must be a positive number.")
-	private short quantity;
+	private int quantity;
 }

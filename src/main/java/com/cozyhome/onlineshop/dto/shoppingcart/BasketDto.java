@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Builder
 @Data
-public class ShoppingCartDto {
+public class BasketDto {
 
 	private String skuCode;
     private String productName;

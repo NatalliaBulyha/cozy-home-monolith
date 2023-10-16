@@ -114,17 +114,16 @@ public class ImageRepositoryCustomImpl implements ImageRepositoryCustom {
 		List<ImageProduct> results = mongoTemplate.aggregate(aggregation, ImageProduct.class, ImageProduct.class)
 				.getMappedResults();				
 	    
-		return buildMap(results);
+		return buildResultMap(results);
 	}
 	
 	private <T> List<T> extractValues(List<ProductColorDto> list, Function<ProductColorDto, T> function){
 		return list.stream().map(function).toList();
 	}
 	
-	private Map<ProductColorDto, ImageProduct> buildMap(List<ImageProduct> imageProductList){
+	private Map<ProductColorDto, ImageProduct> buildResultMap(List<ImageProduct> imageProductList){
 		return imageProductList.stream()
 	            .collect(Collectors.toMap(imageProduct -> new ProductColorDto(imageProduct.getProduct().getSkuCode(), imageProduct.getColor().getId()), 
 	            		imageProduct -> imageProduct));
 	}
-
 }
