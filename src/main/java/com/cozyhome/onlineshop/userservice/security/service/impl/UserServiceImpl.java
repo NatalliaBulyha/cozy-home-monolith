@@ -175,4 +175,10 @@ public class UserServiceImpl implements UserService {
 		return userBuilder.buildUserInformationResponse(user);
 	}
 
+	@Override
+	public void deleteUser(String email) {
+		User user = userRepository.getByEmail(email).orElseThrow(() -> new IllegalArgumentException("Not user found by the email " + email));
+		userRepository.delete(user);		
+	}
+
 }
