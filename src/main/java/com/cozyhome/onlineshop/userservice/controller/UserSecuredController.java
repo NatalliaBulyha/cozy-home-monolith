@@ -1,5 +1,6 @@
 package com.cozyhome.onlineshop.userservice.controller;
 
+import com.cozyhome.onlineshop.dto.auth.EmailRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
 import com.cozyhome.onlineshop.productservice.controller.swagger.SwaggerResponse;
@@ -20,6 +21,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -75,4 +77,13 @@ public class UserSecuredController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Delete user.", description = "Delete user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
+    @Secured({"ROLE_ADMIN"})
+    @PostMapping("/delete-account")
+    public ResponseEntity<String> deleteUser(@RequestBody @Valid EmailRequest emailRequest) {
+        userService.deleteUser(emailRequest.getEmail());
+        return ResponseEntity.ok().build();
+    }
 }

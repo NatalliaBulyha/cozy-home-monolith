@@ -20,4 +20,6 @@ public interface UserService {
 
 	UserInformationResponse getUserInfo(String userId);
 	
+	void deleteUser(String email);
+	
 }
