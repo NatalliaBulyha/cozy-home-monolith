@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.cozyhome.onlineshop.dto.EmailMessageDto;
-import com.cozyhome.onlineshop.emailservice.Emailservice;
+import com.cozyhome.onlineshop.emailservice.EmailService;
 import com.cozyhome.onlineshop.userservice.model.User;
 import com.cozyhome.onlineshop.userservice.model.token.PasswordResetToken;
 import com.cozyhome.onlineshop.userservice.model.token.SecurityToken;
@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Service
 public class SecurityTokenServiceImpl implements SecurityTokenService {
-	private final Emailservice emailService;
+	private final EmailService emailService;
 	private final UserRepository userRepository;
 	private final SecurityTokenRepository securityTokenRepository;
 
