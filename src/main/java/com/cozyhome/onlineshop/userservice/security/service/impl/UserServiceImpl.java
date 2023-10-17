@@ -48,9 +48,14 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void saveUser(SignupRequest signupRequest) {
-		User user = User.builder().email(signupRequest.getEmail()).password(encoder.encode(signupRequest.getPassword()))
-				.firstName(signupRequest.getFirstName()).lastName(signupRequest.getLastName())
-				.phoneNumber(signupRequest.getPhoneNumber()).createdAt(LocalDateTime.now()).status(UserStatusE.ACTIVE)
+		User user = User.builder()
+				.email(signupRequest.getEmail())
+				.password(encoder.encode(signupRequest.getPassword()))
+				.firstName(signupRequest.getFirstName())
+				.lastName(signupRequest.getLastName())
+				.phoneNumber(signupRequest.getPhoneNumber())
+				.createdAt(LocalDateTime.now())
+				.status(UserStatusE.ACTIVE)
 				.build();
 
 		if (signupRequest.getBirthday() != null && !signupRequest.getBirthday().isEmpty()) {
