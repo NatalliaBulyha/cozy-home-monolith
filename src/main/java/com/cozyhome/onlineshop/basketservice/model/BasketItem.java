@@ -1,4 +1,4 @@
-package com.cozyhome.onlineshop.basketcartservice.model;
+package com.cozyhome.onlineshop.basketservice.model;
 
 import com.cozyhome.onlineshop.inventoryservice.model.ProductColor;
 
@@ -20,8 +20,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "shopping_cart_lines")
-public class BasketRecord {
+@Table(name = "basket_items")
+public class BasketItem {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

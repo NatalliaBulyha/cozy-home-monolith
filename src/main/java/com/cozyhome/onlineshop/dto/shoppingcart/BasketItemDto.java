@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Data
-public class BasketRecordDto {
+public class BasketItemDto {
 
 	@ValidSkuCode
 	private String skuCode;

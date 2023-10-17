@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cozyhome.onlineshop.basketservice.service.BasketService;
 import com.cozyhome.onlineshop.dto.shoppingcart.BasketDto;
-import com.cozyhome.onlineshop.dto.shoppingcart.BasketRecordDto;
+import com.cozyhome.onlineshop.dto.shoppingcart.BasketItemDto;
 import com.cozyhome.onlineshop.productservice.controller.swagger.SwaggerResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,7 +25,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @CrossOrigin(origins = { "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
 		"${api.front.additional_url}", "${api.front.main.url}" }, allowedHeaders = {
@@ -35,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @RestController
 @Validated
-@Slf4j
 @RequestMapping("${api.secure.basePath}/basket")
 public class BasketSecuredController {
 
@@ -49,7 +47,7 @@ public class BasketSecuredController {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
 	@Secured({ "ROLE_CUSTOMER" })
 	@GetMapping()
-	public ResponseEntity<List<BasketDto>> getShoppingCart(HttpServletRequest request) {
+	public ResponseEntity<List<BasketDto>> getBasket(HttpServletRequest request) {
 		String userId = (String) request.getAttribute(userIdAttribute);
 		return ResponseEntity.ok(basketService.getBasket(userId));
 	}
@@ -60,11 +58,10 @@ public class BasketSecuredController {
 	@Secured({ "ROLE_CUSTOMER" })
 	@PostMapping()
 	public ResponseEntity<List<BasketDto>> refreshBasket(HttpServletRequest request,
-			@Valid @RequestBody List<BasketRecordDto> dtoList) {
+			@Valid @RequestBody List<BasketItemDto> dtoList) {
 
-		String userId = (String) request.getAttribute(userIdAttribute);
-		basketService.refreshBasket(userId, dtoList);
-		return ResponseEntity.ok(basketService.getBasket(userId));
+		String userId = (String) request.getAttribute(userIdAttribute);		
+		return ResponseEntity.ok(basketService.refreshBasket(userId, dtoList));
 	}
 	
 	@Operation(summary = "Replace user's basket when logging out.")
@@ -72,10 +69,10 @@ public class BasketSecuredController {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
 	@Secured({ "ROLE_CUSTOMER" })
 	@PostMapping("/replace")
-	public ResponseEntity<Void> replaceBasketOnLogout(HttpServletRequest request,
-			@Valid @RequestBody List<BasketRecordDto> dtoList) {
+	public ResponseEntity<Void> replaceBasket(HttpServletRequest request,
+			@Valid @RequestBody List<BasketItemDto> dtoList) {
 		String userId = (String) request.getAttribute(userIdAttribute);
-		basketService.replaceBasketOnLogout(userId, dtoList);
+		basketService.replaceBasket(userId, dtoList);
 		return ResponseEntity.ok().build();
 	}
 }

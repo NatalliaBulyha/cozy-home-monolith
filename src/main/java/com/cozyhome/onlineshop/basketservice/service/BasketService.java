@@ -3,14 +3,14 @@ package com.cozyhome.onlineshop.basketservice.service;
 import java.util.List;
 
 import com.cozyhome.onlineshop.dto.shoppingcart.BasketDto;
-import com.cozyhome.onlineshop.dto.shoppingcart.BasketRecordDto;
+import com.cozyhome.onlineshop.dto.shoppingcart.BasketItemDto;
 
 public interface BasketService {
 	
 	List<BasketDto> getBasket(String userId);
 	
-	void refreshBasket(String userId, List<BasketRecordDto> dtoList);
+	List<BasketDto> refreshBasket(String userId, List<BasketItemDto> dtoList);
 	
-	void replaceBasketOnLogout(String userId, List<BasketRecordDto> dtoList);
+	void replaceBasket(String userId, List<BasketItemDto> dtoList);
 
 }

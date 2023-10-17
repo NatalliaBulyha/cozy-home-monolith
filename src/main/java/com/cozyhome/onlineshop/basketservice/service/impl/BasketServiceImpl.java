@@ -5,19 +5,17 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.cozyhome.onlineshop.basketcartservice.model.BasketRecord;
+import com.cozyhome.onlineshop.basketservice.model.BasketItem;
 import com.cozyhome.onlineshop.basketservice.repository.BasketRepository;
 import com.cozyhome.onlineshop.basketservice.service.BasketService;
 import com.cozyhome.onlineshop.basketservice.service.builder.BasketBuilder;
 import com.cozyhome.onlineshop.dto.shoppingcart.BasketDto;
-import com.cozyhome.onlineshop.dto.shoppingcart.BasketRecordDto;
+import com.cozyhome.onlineshop.dto.shoppingcart.BasketItemDto;
 import com.cozyhome.onlineshop.inventoryservice.model.ProductColor;
 import com.cozyhome.onlineshop.inventoryservice.repository.ProductColorRepository;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class BasketServiceImpl implements BasketService {
@@ -28,41 +26,41 @@ public class BasketServiceImpl implements BasketService {
 
 	@Override
 	public List<BasketDto> getBasket(String userId) {
-		List<BasketRecord> list = basketRepository.findByUserId(userId);		
+		List<BasketItem> list = basketRepository.findByUserId(userId);		
 		return basketBuilder.buildBasketDtoList(list);
 	}	
 	
 
 	@Override
-	public void refreshBasket(String userId, List<BasketRecordDto> newBasket) {
-	    List<BasketRecord> existingBasket = basketRepository.findByUserId(userId);
+	public List<BasketDto> refreshBasket(String userId, List<BasketItemDto> newBasket) {
+	    List<BasketItem> existingBasket = basketRepository.findByUserId(userId);
 
-	    for (BasketRecordDto newBasketRecord : newBasket) {
-	        ProductColor productColor = productColorRepository.findByProductSkuCodeAndColorHex(newBasketRecord.getSkuCode(), newBasketRecord.getColorHex())
+	    for (BasketItemDto newBasketItem : newBasket) {
+	        ProductColor productColor = productColorRepository.findByProductSkuCodeAndColorHex(newBasketItem.getSkuCode(), newBasketItem.getColorHex())
 	                .orElseThrow(() -> new IllegalArgumentException("No product color found."));
 
-	        Optional<BasketRecord> existingBasketRecord = existingBasket.stream()
-	                .filter(basketRecord -> basketRecord.getProductColor().equals(productColor))
+	        Optional<BasketItem> existingBasketItem = existingBasket.stream()
+	                .filter(basketItem -> basketItem.getProductColor().equals(productColor))
 	                .findFirst();
 
-	        if (existingBasketRecord.isPresent()) {
-	            existingBasketRecord.get().setQuantity(newBasketRecord.getQuantity());
+	        if (existingBasketItem.isPresent()) {
+	            existingBasketItem.get().setQuantity(newBasketItem.getQuantity());
 	        } else {
-	            BasketRecord basketRecordToSave = BasketRecord.builder()
+	            BasketItem basketItemToSave = BasketItem.builder()
 	                    .productColor(productColor)
-	                    .quantity(newBasketRecord.getQuantity())
+	                    .quantity(newBasketItem.getQuantity())
 	                    .userId(userId)
 	                    .build();
-	            existingBasket.add(basketRecordToSave);
+	            existingBasket.add(basketItemToSave);
 	        }
 	    }	    
 	    basketRepository.saveAll(existingBasket);
+	    return getBasket(userId);
 	}
 
-
 	@Override
-	public void replaceBasketOnLogout(String userId, List<BasketRecordDto> dtoList) {
+	public void replaceBasket(String userId, List<BasketItemDto> dtoList) {
 		basketRepository.deleteAllByUserId(userId);
-		basketRepository.saveAll(basketBuilder.buildBasketRecordList(userId, dtoList));		
+		basketRepository.saveAll(basketBuilder.buildBasketItemList(userId, dtoList));		
 	}		
 }
