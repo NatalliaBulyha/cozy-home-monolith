@@ -19,5 +19,7 @@ public interface UserService {
 	UserInformationResponse updateUserData(UserInformationRequest userInformationDto, String userId);
 
 	UserInformationResponse getUserInfo(String userId);
+
+	void deleteUser(String email);
 	
 }

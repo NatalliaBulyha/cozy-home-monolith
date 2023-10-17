@@ -53,6 +53,7 @@ public class CozyHomeExceptionHandler extends ResponseEntityExceptionHandler {
     public ErrorResponse handleForbiddenException(Exception ex) {
         return bodyBuilder(ex.getMessage());
     }
+    
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers, HttpStatusCode status, WebRequest request) {

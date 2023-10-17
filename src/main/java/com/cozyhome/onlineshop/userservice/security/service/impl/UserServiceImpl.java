@@ -5,18 +5,16 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.cozyhome.onlineshop.dto.auth.NewPasswordRequest;
+import com.cozyhome.onlineshop.dto.auth.SignupRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
 import com.cozyhome.onlineshop.exception.AuthenticationException;
 import com.cozyhome.onlineshop.exception.DataAlreadyExistException;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
-import com.cozyhome.onlineshop.userservice.security.service.SecurityTokenService;
-import com.cozyhome.onlineshop.userservice.security.service.builder.UserBuilder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import com.cozyhome.onlineshop.dto.auth.SignupRequest;
 import com.cozyhome.onlineshop.userservice.model.Role;
 import com.cozyhome.onlineshop.userservice.model.RoleE;
 import com.cozyhome.onlineshop.userservice.model.User;
@@ -26,7 +24,9 @@ import com.cozyhome.onlineshop.userservice.model.token.SecurityToken;
 import com.cozyhome.onlineshop.userservice.repository.RoleRepository;
 import com.cozyhome.onlineshop.userservice.repository.SecurityTokenRepository;
 import com.cozyhome.onlineshop.userservice.repository.UserRepository;
+import com.cozyhome.onlineshop.userservice.security.service.SecurityTokenService;
 import com.cozyhome.onlineshop.userservice.security.service.UserService;
+import com.cozyhome.onlineshop.userservice.security.service.builder.UserBuilder;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -175,4 +175,10 @@ public class UserServiceImpl implements UserService {
 		return userBuilder.buildUserInformationResponse(user);
 	}
 
+	@Override
+	public void deleteUser(String email) {
+		User user = userRepository.getByEmail(email).orElseThrow(() -> new IllegalArgumentException("Not user found by the email " + email));
+		log.info("[ON deleteUser] :: request to delete user with email {}", email);
+		userRepository.delete(user);
+	}
 }
