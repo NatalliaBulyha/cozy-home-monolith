@@ -36,13 +36,13 @@ public class BasketBuilder {
 	@Value("${image.product.path.base}")
     private String imagePathBase;
 
-	public List<BasketDto> buildBasketDtoList(List<BasketItem> list){
-		Map<ProductColorDto, ImageProduct> imageMap = getImageMap(list);
+	public List<BasketDto> buildBasketDtoList(List<BasketItem> basketItemlist){
+		Map<ProductColorDto, ImageProduct> imageMap = getImageMap(basketItemlist);
 		List<BasketDto> basketDtoList = new ArrayList<>();
-		for(BasketItem line : list) {
-			String skuCode = line.getProductColor().getProductSkuCode();
-			String hex = line.getProductColor().getColorHex();
-			BasketDto dto = buildBasketDto(line, imageMap.get(new ProductColorDto(skuCode, hex)));
+		for(BasketItem basketItem : basketItemlist) {
+			String skuCode = basketItem.getProductColor().getProductSkuCode();
+			String hex = basketItem.getProductColor().getColorHex();
+			BasketDto dto = buildBasketDto(basketItem, imageMap.get(new ProductColorDto(skuCode, hex)));
 			basketDtoList.add(dto);
 		}
 		return basketDtoList;
