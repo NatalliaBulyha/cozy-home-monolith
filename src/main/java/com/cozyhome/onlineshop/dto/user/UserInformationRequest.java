@@ -16,13 +16,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @ValidOptionalFieldsPassword
-@ValidFieldsValueMatch.List({
-        @ValidFieldsValueMatch(
-                field = "newPassword",
-                fieldMatch = "passwordReset",
-                message = "Fields new password and password reset don't match."
-        )
-})
+@ValidFieldsValueMatch(
+        field = "newPassword",
+        fieldMatch = "passwordReset",
+        message = "Fields new password and password reset don't match."
+)
 public class UserInformationRequest {
     @ValidEmail
     private String email;

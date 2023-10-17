@@ -25,7 +25,7 @@ public class FieldsValueMatchValidator implements ConstraintValidator<ValidField
         if (fieldValue != null) {
             return fieldValue.equals(fieldMatchValue);
         } else {
-            return fieldMatchValue == null;
+            return false;
         }
     }
 }
