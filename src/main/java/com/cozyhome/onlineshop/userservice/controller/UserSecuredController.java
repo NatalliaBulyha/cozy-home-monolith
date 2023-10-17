@@ -3,7 +3,6 @@ package com.cozyhome.onlineshop.userservice.controller;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cozyhome.onlineshop.dto.user.PasswordChangeRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
 import com.cozyhome.onlineshop.productservice.controller.swagger.SwaggerResponse;
@@ -77,14 +75,5 @@ public class UserSecuredController {
         tokenBlackListService.saveTokenToBlackList(jwtToken);
         log.warn("[ON logout] :: JwtToken {} was added to Black List.", jwtToken);
         return ResponseEntity.ok().build();
-    }
-    
-    @Secured({"ROLE_CUSTOMER"})
-    @PutMapping("/profile/change-password")
-    public ResponseEntity<Void> changePassword(@Valid @RequestBody PasswordChangeRequest dto){
-    	String email = SecurityContextHolder.getContext().getAuthentication().getName();
-    	userService.changePassword(email, dto);
-    	return ResponseEntity.ok().build();
-    }
-
+    }    
 }

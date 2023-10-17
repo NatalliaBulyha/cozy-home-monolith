@@ -10,12 +10,10 @@ import org.springframework.stereotype.Service;
 
 import com.cozyhome.onlineshop.dto.auth.NewPasswordRequest;
 import com.cozyhome.onlineshop.dto.auth.SignupRequest;
-import com.cozyhome.onlineshop.dto.user.PasswordChangeRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
 import com.cozyhome.onlineshop.exception.DataAlreadyExistException;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
-import com.cozyhome.onlineshop.exception.InvalidOldPasswordException;
 import com.cozyhome.onlineshop.userservice.model.Role;
 import com.cozyhome.onlineshop.userservice.model.RoleE;
 import com.cozyhome.onlineshop.userservice.model.User;
@@ -173,16 +171,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void changePassword(String email, PasswordChangeRequest dto) {
-		User user = userRepository.findByEmail(email)
-				.orElseThrow(() -> new DataNotFoundException(String.format("User with email = %s not found.", email)));
-		if (encoder.matches(dto.getOldPassword(), user.getPassword())) {
-			user.setPassword(encoder.encode(dto.getNewPassword()));
-			userRepository.save(user);
-		} else {
-			log.error("[ON changePassword] :: Password change failed: the provided old password does not match the user's current password");
-			throw new InvalidOldPasswordException("Password change failed: the provided old password does not match the user's current password");
-		}
+	public void deleteUser(String email) {
+		User user = userRepository.getByEmail(email).orElseThrow(() -> new IllegalArgumentException("Not user found by the email " + email));
+		log.info("[ON deleteUser] :: request to delete user with email {}", email);
+		userRepository.delete(user);		
 	}
-
 }
