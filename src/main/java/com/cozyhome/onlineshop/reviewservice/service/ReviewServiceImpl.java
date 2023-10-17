@@ -10,6 +10,7 @@ import com.cozyhome.onlineshop.reviewservice.repository.ReviewRepository;
 import com.cozyhome.onlineshop.reviewservice.service.builder.ReviewBuilder;
 import com.cozyhome.onlineshop.userservice.model.RoleE;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService{
@@ -29,6 +31,7 @@ public class ReviewServiceImpl implements ReviewService{
     public List<ReviewAdminResponse> getReviews() {
         List<Review> reviews = repository.findAll();
         if (reviews.isEmpty()) {
+            log.error("[ON getReviews]:: The are no reviews.");
             throw new DataNotFoundException("The are no reviews.");
         }
         return reviews.stream().map(review -> mapper.map(review, ReviewAdminResponse.class)).toList();
@@ -62,6 +65,7 @@ public class ReviewServiceImpl implements ReviewService{
                 || reviewRemoveDto.getRoles().stream().anyMatch(role -> role.getName().equals(RoleE.ROLE_ADMIN))) {
             repository.deleteById(UUID.fromString(reviewRemoveDto.getReviewId()));
         } else {
+            log.error("[ON removeReviewById]:: You can only delete your own reviews.");
             throw new AccessDeniedException("You can only delete your own reviews.");
         }
     }
@@ -70,6 +74,7 @@ public class ReviewServiceImpl implements ReviewService{
     public List<ReviewAdminResponse> getReviewsForProductAllInf(String productSkuCode) {
         List<Review> reviews = repository.findReviewsByProductSkuCode(productSkuCode);
         if (reviews.isEmpty()) {
+            log.error("[ON getReviewsForProductAllInf]:: Review for product with sku code = {} isn't exist.", productSkuCode);
             throw new DataNotFoundException("Review for product with sku code = " + productSkuCode + " isn't exist.");
         }
         return reviews.stream().map(review -> mapper.map(review, ReviewAdminResponse.class)).toList();

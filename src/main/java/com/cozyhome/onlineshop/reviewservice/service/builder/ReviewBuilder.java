@@ -6,10 +6,12 @@ import com.cozyhome.onlineshop.reviewservice.model.Review;
 import com.cozyhome.onlineshop.userservice.model.User;
 import com.cozyhome.onlineshop.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ReviewBuilder {
@@ -22,7 +24,8 @@ public class ReviewBuilder {
         String userId = review.getUserId();
         User user = userRepository.getUserById(userId)
                 .orElseThrow(() -> new DataNotFoundException(String.format("User with id = %s doesn't found", userId)));
-            return ReviewResponse.builder()
+        log.warn("[ON getReviewsForProductAllInf]:: build review with id: {} for user: {}.", review.getId(), review.getUserId());
+        return ReviewResponse.builder()
                     .reviewId(review.getId().toString())
                     .rating((byte) review.getRating())
                     .userName(user.getFirstName() + " " + user.getLastName())

@@ -1,15 +1,18 @@
 package com.cozyhome.onlineshop.productservice.service.impl;
 
 import com.cozyhome.onlineshop.dto.ColorDto;
+import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.productservice.model.Color;
 import com.cozyhome.onlineshop.productservice.repository.ColorRepository;
 import com.cozyhome.onlineshop.productservice.service.ColorService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ColorServiceImpl implements ColorService {
@@ -18,6 +21,10 @@ public class ColorServiceImpl implements ColorService {
     @Override
     public List<ColorDto> getColors() {
         List<Color> colors = colorRepository.findAllByActive(true);
+        if (colors.isEmpty()) {
+            log.error("[ON getColors]:: Colors not found.");
+            throw new DataNotFoundException("Colors not found.");
+        }
         return colors.stream().map(color -> modelMapper.map(color, ColorDto.class)).toList();
     }
 }
