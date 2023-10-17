@@ -140,15 +140,10 @@ public class UserServiceImpl implements UserService {
 				.orElseThrow(() -> new DataNotFoundException(
 						String.format("User with email = %s not found.", userInformationDto.getEmail())));
 
-		if (!user.getLastName().equals(userInformationDto.getLastName())) {
-			user.setLastName(userInformationDto.getLastName());
-		}
-		if (!user.getFirstName().equals(userInformationDto.getFirstName())) {
-			user.setFirstName(userInformationDto.getFirstName());
-		}
-		if (!user.getPhoneNumber().equals(userInformationDto.getPhoneNumber())) {
-			user.setPhoneNumber(userInformationDto.getPhoneNumber());
-		}
+		user.setLastName(userInformationDto.getLastName());
+		user.setFirstName(userInformationDto.getFirstName());
+		user.setPhoneNumber(userInformationDto.getPhoneNumber());
+
 		if (!user.getEmail().equals(userInformationDto.getEmail())) {
 			if (userRepository.existsByEmail(userInformationDto.getEmail()) ) {
 				throw new DataAlreadyExistException(String.format("Email is already in use by another user. " +
@@ -156,11 +151,13 @@ public class UserServiceImpl implements UserService {
 			}
 			user.setEmail(userInformationDto.getEmail());
 		}
+
 		if (!userInformationDto.getBirthday().isEmpty()) {
 			LocalDate birthday = LocalDate.parse(userInformationDto.getBirthday());
 			user.setBirthday(birthday);
 		}
-		if (userInformationDto.getOldPassword() != null && !userInformationDto.getOldPassword().isEmpty()) {
+
+		if (!userInformationDto.getNewPassword().isEmpty()) {
 			if (encoder.matches(userInformationDto.getOldPassword(), user.getPassword())) {
 				user.setPassword(encoder.encode(userInformationDto.getNewPassword()));
 			} else {
