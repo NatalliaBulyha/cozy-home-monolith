@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @ValidOptionalPassword
 @ValidNewPasswordsMatch(
         field = "newPassword",
-        fieldMatch = "passwordReset",
+        fieldMatch = "repeatedNewPassword",
         message = "Fields new password and password reset don't match."
 )
 public class UserInformationRequest {
