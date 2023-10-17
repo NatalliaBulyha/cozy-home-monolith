@@ -1,12 +1,12 @@
 package com.cozyhome.onlineshop.validation.impl;
 
-import com.cozyhome.onlineshop.validation.ValidOptionalFieldBirthday;
+import com.cozyhome.onlineshop.validation.ValidOptionalBirthday;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class OptionalFieldBirthdayConstraintValidator implements ConstraintValidator<ValidOptionalFieldBirthday, String> {
+public class OptionalBirthdayValidator implements ConstraintValidator<ValidOptionalBirthday, String> {
     @Override
-    public void initialize(ValidOptionalFieldBirthday constraintAnnotation) {
+    public void initialize(ValidOptionalBirthday constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 

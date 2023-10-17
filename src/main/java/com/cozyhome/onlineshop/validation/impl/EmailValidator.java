@@ -4,7 +4,7 @@ import com.cozyhome.onlineshop.validation.ValidEmail;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class EmailConstraintValidator implements ConstraintValidator<ValidEmail, String> {
+public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
     @Override
     public void initialize(ValidEmail constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);

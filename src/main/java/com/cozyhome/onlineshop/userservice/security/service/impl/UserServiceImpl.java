@@ -146,8 +146,7 @@ public class UserServiceImpl implements UserService {
 
 		if (!user.getEmail().equals(userInformationDto.getEmail())) {
 			if (userRepository.existsByEmail(userInformationDto.getEmail()) ) {
-				throw new DataAlreadyExistException(String.format("Email is already in use by another user. " +
-						"Forbidden to change mail to %s.", userInformationDto.getEmail()));
+				throw new DataAlreadyExistException(String.format("Email %s is already in use", userInformationDto.getEmail()));
 			}
 			user.setEmail(userInformationDto.getEmail());
 		}

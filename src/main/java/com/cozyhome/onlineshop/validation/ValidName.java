@@ -1,6 +1,6 @@
 package com.cozyhome.onlineshop.validation;
 
-import com.cozyhome.onlineshop.validation.impl.OptionalFieldsPasswordConstraintValidator;
+import com.cozyhome.onlineshop.validation.impl.NameValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -15,13 +15,12 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Documented
-@Constraint(validatedBy = OptionalFieldsPasswordConstraintValidator.class)
+@Constraint(validatedBy = NameValidator.class)
 @Target({ TYPE, FIELD, ANNOTATION_TYPE, PARAMETER })
 @Retention(RUNTIME)
-public @interface ValidOptionalFieldsPassword {
-    String message() default "Invalid password. Password must have: minimum 8 characters in length, " +
-            "at least one special character: #?!@$%^&*-, at least one uppercase English letter, " +
-            "at least one lowercase English letter, at least one digit.";
+public @interface ValidName {
+    String message() default "Invalid name. Name must be not null, greater than or equal to 2 and less than or equal " +
+            "to 32, letters only.";
 
     Class<?>[] groups() default {};
 
