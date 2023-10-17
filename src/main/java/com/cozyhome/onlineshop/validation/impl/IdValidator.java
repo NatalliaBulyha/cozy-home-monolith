@@ -4,7 +4,7 @@ import com.cozyhome.onlineshop.validation.ValidId;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class IdConstraintValidator implements ConstraintValidator<ValidId, String> {
+public class IdValidator implements ConstraintValidator<ValidId, String> {
     @Override
     public void initialize(ValidId constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);

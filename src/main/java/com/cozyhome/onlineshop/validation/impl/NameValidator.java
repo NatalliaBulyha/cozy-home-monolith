@@ -1,12 +1,12 @@
 package com.cozyhome.onlineshop.validation.impl;
 
-import com.cozyhome.onlineshop.validation.ValidFirstNameAndLastName;
+import com.cozyhome.onlineshop.validation.ValidName;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class FirstNameAndLastNameConstraintValidator implements ConstraintValidator<ValidFirstNameAndLastName, String> {
+public class NameValidator implements ConstraintValidator<ValidName, String> {
     @Override
-    public void initialize(ValidFirstNameAndLastName constraintAnnotation) {
+    public void initialize(ValidName constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 

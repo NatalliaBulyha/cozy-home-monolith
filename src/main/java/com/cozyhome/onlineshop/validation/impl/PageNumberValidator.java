@@ -4,7 +4,7 @@ import com.cozyhome.onlineshop.validation.ValidPageNumber;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class PageNumberConstraintValidator implements ConstraintValidator<ValidPageNumber, Integer> {
+public class PageNumberValidator implements ConstraintValidator<ValidPageNumber, Integer> {
     @Override
     public void initialize(ValidPageNumber constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);

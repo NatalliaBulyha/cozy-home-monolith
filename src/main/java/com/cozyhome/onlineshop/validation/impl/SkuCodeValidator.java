@@ -4,7 +4,7 @@ import com.cozyhome.onlineshop.validation.ValidSkuCode;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class SkuCodeConstraintValidator implements ConstraintValidator<ValidSkuCode, String> {
+public class SkuCodeValidator implements ConstraintValidator<ValidSkuCode, String> {
 
     @Override
     public void initialize(ValidSkuCode constraintAnnotation) {

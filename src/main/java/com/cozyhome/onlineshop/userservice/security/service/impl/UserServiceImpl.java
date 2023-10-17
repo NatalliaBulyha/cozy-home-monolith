@@ -12,6 +12,7 @@ import com.cozyhome.onlineshop.dto.auth.NewPasswordRequest;
 import com.cozyhome.onlineshop.dto.auth.SignupRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
+import com.cozyhome.onlineshop.exception.AuthenticationException;
 import com.cozyhome.onlineshop.exception.DataAlreadyExistException;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.userservice.model.Role;
@@ -121,49 +122,48 @@ public class UserServiceImpl implements UserService {
 	public User resetPassword(String token, NewPasswordRequest newPassword) {
 		PasswordResetToken resetToken = (PasswordResetToken) securityTokenRepository.findByToken(token);
 
-		if (resetToken == null || resetToken.isExpired()) {
-			throw new IllegalArgumentException("Invalid or expired token");
-		}
+        if (resetToken == null || resetToken.isExpired()) {
+            throw new IllegalArgumentException("Invalid or expired token");
+        }
 
-		User user = resetToken.getUser();
-		user.setPassword(encoder.encode(newPassword.getPassword()));
-		userRepository.save(user);
+        User user = resetToken.getUser();
+        user.setPassword(encoder.encode(newPassword.getPassword()));
+        userRepository.save(user);
 
-		securityTokenRepository.delete(resetToken);
-		return user;
+        securityTokenRepository.delete(resetToken);	
+        return user;
 	}
 
 	@Override
 	public UserInformationResponse updateUserData(UserInformationRequest userInformationDto, String userId) {
-		User user = userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException(
-				String.format("User with email = %s not found.", userInformationDto.getEmail())));
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new DataNotFoundException(
+						String.format("User with email = %s not found.", userInformationDto.getEmail())));
 
-		if (!user.getLastName().equals(userInformationDto.getLastName())) {
-			if (userRepository.existsByEmail(userInformationDto.getEmail())) {
-				throw new DataAlreadyExistException(
-						String.format("Email is already in use by another user. " + "Forbidden to change mail to %s.",
-								userInformationDto.getEmail()));
-			}
-			user.setLastName(userInformationDto.getLastName());
-		}
-		if (!user.getFirstName().equals(userInformationDto.getFirstName())) {
-			user.setFirstName(userInformationDto.getFirstName());
-		}
-		if (!user.getPhoneNumber().equals(userInformationDto.getPhoneNumber())) {
-			user.setPhoneNumber(userInformationDto.getPhoneNumber());
-		}
+		user.setLastName(userInformationDto.getLastName());
+		user.setFirstName(userInformationDto.getFirstName());
+		user.setPhoneNumber(userInformationDto.getPhoneNumber());
+
 		if (!user.getEmail().equals(userInformationDto.getEmail())) {
+			if (userRepository.existsByEmail(userInformationDto.getEmail()) ) {
+				throw new DataAlreadyExistException(String.format("Email %s is already in use", userInformationDto.getEmail()));
+			}
 			user.setEmail(userInformationDto.getEmail());
 		}
+
 		if (!userInformationDto.getBirthday().isEmpty()) {
 			LocalDate birthday = LocalDate.parse(userInformationDto.getBirthday());
 			user.setBirthday(birthday);
 		}
-		if (user.getPassword().equals(userInformationDto.getOldPassword())
-				&& userInformationDto.getNewPassword() != null && !userInformationDto.getNewPassword().isEmpty()
-				&& !user.getPassword().equals(userInformationDto.getNewPassword())) {
-			user.setPassword(userInformationDto.getNewPassword());
+
+		if (!userInformationDto.getNewPassword().isEmpty()) {
+			if (encoder.matches(userInformationDto.getOldPassword(), user.getPassword())) {
+				user.setPassword(encoder.encode(userInformationDto.getNewPassword()));
+			} else {
+				throw new AuthenticationException("Wrong old password entered.");
+			}
 		}
+
 		User updatedUser = userRepository.save(user);
 		return userBuilder.buildUserInformationResponse(updatedUser);
 	}
@@ -179,6 +179,6 @@ public class UserServiceImpl implements UserService {
 	public void deleteUser(String email) {
 		User user = userRepository.getByEmail(email).orElseThrow(() -> new IllegalArgumentException("Not user found by the email " + email));
 		log.info("[ON deleteUser] :: request to delete user with email {}", email);
-		userRepository.delete(user);		
+		userRepository.delete(user);
 	}
 }
