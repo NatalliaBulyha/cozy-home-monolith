@@ -1,5 +1,6 @@
 package com.cozyhome.onlineshop.dto.user;
 
+import com.cozyhome.onlineshop.validation.ValidFieldsValueMatch;
 import com.cozyhome.onlineshop.validation.ValidFirstNameAndLastName;
 import com.cozyhome.onlineshop.validation.ValidOptionalFieldBirthday;
 import com.cozyhome.onlineshop.validation.ValidOptionalFieldsPassword;
@@ -15,11 +16,19 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @ValidOptionalFieldsPassword
+@ValidFieldsValueMatch.List({
+        @ValidFieldsValueMatch(
+                field = "newPassword",
+                fieldMatch = "passwordReset",
+                message = "Fields new password and password reset don't match."
+        )
+})
 public class UserInformationRequest {
     @ValidEmail
     private String email;
     private String oldPassword;
     private String newPassword;
+    private String passwordReset;
     @ValidOptionalFieldBirthday
     private String birthday;
     @ValidFirstNameAndLastName(message = "Invalid firstName. FirstName must be not null, greater than " +
