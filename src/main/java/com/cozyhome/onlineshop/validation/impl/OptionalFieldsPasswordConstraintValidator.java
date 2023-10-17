@@ -14,13 +14,14 @@ public class OptionalFieldsPasswordConstraintValidator implements ConstraintVali
 
     @Override
     public boolean isValid(UserInformationRequest request, ConstraintValidatorContext constraintValidatorContext) {
-        if (request.getNewPassword() != null && !request.getNewPassword().isEmpty()
-        && request.getOldPassword() != null && !request.getOldPassword().isEmpty()) {
-            String regex = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$";
-            return request.getNewPassword().matches(regex) && request.getOldPassword().matches(regex);
-        } else if (request.getNewPassword() == null || request.getNewPassword().isEmpty()
-                && (request.getOldPassword() == null || request.getOldPassword().isEmpty())) {
+        if (request.getOldPassword() == null || request.getNewPassword() == null || request.getPasswordReset() == null) {
+            return false;
+        } else if (request.getOldPassword().isEmpty() && request.getNewPassword().isEmpty() && request.getPasswordReset().isEmpty()) {
             return true;
+        } else if (!request.getOldPassword().isEmpty() && !request.getNewPassword().isEmpty() && !request.getPasswordReset().isEmpty()) {
+            String regex = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$";
+            return request.getOldPassword().matches(regex) && request.getNewPassword().matches(regex)
+                    && request.getPasswordReset().matches(regex);
         } else {
             return false;
         }
