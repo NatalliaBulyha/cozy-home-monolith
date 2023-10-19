@@ -85,8 +85,8 @@ public class ProductServiceImpl implements ProductService {
                                                                    int countOfProducts) {
         List<ObjectId> categoriesIds = categoryService.getCategoriesIdsByParentId(categoryId);
         if (categoriesIds.isEmpty()) {
-            log.error("[ON getRandomProductsByStatusAndCategoryId]:: Category with id {} doesn't exist.", categoriesIds);
-            throw new DataNotFoundException("");
+            log.error("[ON getRandomProductsByStatusAndCategoryId]:: Subcategory for category with id {} doesn't exist.", categoryId);
+            throw new DataNotFoundException(String.format("Subcategory for category with id %s doesn't exist.", categoryId));
         }
         List<Product> products = productRepositoryCustom.getRandomByStatusAndCategoryIdAndInStock(
             ProductStatus.valueOfDescription(status), categoriesIds, countOfProducts);

@@ -29,39 +29,36 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 
 @Slf4j(topic = "COZY_HOME_EXCEPTION_HANDLER")
 @RestControllerAdvice
 public class CozyHomeExceptionHandler extends ResponseEntityExceptionHandler {
 
-    public static final String TRACE = "trace";
-
-    @Value("${reflectoring.trace:false}")
+    @Value("${reflectoring.trace}")
     private boolean printStackTrace;
 
     @ExceptionHandler({DataNotFoundException.class, IllegalArgumentException.class, NoSuchElementException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<Object> handleDataNotFoundException(Exception ex, WebRequest request) {
-        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.NOT_FOUND, request);
+    public ResponseEntity<Object> handleDataNotFoundException(Exception exception) {
+        return buildErrorResponse(exception, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({ConstraintViolationException.class, UnexpectedTypeException.class, MethodArgumentTypeMismatchException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Object> handleValidationException(Exception ex, WebRequest request) {
-        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.BAD_REQUEST, request);
+    public ResponseEntity<Object> handleValidationException(Exception exception) {
+        return buildErrorResponse(exception, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({BadCredentialsException.class, AuthenticationException.class, AuthException.class})
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ResponseEntity<Object> handleAuthenticationException(Exception ex, WebRequest request) {
-        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.UNAUTHORIZED, request);
+    public ResponseEntity<Object> handleAuthenticationException(Exception exception) {
+        return buildErrorResponse(exception, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler({AccessDeniedException.class, JwtException.class, InvalidTokenException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ResponseEntity<Object> handleForbiddenException(Exception ex, WebRequest request) {
-        return buildErrorResponse(ex, ex.getMessage(), HttpStatus.FORBIDDEN, request);
+    public ResponseEntity<Object> handleForbiddenException(Exception exception) {
+        return buildErrorResponse(exception, HttpStatus.FORBIDDEN);
     }
 
     @Override
@@ -88,30 +85,17 @@ public class CozyHomeExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
-    public ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body, HttpHeaders headers,
+    public ResponseEntity<Object> handleExceptionInternal(Exception exception, @Nullable Object body, HttpHeaders headers,
                                                           HttpStatusCode statusCode, WebRequest request) {
 
-        return buildErrorResponse(ex, statusCode, request);
+        return buildErrorResponse(exception, statusCode);
     }
 
-    private ResponseEntity<Object> buildErrorResponse(Exception exception, HttpStatusCode httpStatus,
-                                                      WebRequest request) {
-        return buildErrorResponse(exception, exception.getMessage(), httpStatus, request);
-    }
-
-    private ResponseEntity<Object> buildErrorResponse(Exception exception, String message, HttpStatusCode httpStatus,
-                                                      WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(httpStatus.value(), message);
-        if (printStackTrace && isTraceOn(request)) {
+    private ResponseEntity<Object> buildErrorResponse(Exception exception, HttpStatusCode httpStatus) {
+        ErrorResponse errorResponse = new ErrorResponse(httpStatus.value(), exception.getMessage());
+        if (printStackTrace) {
             errorResponse.setStackTrace(ExceptionUtils.getStackTrace(exception));
         }
         return ResponseEntity.status(httpStatus).body(errorResponse);
-    }
-
-    private boolean isTraceOn(WebRequest request) {
-        String[] value = request.getParameterValues(TRACE);
-        return Objects.nonNull(value)
-                && value.length > 0
-                && value[0].contentEquals("true");
     }
 }
