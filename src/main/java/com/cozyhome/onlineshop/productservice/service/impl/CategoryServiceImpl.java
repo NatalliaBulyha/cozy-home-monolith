@@ -3,7 +3,6 @@ package com.cozyhome.onlineshop.productservice.service.impl;
 import com.cozyhome.onlineshop.dto.CategoryWithIconDto;
 import com.cozyhome.onlineshop.dto.CategoryWithPhotoDto;
 import com.cozyhome.onlineshop.dto.CategoryWithSubCategoriesDto;
-import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.productservice.model.Category;
 import com.cozyhome.onlineshop.productservice.model.ImageCategory;
 import com.cozyhome.onlineshop.productservice.repository.CategoryRepository;
@@ -17,6 +16,7 @@ import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -33,8 +33,8 @@ public class CategoryServiceImpl implements CategoryService {
 	public List<CategoryWithIconDto> getCategoryWithIcon() {
 		List<Category> categories = categoryRepository.findAllByActiveAndParentIdNull(true);
 		if (categories.isEmpty()) {
-			log.error("[ON getCategoryWithIcon]:: Categories not found.");
-			throw new DataNotFoundException("Categories not found.");
+			log.info("[ON getCategoryWithIcon]:: Categories not found.");
+			return new ArrayList<>();
 		}
 		return categories.stream().map(category -> modelMapper.map(category, CategoryWithIconDto.class)).toList();
 	}
@@ -51,14 +51,10 @@ public class CategoryServiceImpl implements CategoryService {
         List<Category> categories = categoryRepository.findAllByActive(true);
 		if (categories.isEmpty()) {
 			log.error("[ON getCategoriesWithPhoto]:: Categories not found.");
-			throw new DataNotFoundException("Categories not found.");
+			return new ArrayList<>();
 		}
         List<ObjectId> ids = categories.stream().map(Category::getId).toList();
         List<ImageCategory> images = imageCategoryRepository.findAllByCatalogAndCategoryIn(true, ids);
-		if (images.isEmpty()) {
-			log.error("[ON getCategoriesWithPhoto]:: Images for categories not found.");
-			throw new DataNotFoundException("Images for categories not found.");
-		}
         return categoryBuilder.buildParentCategoryWithCategoriesDtoList(categories, images);
     }
 
@@ -66,8 +62,8 @@ public class CategoryServiceImpl implements CategoryService {
 	public List<CategoryWithPhotoDto> getCategoriesForHomepage() {
 		List<ImageCategory> imageCategories = imageCategoryRepository.findAllByCatalogFalse();
 		if (imageCategories.isEmpty()) {
-			log.error("[ON getCategoriesForHomepage]:: Images for categories not found.");
-			throw new DataNotFoundException("Images for categories not found.");
+			log.info("[ON getCategoriesForHomepage]:: Images for categories not found.");
+			return new ArrayList<>();
 		}
 		return imageCategories.stream().map(categoryBuilder::mapToCategoryForHomepageDto).toList();
 	}

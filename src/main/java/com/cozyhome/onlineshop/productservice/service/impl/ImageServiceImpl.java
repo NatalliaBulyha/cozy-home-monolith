@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -36,10 +37,9 @@ public class ImageServiceImpl implements ImageService {
 		List<ImageProduct> popUpImages = imageProductRepository
 				.findByProductSkuCodeAndColorId(productColor.getProductSkuCode(), productColor.getColorHex());
 		if (popUpImages.isEmpty()) {
-			log.error("[ON getPopUpImageForProductByColor]:: Image for product with skuCode {} and color hex {} " +
+			log.info("[ON getPopUpImageForProductByColor]:: Image for product with skuCode {} and color hex {} " +
 					"doesn't found.", productColor.getProductSkuCode(), productColor.getColorHex());
-			throw new DataNotFoundException(String.format("Image for product with skuCode %s and color hex %s " +
-							"doesn't found", productColor.getProductSkuCode(), productColor.getColorHex()));
+			return new ArrayList<>();
 		}
 		return imageBuilder.buildPopUpImageDtos(popUpImages);
 	}
@@ -49,10 +49,9 @@ public class ImageServiceImpl implements ImageService {
 		List<ImageProduct> productCardImages = imageProductRepository
 				.findByProductSkuCodeAndColorId(productColor.getProductSkuCode(), productColor.getColorHex());
 		if (productCardImages.isEmpty()) {
-			log.error("[ON getProductCardImagesByColor]:: Image for product with skuCode {} and color hex {} " +
+			log.info("[ON getProductCardImagesByColor]:: Image for product with skuCode {} and color hex {} " +
 					"doesn't found.", productColor.getProductSkuCode(), productColor.getColorHex());
-			throw new DataNotFoundException(String.format("Image for product with skuCode %s and color hex %s " +
-					"doesn't found", productColor.getProductSkuCode(), productColor.getColorHex()));
+			return new ArrayList<>();
 		}
 		return imageBuilder.buildProductCardImageDtos(productCardImages);
 	}
