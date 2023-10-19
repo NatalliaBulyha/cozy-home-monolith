@@ -4,7 +4,6 @@ import com.cozyhome.onlineshop.dto.review.ReviewToRemoveDto;
 import com.cozyhome.onlineshop.dto.review.ReviewResponse;
 import com.cozyhome.onlineshop.dto.review.ReviewAdminResponse;
 import com.cozyhome.onlineshop.dto.review.ReviewRequest;
-import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.reviewservice.model.Review;
 import com.cozyhome.onlineshop.reviewservice.repository.ReviewRepository;
 import com.cozyhome.onlineshop.reviewservice.service.builder.ReviewBuilder;
@@ -31,8 +30,8 @@ public class ReviewServiceImpl implements ReviewService{
     public List<ReviewAdminResponse> getReviews() {
         List<Review> reviews = repository.findAll();
         if (reviews.isEmpty()) {
-            log.error("[ON getReviews]:: The are no reviews.");
-            throw new DataNotFoundException("The are no reviews.");
+            log.info("[ON getReviews]:: The are no reviews for any product.");
+            return new ArrayList<>();
         }
         return reviews.stream().map(review -> mapper.map(review, ReviewAdminResponse.class)).toList();
     }
@@ -51,6 +50,7 @@ public class ReviewServiceImpl implements ReviewService{
     public List<ReviewResponse> getReviewsForProduct(String productSkuCode) {
         List<Review> reviews = repository.findReviewsByProductSkuCode(productSkuCode);
         if (reviews.isEmpty()) {
+            log.info("[ON getReviewsForProduct]:: Review for product with sku code = {} isn't exist.", productSkuCode);
             return new ArrayList<>();
         }
         return reviewBuilder.buildReviewsResponse(reviews);
@@ -74,8 +74,8 @@ public class ReviewServiceImpl implements ReviewService{
     public List<ReviewAdminResponse> getReviewsForProductAllInf(String productSkuCode) {
         List<Review> reviews = repository.findReviewsByProductSkuCode(productSkuCode);
         if (reviews.isEmpty()) {
-            log.error("[ON getReviewsForProductAllInf]:: Review for product with sku code = {} isn't exist.", productSkuCode);
-            throw new DataNotFoundException("Review for product with sku code = " + productSkuCode + " isn't exist.");
+            log.info("[ON getReviewsForProductAllInf]:: Review for product with sku code = {} isn't exist.", productSkuCode);
+            return new ArrayList<>();
         }
         return reviews.stream().map(review -> mapper.map(review, ReviewAdminResponse.class)).toList();
     }

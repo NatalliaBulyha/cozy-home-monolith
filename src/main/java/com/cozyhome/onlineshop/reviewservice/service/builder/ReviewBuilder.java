@@ -24,7 +24,7 @@ public class ReviewBuilder {
         String userId = review.getUserId();
         User user = userRepository.getUserById(userId)
                 .orElseThrow(() -> new DataNotFoundException(String.format("User with id = %s doesn't found", userId)));
-        log.warn("[ON getReviewsForProductAllInf]:: build review with id: {} for user: {}.", review.getId(), review.getUserId());
+        log.info("[ON getReviewsForProductAllInf]:: build review with id: {} for user: {}.", review.getId(), review.getUserId());
         return ReviewResponse.builder()
                     .reviewId(review.getId().toString())
                     .rating((byte) review.getRating())

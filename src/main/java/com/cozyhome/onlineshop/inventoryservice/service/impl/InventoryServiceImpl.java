@@ -4,7 +4,6 @@ import com.cozyhome.onlineshop.dto.inventory.CheckingProductAvailableAndStatusDt
 import com.cozyhome.onlineshop.dto.inventory.InventoryForBasketDto;
 import com.cozyhome.onlineshop.dto.request.ProductColorDto;
 import com.cozyhome.onlineshop.dto.inventory.QuantityStatusDto;
-import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.inventoryservice.model.Inventory;
 import com.cozyhome.onlineshop.inventoryservice.model.enums.ProductQuantityStatus;
 import com.cozyhome.onlineshop.inventoryservice.repository.InventoryRepository;
@@ -49,7 +48,7 @@ public class InventoryServiceImpl implements InventoryService {
 		List<Inventory> inventoryList = inventoryRepository.findByProductColorProductSkuCodeIn(productSkuCodeList);
 		if (inventoryList.isEmpty()) {
 			log.error("[ON getQuantityStatusBySkuCodeList]:: Product quantity information not found.");
-			throw new DataNotFoundException("Product quantity information not found.");
+			return new HashMap<>();
 		}
 
 		Map<String, String> map = new HashMap<>();
@@ -72,7 +71,6 @@ public class InventoryServiceImpl implements InventoryService {
 		List<Inventory> inventoryList = inventoryRepository.findByProductColorProductSkuCode(productSkuCode);
 		if (inventoryList.isEmpty()) {
 			log.error("[ON getProductCardColorQuantityStatus]:: Product quantity information not found.");
-			throw new DataNotFoundException("Product quantity information not found.");
 		}
 		Map<String, String> map = new HashMap<>();
 		for (Inventory inventory : inventoryList) {
