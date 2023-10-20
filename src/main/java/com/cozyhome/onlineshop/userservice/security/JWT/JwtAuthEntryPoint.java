@@ -23,6 +23,7 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint{
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) {
         log.info("[ON commence]:: unauthorized 401");
+        //response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
         resolver.resolveException(request, response, null, authException);
     }
 }
