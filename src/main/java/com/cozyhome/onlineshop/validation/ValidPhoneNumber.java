@@ -1,6 +1,6 @@
 package com.cozyhome.onlineshop.validation;
 
-import com.cozyhome.onlineshop.validation.impl.PhoneNumberConstraintValidator;
+import com.cozyhome.onlineshop.validation.impl.PhoneNumberValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -15,7 +15,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Documented
-@Constraint(validatedBy = PhoneNumberConstraintValidator.class)
+@Constraint(validatedBy = PhoneNumberValidator.class)
 @Target({ TYPE, FIELD, ANNOTATION_TYPE, PARAMETER })
 @Retention(RUNTIME)
 public @interface ValidPhoneNumber {

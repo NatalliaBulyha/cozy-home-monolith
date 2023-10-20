@@ -4,7 +4,7 @@ import com.cozyhome.onlineshop.validation.ValidPhoneNumber;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class PhoneNumberConstraintValidator implements ConstraintValidator<ValidPhoneNumber, String> {
+public class PhoneNumberValidator implements ConstraintValidator<ValidPhoneNumber, String> {
     @Override
     public void initialize(ValidPhoneNumber constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);

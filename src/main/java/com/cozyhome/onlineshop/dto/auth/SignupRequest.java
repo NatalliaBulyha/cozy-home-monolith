@@ -3,8 +3,8 @@ package com.cozyhome.onlineshop.dto.auth;
 import java.util.Set;
 
 import com.cozyhome.onlineshop.validation.ValidEmail;
-import com.cozyhome.onlineshop.validation.ValidFirstNameAndLastName;
-import com.cozyhome.onlineshop.validation.ValidOptionalFieldBirthday;
+import com.cozyhome.onlineshop.validation.ValidName;
+import com.cozyhome.onlineshop.validation.ValidOptionalBirthday;
 import com.cozyhome.onlineshop.validation.ValidPassword;
 import com.cozyhome.onlineshop.validation.ValidPhoneNumber;
 import lombok.AllArgsConstructor;
@@ -22,11 +22,11 @@ public class SignupRequest {
 	private String email;
 	@ValidPassword
 	private String password;
-	@ValidFirstNameAndLastName
+	@ValidName
 	private String firstName;
-	@ValidFirstNameAndLastName
+	@ValidName
 	private String lastName;
-	@ValidOptionalFieldBirthday
+	@ValidOptionalBirthday
 	private String birthday;
 	@ValidPhoneNumber
 	private String phoneNumber;

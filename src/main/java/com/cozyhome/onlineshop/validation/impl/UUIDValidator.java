@@ -4,7 +4,7 @@ import com.cozyhome.onlineshop.validation.ValidUUID;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class UUIDConstraintValidator implements ConstraintValidator<ValidUUID, String> {
+public class UUIDValidator implements ConstraintValidator<ValidUUID, String> {
     @Override
     public void initialize(ValidUUID constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);

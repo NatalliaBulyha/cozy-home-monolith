@@ -1,5 +1,7 @@
 package com.cozyhome.onlineshop.inventoryservice.model;
 
+import org.apache.commons.lang3.builder.ToStringExclude;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,10 +23,12 @@ public class ProductColor {
 
 	@Column(name = "product_skucode")
     private String productSkuCode;
+	
 	@Column(name = "color_hex")
     private String colorHex;
 	
 	@JsonIgnore
+	@ToStringExclude
 	@OneToOne(mappedBy = "productColor")
 	private Inventory inventory;
 }

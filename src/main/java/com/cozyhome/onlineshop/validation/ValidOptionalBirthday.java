@@ -1,6 +1,6 @@
 package com.cozyhome.onlineshop.validation;
 
-import com.cozyhome.onlineshop.validation.impl.FirstNameAndLastNameConstraintValidator;
+import com.cozyhome.onlineshop.validation.impl.OptionalBirthdayValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -15,12 +15,11 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Documented
-@Constraint(validatedBy = FirstNameAndLastNameConstraintValidator.class)
+@Constraint(validatedBy = OptionalBirthdayValidator.class)
 @Target({ TYPE, FIELD, ANNOTATION_TYPE, PARAMETER })
 @Retention(RUNTIME)
-public @interface ValidFirstNameAndLastName {
-    String message() default "Invalid firstName or lastName. FirstName and lastName must be not null, greater than " +
-            "or equal to 2 and less than or equal to 32, letters only.";
+public @interface ValidOptionalBirthday {
+    String message() default "Invalid date of birth. Date of birth must have format yyyy-MM-dd.";
 
     Class<?>[] groups() default {};
 

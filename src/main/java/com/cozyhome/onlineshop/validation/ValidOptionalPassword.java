@@ -1,6 +1,6 @@
 package com.cozyhome.onlineshop.validation;
 
-import com.cozyhome.onlineshop.validation.impl.IdValidator;
+import com.cozyhome.onlineshop.validation.impl.OptionalPasswordValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -15,11 +15,13 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Documented
-@Constraint(validatedBy = IdValidator.class)
+@Constraint(validatedBy = OptionalPasswordValidator.class)
 @Target({ TYPE, FIELD, ANNOTATION_TYPE, PARAMETER })
 @Retention(RUNTIME)
-public @interface ValidId {
-    String message() default "Invalid id. id must be 24 characters: numbers and letters.";
+public @interface ValidOptionalPassword {
+    String message() default "Invalid password. Password must have: minimum 8 characters in length, " +
+            "at least one special character: #?!@$%^&*-, at least one uppercase English letter, " +
+            "at least one lowercase English letter, at least one digit.";
 
     Class<?>[] groups() default {};
 

@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.cozyhome.onlineshop.dto.EmailMessageDto;
-import com.cozyhome.onlineshop.emailservice.Emailservice;
+import com.cozyhome.onlineshop.emailservice.EmailService;
 import com.cozyhome.onlineshop.userservice.model.User;
 import com.cozyhome.onlineshop.userservice.model.token.PasswordResetToken;
 import com.cozyhome.onlineshop.userservice.model.token.SecurityToken;
@@ -25,10 +25,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Service
 public class SecurityTokenServiceImpl implements SecurityTokenService {
-	private final Emailservice emailService;
+	private final EmailService emailService;
 	private final UserRepository userRepository;
 	private final SecurityTokenRepository securityTokenRepository;
 
+	@Value("${activation.message.link3000}")
+	private String activationLink3000;
 	@Value("${activation.message.link}")
 	private String activationLink;
 	@Value("${activation.message.subject}")
@@ -36,6 +38,8 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
 	@Value("${activation.message.text}")
 	private String activationEmailText;
 
+	@Value("${reset-password.message.link3000}")
+	private String resetPasswordEmailLink3000;
 	@Value("${reset-password.message.link}")
 	private String resetPasswordEmailLink;
 	@Value("${reset-password.message.subject}")
@@ -56,6 +60,16 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
         log.info("[ON createActivationUserToken] :: Token is created " + token);
         securityTokenRepository.save(token);
 
+        //for localhost 3000
+        String link3000 = activationLink3000 + activationToken;
+        EmailMessageDto activationEmail3000 = EmailMessageDto.builder()
+				.link(link3000)
+				.mailTo(user.getEmail())
+                .subject(activationEmailSubject)
+				.text(activationEmailText + link3000)
+				.build();
+        emailService.sendEmail(activationEmail3000);
+        //for production
         EmailMessageDto activationEmail = EmailMessageDto.builder()
 				.link(link)
 				.mailTo(user.getEmail())
@@ -81,7 +95,16 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
                 .build();
         log.info("[ON createPasswordResetToken] :: Token is created " + token);
         securityTokenRepository.save(passwordResetToken);
-
+        //for localhost 3000
+        String link3000 = resetPasswordEmailLink3000 + token;
+        EmailMessageDto activationEmail3000 = EmailMessageDto.builder()
+				.link(link3000)
+				.mailTo(user.getEmail())
+                .subject(resetPasswordEmailSubject)
+				.text(resetPasswordEmailText + link3000)
+				.build();
+        emailService.sendEmail(activationEmail3000);
+        //for production
         EmailMessageDto activationEmail = EmailMessageDto.builder()
 				.link(link)
 				.mailTo(user.getEmail())

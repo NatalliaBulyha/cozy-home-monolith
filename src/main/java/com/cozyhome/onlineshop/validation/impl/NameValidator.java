@@ -1,17 +1,20 @@
 package com.cozyhome.onlineshop.validation.impl;
 
-import com.cozyhome.onlineshop.validation.ValidFirstNameAndLastName;
+import com.cozyhome.onlineshop.validation.ValidName;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class FirstNameAndLastNameConstraintValidator implements ConstraintValidator<ValidFirstNameAndLastName, String> {
+public class NameValidator implements ConstraintValidator<ValidName, String> {
     @Override
-    public void initialize(ValidFirstNameAndLastName constraintAnnotation) {
+    public void initialize(ValidName constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 
     @Override
     public boolean isValid(String name, ConstraintValidatorContext constraintValidatorContext) {
-        return name != null && name.matches("^[a-zA-Z]{2,32}$");
+        if (name == null) {
+            return false;
+        }
+        return name.matches("^[а-яА-Яa-zA-ZґҐєЄіІїЇ]{2,32}$");
     }
 }
