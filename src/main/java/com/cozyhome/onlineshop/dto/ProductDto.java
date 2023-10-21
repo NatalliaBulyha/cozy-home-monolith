@@ -1,5 +1,6 @@
 package com.cozyhome.onlineshop.dto;
 
+import com.cozyhome.onlineshop.dto.productcard.ColorQuantityStatusDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,8 +20,8 @@ public class ProductDto {
     private BigDecimal price;
     private Byte discount;
     private BigDecimal priceWithDiscount;
-    private List<ImageDto> imageDtoList;
-    private List<ColorDto> colorDtoList;
+    private List<ImageDto> imagesList;
+    private List<ColorQuantityStatusDto> colorsList;
     private String productQuantityStatus;
 
 }
