@@ -13,7 +13,7 @@ public interface InventoryService {
 	
 	String getQuantityStatusByProductColor(ProductColorDto request);
 	
-	Map<String, String> getQuantityStatusBySkuCodeList(List<String> productSkuCodeList);
+	Map<String, QuantityStatusDto> getQuantityStatusBySkuCodeList(List<String> productSkuCodeList);
 	
 	QuantityStatusDto getProductCardColorQuantityStatus(String productSkuCode);
 
