@@ -10,7 +10,6 @@ import com.cozyhome.onlineshop.inventoryservice.repository.InventoryRepository;
 import com.cozyhome.onlineshop.inventoryservice.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -41,41 +41,29 @@ public class InventoryServiceImpl implements InventoryService {
 	@Override
 	public String getQuantityStatusByProductColor(ProductColorDto request) {
 		int productQuantity = getQuantityByProductColor(request);
-		return convertQuantityToQuantityStatus(productQuantity);
+		return ProductQuantityStatus.getStatusByQuantity(productQuantity);
 	}
 
 	@Override
-	public Map<String, String> getQuantityStatusBySkuCodeList(List<String> productSkuCodeList) {
+	public Map<String, QuantityStatusDto> getQuantityStatusBySkuCodeList(List<String> productSkuCodeList) {
 		List<Inventory> inventoryList = inventoryRepository.findByProductColorProductSkuCodeIn(productSkuCodeList);
-		Map<String, String> map = new HashMap<>();
-		for (Inventory inventory : inventoryList) {
-			String productSkuCode = inventory.getProductColor().getProductSkuCode();
-			String quantityStatus = convertQuantityToQuantityStatus(inventory.getQuantity());
-			map.put(productSkuCode, quantityStatus);
-		}
-		return map;
-	}
+		Map<String, QuantityStatusDto> skuCodeQuantityStatusMap = new HashMap<>();
+		Map<String, List<Inventory>> skuCodeInventoryMap = inventoryList.stream().collect(Collectors.groupingBy(
+				inventory -> inventory.getProductColor().getProductSkuCode(), Collectors.toList()));
 
-	private String convertQuantityToQuantityStatus(int productQuantity) {
-		String status = ProductQuantityStatus.getStatusByQuantity(productQuantity);
-		log.info("QUANTITY STATUS [" + status + "] FOR QUANTITY " + productQuantity);
-		return status;
+		for (String skuCode : productSkuCodeList) {
+			List<Inventory> inventories = skuCodeInventoryMap.get(skuCode);
+			skuCodeQuantityStatusMap.put(skuCode, createQuantityStatusDto(inventories));
+		}
+		return skuCodeQuantityStatusMap;
 	}
 
 	public QuantityStatusDto getProductCardColorQuantityStatus(String productSkuCode) {
-		QuantityStatusDto result = new QuantityStatusDto();
-		List<Inventory> inventoryList = inventoryRepository.findByProductColorProductSkuCode(productSkuCode);
-		Map<String, String> map = new HashMap<>();
-		for (Inventory inventory : inventoryList) {
-			String quantityStatus = ProductQuantityStatus.getStatusByQuantity(inventory.getQuantity());
-			map.put(inventory.getProductColor().getColorHex(),quantityStatus);
-		}
-		int quantity = inventoryList.stream().mapToInt(Inventory::getQuantity).sum();
-		result.setColorQuantityStatus(map);
-		result.setStatus(ProductQuantityStatus.getStatusByQuantity(quantity));
-		log.info("Get quantity status dto for product [" + productSkuCode + "]");
-		return result;
+		List<Inventory> inventories = inventoryRepository.findByProductColorProductSkuCode(productSkuCode);
+		return createQuantityStatusDto(inventories);
 	}
+
+
 
 	@Override
 	public List<InventoryForBasketDto> getProductAvailableStatus(List<ProductColorDto> productColorDto) {
@@ -94,5 +82,18 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 
 		return checkAvailableAndStatus;
+	}
+
+	private QuantityStatusDto createQuantityStatusDto(List<Inventory> inventories) {
+		Map<String, String> colorHexStatus = new HashMap<>();
+		int quantity = inventories.stream().mapToInt(Inventory::getQuantity).sum();
+		String generalStatus = ProductQuantityStatus.getStatusByQuantity(quantity);
+
+		for (Inventory inventory : inventories) {
+			String status = ProductQuantityStatus.getStatusByQuantity(inventory.getQuantity());
+			colorHexStatus.put(inventory.getProductColor().getColorHex(), status);
+		}
+
+		return new QuantityStatusDto(generalStatus, colorHexStatus);
 	}
 }
