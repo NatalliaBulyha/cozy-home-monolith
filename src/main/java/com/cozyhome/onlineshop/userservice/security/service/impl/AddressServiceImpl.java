@@ -3,6 +3,7 @@ package com.cozyhome.onlineshop.userservice.security.service.impl;
 import com.cozyhome.onlineshop.dto.user.AddressIdDto;
 import com.cozyhome.onlineshop.dto.user.AddressRequest;
 import com.cozyhome.onlineshop.dto.user.AddressResponse;
+import com.cozyhome.onlineshop.exception.DataAlreadyExistException;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.userservice.model.Address;
 import com.cozyhome.onlineshop.userservice.model.User;
@@ -28,6 +29,7 @@ public class AddressServiceImpl implements AddressService {
     private final ModelMapper modelMapper;
     @Override
     public AddressResponse saveAddress(AddressRequest addressRequest, String userId) {
+        List<Address> addresses = new ArrayList<>();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new DataNotFoundException(String.format("User with id = %s not found.", userId)));
 
@@ -51,18 +53,18 @@ public class AddressServiceImpl implements AddressService {
         if (!addressRequest.getWithLift().isEmpty()) {
             address.setWithLift(Boolean.parseBoolean(addressRequest.getWithLift()));
         }
-
+        if (user.getAddresses() != null) {
+            if (user.getAddresses().contains(address)) {
+                throw new DataAlreadyExistException(String.format("User with id %s already has this address: %s",
+                        userId, address));
+            } else {
+                addresses = user.getAddresses();
+            }
+        }
         Address savedAddress = addressRepository.save(address);
         log.info("[ON saveAddress] :: address with id {} was saved.", savedAddress.getId());
-        if (user.getAddresses() != null) {
-            List<Address> addresses = user.getAddresses();
-            addresses.add(savedAddress);
-            user.setAddresses(addresses);
-        } else {
-            List<Address> addresses = new ArrayList<>();
-            addresses.add(savedAddress);
-            user.setAddresses(addresses);
-        }
+        addresses.add(savedAddress);
+        user.setAddresses(addresses);
         userRepository.save(user);
         log.info("[ON saveAddress] :: user with id {} saved address with id {} to his address list.", userId, savedAddress.getId());
         return modelMapper.map(savedAddress, AddressResponse.class);
