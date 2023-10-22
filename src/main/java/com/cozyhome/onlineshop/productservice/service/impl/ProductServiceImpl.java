@@ -10,6 +10,7 @@ import com.cozyhome.onlineshop.dto.productcard.ProductCardDto;
 import com.cozyhome.onlineshop.dto.request.PageableDto;
 import com.cozyhome.onlineshop.dto.request.ProductColorDto;
 import com.cozyhome.onlineshop.dto.request.SortDto;
+import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.inventoryservice.service.InventoryService;
 import com.cozyhome.onlineshop.productservice.model.ImageProduct;
 import com.cozyhome.onlineshop.productservice.model.Product;
@@ -38,6 +39,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -71,6 +73,10 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductDto> getRandomProductsByStatus(Byte status, int productCount) {
         List<Product> products = productRepositoryCustom.getRandomByStatusAndInStock(ProductStatus.valueOfDescription(status),
             productCount);
+        if (products.isEmpty()) {
+            log.info("[ON getRandomProductsByStatus]:: Product with status {} not found.", ProductStatus.valueOfDescription(status));
+            return new ArrayList<>();
+        }
         return productBuilder.buildProductDtoList(products, isMain);
     }
 
@@ -78,8 +84,17 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductDto> getRandomProductsByStatusAndCategoryId(Byte status, String categoryId,
                                                                    int countOfProducts) {
         List<ObjectId> categoriesIds = categoryService.getCategoriesIdsByParentId(categoryId);
+        if (categoriesIds.isEmpty()) {
+            log.error("[ON getRandomProductsByStatusAndCategoryId]:: Subcategory for category with id {} doesn't exist.", categoryId);
+            throw new DataNotFoundException(String.format("Subcategory for category with id %s doesn't exist.", categoryId));
+        }
         List<Product> products = productRepositoryCustom.getRandomByStatusAndCategoryIdAndInStock(
             ProductStatus.valueOfDescription(status), categoriesIds, countOfProducts);
+        if (products.isEmpty()) {
+            log.info("[ON getRandomProductsByStatusAndCategoryId]:: Product with status {} and category id {} not found.",
+                    ProductStatus.valueOfDescription(status), categoriesIds);
+            return new ArrayList<>();
+        }
         return productBuilder.buildProductDtoList(products, isMain);
     }
 
@@ -95,6 +110,10 @@ public class ProductServiceImpl implements ProductService {
             products = productRepository.findAllByStatusNotDeletedAndCategoryIdIn(objectIds,
                 buildPageable(pageable, new SortDto(null, null)));
         }
+        if (products.isEmpty()) {
+            log.info("[ON getProductsByCategoryId]:: Product with category id {} not found.", categoryId);
+            return new ArrayList<>();
+        }
         return productBuilder.buildProductDtoList(products.getContent(), isMain);
     }
 
@@ -102,28 +121,53 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductDto> getFilteredProducts(FilterDto filter, PageableDto pageable, SortDto sortDto) {
         Pageable currentPageable = buildPageable(pageable, sortDto);
         List<Product> products = productRepositoryCustom.filterProductsByCriterias(filter, currentPageable);
+        if (products.isEmpty()) {
+            log.info("[ON getFilteredProducts]:: Products by the given parameters don't found.");
+            return new ArrayList<>();
+        }
         return productBuilder.buildProductDtoList(products, isMain);
     }
 
     @Override
     public FilterDto getFilterParameters(FilterDto filter, byte size) {
         List<Product> filteredProducts = productRepositoryCustom.filterProductsByCriterias(filter, null);
+        if (filteredProducts.isEmpty()) {
+            log.info("[ON getFilterParameters]:: Products by the given parameters don't found.");
+            return new FilterDto();
+        }
         List<ObjectId> objectIds = categoryService.getCategoriesIdsByParentId(filter.getParentCategoryId());
+        if (objectIds.isEmpty()) {
+            log.info("[ON getFilterParameters]:: Category with id {} hasn't subcategories.", filter.getParentCategoryId());
+            return productFilterParametersBuilder.buildFilterParameters(filteredProducts, filteredProducts, size);
+        }
         List<Product> notFilteredProducts = productRepository.findAllByStatusNotDeletedAndCategoryIdIn(objectIds);
+        if (notFilteredProducts.isEmpty()) {
+            log.info("[ON getFilterParameters]:: Products for category with id {} don't found.", filter.getParentCategoryId());
+            return productFilterParametersBuilder.buildFilterParameters(filteredProducts, filteredProducts, size);
+        }
         return productFilterParametersBuilder.buildFilterParameters(filteredProducts, notFilteredProducts, size);
     }
 
     @Override
-    public ProductCardDto getProductCard(ProductColorDto dto) {
-        Product product = productRepository.findBySkuCode(dto.getProductSkuCode())
-            .orElseThrow(() -> new IllegalArgumentException("Product with skucode " + dto.getProductSkuCode() + " is not exists."));
-        return productBuilder.buildProductCardDto(product, dto.getColorHex());
+    public ProductCardDto getProductCard(ProductColorDto productColor) {
+        Optional<Product> product = productRepository.findBySkuCode(productColor.getProductSkuCode());
+        if (product.isPresent()) {
+            log.info("[ON getProductCard]:: Product with sku code {} and color hex {} doesn't exist.",
+                    productColor.getProductSkuCode(), productColor.getColorHex());
+            return productBuilder.buildProductCardDto(product.get(), productColor.getColorHex());
+        } else {
+            return new ProductCardDto();
+        }
     }
 
     @Override
     public List<ProductDto> getProductsByCollectionExcludeSkuCode(String collectionId, String skuCodeToExclude) {
         List<Product> products = productRepository
             .findAllByStatusNotDeletedAndCollectionIdExcludeSkuCode(new ObjectId(collectionId), skuCodeToExclude);
+        if (products.isEmpty()) {
+            log.info("[ON getProductsByCollectionExcludeSkuCode]:: Products from collection with id {} don't found.", collectionId);
+            return new ArrayList<>();
+        }
         return productBuilder.buildProductDtoList(products, isMain);
     }
 
@@ -131,14 +175,22 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductForBasketDto> getProductsForBasket(List<ProductColorDto> productColorDtos) {
         Map<String, Product> productMap = new HashMap<>();
         Map<ProductColorDto, CheckingProductAvailableAndStatusDto> productAvailableAndStatusMap = new HashMap<>();
-
         List<String> skuCodes = productColorDtos.stream().map(ProductColorDto::getProductSkuCode).toList();
+
         List<Product> products = productRepository.findAllByStatusNotDeletedAndSkuCodeIn(skuCodes);
-        Map<ProductColorDto, ImageProduct> imagesMap = imageRepositoryCustom.findImagesByMainPhotoTrueAndProductSkuCodeWithColorHexIn(productColorDtos);
+        if (products.isEmpty()) {
+            log.info("[ON getProductsForBasket]:: Products for basket don't found.");
+            return new ArrayList<>();
+        }
+        Map<ProductColorDto, ImageProduct> imagesMap =
+                imageRepositoryCustom.findImagesByMainPhotoTrueAndProductSkuCodeWithColorHexIn(productColorDtos);
         List<InventoryForBasketDto> inventoryForBasket = inventoryService.getProductAvailableStatus(productColorDtos);
 
         products.forEach(product -> productMap.put(product.getSkuCode(), product));
-        inventoryForBasket.forEach(inventory -> productAvailableAndStatusMap.put(inventory.getProductColorDto(), inventory.getCheckingProductAvailableAndStatusDto()));
+        if (!inventoryForBasket.isEmpty()) {
+            inventoryForBasket.forEach(inventory -> productAvailableAndStatusMap.put(inventory.getProductColorDto(),
+                    inventory.getCheckingProductAvailableAndStatusDto()));
+        }
 
         return productBuilder.buildProductsShopCard(productMap, imagesMap, productColorDtos, productAvailableAndStatusMap);
     }
