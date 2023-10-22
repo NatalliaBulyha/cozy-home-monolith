@@ -5,7 +5,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 public class OptionalNumberValidator implements ConstraintValidator<ValidOptionalNumber, String> {
-    private final String pattern = "^(0-9){1,14}$";
+    private final String pattern = "^[1-9]\\d*$";
     @Override
     public void initialize(ValidOptionalNumber constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
