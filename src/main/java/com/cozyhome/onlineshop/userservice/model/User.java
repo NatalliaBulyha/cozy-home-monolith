@@ -2,6 +2,7 @@ package com.cozyhome.onlineshop.userservice.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 import org.hibernate.validator.constraints.UniqueElements;
@@ -57,5 +58,8 @@ public class User {
 	private LocalDateTime modifiedAt;
 	
 	private UserStatusE status;
+
+	@DBRef
+	private List<Address> addresses;
 	
 }

@@ -2,9 +2,13 @@ package com.cozyhome.onlineshop.userservice.security.service.impl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import com.cozyhome.onlineshop.dto.user.AddressResponse;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +46,7 @@ public class UserServiceImpl implements UserService {
 	private final SecurityTokenRepository securityTokenRepository;
 	private final SecurityTokenService securityTokenService;
 	private final UserBuilder userBuilder;
+	private final ModelMapper modelMapper;
 
 	private final String admin = "admin";
 	private final String manager = "manager";
@@ -143,6 +148,7 @@ public class UserServiceImpl implements UserService {
 		user.setLastName(userInformationDto.getLastName());
 		user.setFirstName(userInformationDto.getFirstName());
 		user.setPhoneNumber(userInformationDto.getPhoneNumber());
+		user.setModifiedAt(LocalDateTime.now());
 
 		if (!user.getEmail().equals(userInformationDto.getEmail())) {
 			if (userRepository.existsByEmail(userInformationDto.getEmail()) ) {
@@ -177,8 +183,21 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void deleteUser(String email) {
-		User user = userRepository.getByEmail(email).orElseThrow(() -> new IllegalArgumentException("Not user found by the email " + email));
+		User user = userRepository.getByEmail(email)
+				.orElseThrow(() -> new IllegalArgumentException("Not user found by the email " + email));
 		log.info("[ON deleteUser] :: request to delete user with email {}", email);
 		userRepository.delete(user);
+	}
+
+	@Override
+	public List<AddressResponse> getUserAddresses(String userId) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new DataNotFoundException(String.format("User with id = %s not found.", userId)));
+		if (user.getAddresses() != null) {
+			return user.getAddresses().stream().map(address -> modelMapper.map(address, AddressResponse.class)).toList();
+		} else {
+			log.info("[ON getUserAddresses] :: user with id {} has empty address list.", userId);
+			return new ArrayList<>();
+		}
 	}
 }

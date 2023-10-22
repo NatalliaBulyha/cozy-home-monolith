@@ -1,5 +1,6 @@
 package com.cozyhome.onlineshop.userservice.controller;
 
+import com.cozyhome.onlineshop.dto.user.AddressResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -25,6 +26,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 @CrossOrigin(origins = { "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
 		"${api.front.additional_url}", "${api.front.main.url}" }, allowedHeaders = { "Authorization" },
@@ -73,5 +76,15 @@ public class UserSecuredController {
         tokenBlackListService.saveTokenToBlackList(jwtToken);
         log.warn("[ON logout] :: JwtToken {} was added to Black List.", jwtToken);
         return ResponseEntity.ok().build();
-    }    
+    }
+
+    @Operation(summary = "Logout.", description = "Logout.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
+    @Secured({"ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_ADMIN"})
+    @GetMapping("/address")
+    public ResponseEntity<List<AddressResponse>> getUserAddresses(HttpServletRequest request) {
+        String userId = (String) request.getAttribute(userIdName);
+        return ResponseEntity.ok(userService.getUserAddresses(userId));
+    }
 }
