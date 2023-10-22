@@ -15,8 +15,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
@@ -29,11 +29,7 @@ public class ReviewServiceImpl implements ReviewService{
     @Override
     public List<ReviewAdminResponse> getReviews() {
         List<Review> reviews = repository.findAll();
-        if (reviews.isEmpty()) {
-            log.info("[ON getReviews]:: The are no reviews for any product.");
-            return new ArrayList<>();
-        }
-        return reviews.stream().map(review -> mapper.map(review, ReviewAdminResponse.class)).toList();
+        return reviews.stream().filter(Objects::nonNull).map(review -> mapper.map(review, ReviewAdminResponse.class)).toList();
     }
 
     @Override
@@ -49,11 +45,7 @@ public class ReviewServiceImpl implements ReviewService{
     @Override
     public List<ReviewResponse> getReviewsForProduct(String productSkuCode) {
         List<Review> reviews = repository.findReviewsByProductSkuCode(productSkuCode);
-        if (reviews.isEmpty()) {
-            log.info("[ON getReviewsForProduct]:: Review for product with sku code = {} isn't exist.", productSkuCode);
-            return new ArrayList<>();
-        }
-        return reviewBuilder.buildReviewsResponse(reviews);
+        return reviews.stream().filter(Objects::nonNull).map(reviewBuilder::buildReviewResponse).toList();
     }
 
     @Override
@@ -73,10 +65,6 @@ public class ReviewServiceImpl implements ReviewService{
     @Override
     public List<ReviewAdminResponse> getReviewsForProductAllInf(String productSkuCode) {
         List<Review> reviews = repository.findReviewsByProductSkuCode(productSkuCode);
-        if (reviews.isEmpty()) {
-            log.info("[ON getReviewsForProductAllInf]:: Review for product with sku code = {} isn't exist.", productSkuCode);
-            return new ArrayList<>();
-        }
-        return reviews.stream().map(review -> mapper.map(review, ReviewAdminResponse.class)).toList();
+        return reviews.stream().filter(Objects::nonNull).map(review -> mapper.map(review, ReviewAdminResponse.class)).toList();
     }
 }

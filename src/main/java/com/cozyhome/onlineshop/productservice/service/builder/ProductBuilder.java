@@ -74,7 +74,8 @@ public class ProductBuilder {
 			String productSkuCode = product.getSkuCode();
 			ProductDto dto;
 			if (productColors.isEmpty()) {
-				dto = buildProductDto(product, imageMap.get(productSkuCode), null);
+				log.error("[ON buildProductDtoList]:: Map productColors is empty. Colors for products don't found.");
+				throw new DataNotFoundException("");
 			} else {
 				dto = buildProductDto(product, imageMap.get(productSkuCode), productColors.get(productSkuCode));
 			}

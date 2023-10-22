@@ -1,5 +1,6 @@
 package com.cozyhome.onlineshop.userservice.security.JWT;
 
+import jakarta.servlet.ServletException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.AuthenticationException;
@@ -11,6 +12,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
+import java.io.IOException;
+
 @Slf4j
 @Component
 public class JwtAuthEntryPoint implements AuthenticationEntryPoint{
@@ -21,7 +24,7 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint{
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
-                         AuthenticationException authException) {
+                         AuthenticationException authException) throws IOException, ServletException {
         log.info("[ON commence]:: unauthorized 401");
         //response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
         resolver.resolveException(request, response, null, authException);
