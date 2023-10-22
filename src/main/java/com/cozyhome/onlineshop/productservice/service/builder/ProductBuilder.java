@@ -2,7 +2,6 @@ package com.cozyhome.onlineshop.productservice.service.builder;
 
 import com.cozyhome.onlineshop.dto.inventory.CheckingProductAvailableAndStatusDto;
 import com.cozyhome.onlineshop.dto.CollectionDto;
-import com.cozyhome.onlineshop.dto.ColorDto;
 import com.cozyhome.onlineshop.dto.ProductDto;
 import com.cozyhome.onlineshop.dto.ProductForBasketDto;
 import com.cozyhome.onlineshop.dto.inventory.QuantityStatusDto;
@@ -13,12 +12,10 @@ import com.cozyhome.onlineshop.dto.request.ProductColorDto;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.inventoryservice.service.InventoryService;
 import com.cozyhome.onlineshop.productservice.model.Category;
-import com.cozyhome.onlineshop.productservice.model.Color;
 import com.cozyhome.onlineshop.productservice.model.ImageProduct;
 import com.cozyhome.onlineshop.productservice.model.Material;
 import com.cozyhome.onlineshop.productservice.model.Product;
 import com.cozyhome.onlineshop.productservice.model.enums.ColorsEnum;
-import com.cozyhome.onlineshop.productservice.model.enums.ProductQuantityStatus;
 import com.cozyhome.onlineshop.productservice.repository.CategoryRepository;
 import com.cozyhome.onlineshop.productservice.repository.ImageProductRepository;
 import com.cozyhome.onlineshop.productservice.repository.ImageRepositoryCustom;
@@ -59,61 +56,41 @@ public class ProductBuilder {
 
 	public List<ProductDto> buildProductDtoList(List<Product> products, boolean isMain) {
 		List<String> productsSkuCodes = extractSkuCodes(products);
-		Map<String, List<Color>> productColors = imageRepositoryCustom.groupColorsByProductSkuCodeIn(productsSkuCodes);
-		List<ImageProduct> images = imageRepositoryCustom.findImagesByMainPhotoAndProductSkuCodeIn(productsSkuCodes,
-				isMain);
-		Map<String, List<ImageProduct>> imageMap;
-		if (images.isEmpty()) {
-			imageMap = getEmptyImageMap(productsSkuCodes);
-		} else {
-			imageMap = getImageMap(images);
-		}
-		Map<String, String> quantityStatusMap = getProductQuantityStatusMap(products);
-		List<ProductDto> productDtoList = new ArrayList<>();
-		for (Product product : products) {
-			String productSkuCode = product.getSkuCode();
-			ProductDto dto;
-			if (productColors.isEmpty()) {
-				log.error("[ON buildProductDtoList]:: Map productColors is empty. Colors for products don't found.");
-				throw new DataNotFoundException("");
-			} else {
-				dto = buildProductDto(product, imageMap.get(productSkuCode), productColors.get(productSkuCode));
-			}
-			if (quantityStatusMap.get(productSkuCode) != null) {
-				dto.setProductQuantityStatus(quantityStatusMap.get(productSkuCode));
-			}
-			productDtoList.add(dto);
-			log.info("PRODUCT DTO[" + dto + "]");
-		}
-		return productDtoList;
+
+		List<ImageProduct> images = imageRepositoryCustom.findImagesByMainPhotoAndProductSkuCodeIn(productsSkuCodes, isMain);
+		Map<String, List<ImageProduct>> imageMap = getImageMap(images);
+		Map<String, QuantityStatusDto> quantityStatusMap = inventoryService.getQuantityStatusBySkuCodeList(productsSkuCodes);
+		log.info("GET PRODUCT QUANTITY STATUS MAP " + quantityStatusMap);
+
+		return products.stream().map(product -> buildProductDto(product, imageMap.get(product.getSkuCode()),
+				quantityStatusMap.get(product.getSkuCode()))).toList();
 	}
 
 	private List<String> extractSkuCodes(List<Product> products) {
 		return products.stream().map(Product::getSkuCode).toList();
 	}
 
-	private Map<String, String> getProductQuantityStatusMap(List<Product> products) {
-		Map<String, String> result = inventoryService.getQuantityStatusBySkuCodeList(extractSkuCodes(products));
-		log.info("GET PRODUCT QUANTITY STATUS MAP " + result);
-		return result;
-	}
-
-	public ProductDto buildProductDto(Product product, List<ImageProduct> images, List<Color> colors) {
-		ProductDto productDto = ProductDto.builder().skuCode(product.getSkuCode()).name(product.getName())
+	public ProductDto buildProductDto(Product product, List<ImageProduct> images,
+									  QuantityStatusDto quantityStatus) {
+		ProductDto productDto = ProductDto.builder()
+				.skuCode(product.getSkuCode())
+				.name(product.getName())
 				.shortDescription(product.getShortDescription())
 				.price(roundBigDecimalToZeroDecimalPlace(product.getPrice()))
-				.imageDtoList(imageBuilder.buildImageDtoList(images))
-				.productQuantityStatus(ProductQuantityStatus.getDescriptionForFalseAvailability(product.isAvailable()))
+				.imagesList(imageBuilder.buildImageDtoList(images))
 				.build();
-
-		if(colors != null) {
-			productDto.setColorDtoList(colors.stream().map(color -> modelMapper.map(color, ColorDto.class)).toList());
+		if (quantityStatus.getStatus() != null) {
+			productDto.setProductQuantityStatus(quantityStatus.getStatus());
+		}
+		if (quantityStatus.getColorQuantityStatus() != null) {
+			productDto.setColorsList(convertMapToColorDtoList(quantityStatus.getColorQuantityStatus()));
 		}
 		BigDecimal discount = BigDecimal.valueOf(product.getDiscount());
 		if (!discount.equals(NULL_PERCENT)) {
 			productDto.setDiscount(product.getDiscount());
 			productDto.setPriceWithDiscount(roundBigDecimalToZeroDecimalPlace(product.getPriceWithDiscount()));
 		}
+		log.info("PRODUCT DTO[" + productDto + "]");
 		return productDto;
 	}
 

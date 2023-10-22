@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -38,51 +39,26 @@ public class InventoryServiceImpl implements InventoryService {
 	}
 
 	@Override
-	public String getQuantityStatusByProductColor(ProductColorDto request) {
-		int productQuantity = getQuantityByProductColor(request);
-		return convertQuantityToQuantityStatus(productQuantity);
-	}
-
-	@Override
-	public Map<String, String> getQuantityStatusBySkuCodeList(List<String> productSkuCodeList) {
+	public Map<String, QuantityStatusDto> getQuantityStatusBySkuCodeList(List<String> productSkuCodeList) {
 		List<Inventory> inventoryList = inventoryRepository.findByProductColorProductSkuCodeIn(productSkuCodeList);
-		if (inventoryList.isEmpty()) {
-			log.error("[ON getQuantityStatusBySkuCodeList]:: Product quantity information not found.");
-			return new HashMap<>();
-		}
+		Map<String, QuantityStatusDto> skuCodeQuantityStatusMap = new HashMap<>();
+		Map<String, List<Inventory>> skuCodeInventoryMap = inventoryList.stream().collect(Collectors.groupingBy(
+				inventory -> inventory.getProductColor().getProductSkuCode(), Collectors.toList()));
 
-		Map<String, String> map = new HashMap<>();
-		for (Inventory inventory : inventoryList) {
-			String productSkuCode = inventory.getProductColor().getProductSkuCode();
-			String quantityStatus = convertQuantityToQuantityStatus(inventory.getQuantity());
-			map.put(productSkuCode, quantityStatus);
+		for (String skuCode : productSkuCodeList) {
+			List<Inventory> inventories = skuCodeInventoryMap.get(skuCode);
+			skuCodeQuantityStatusMap.put(skuCode, createQuantityStatusDto(inventories));
 		}
-		return map;
+		return skuCodeQuantityStatusMap;
 	}
 
-	private String convertQuantityToQuantityStatus(int productQuantity) {
-		String status = ProductQuantityStatus.getStatusByQuantity(productQuantity);
-		log.info("QUANTITY STATUS [" + status + "] FOR QUANTITY " + productQuantity);
-		return status;
-	}
-
+  @Override
 	public QuantityStatusDto getProductCardColorQuantityStatus(String productSkuCode) {
-		QuantityStatusDto result = new QuantityStatusDto();
-		List<Inventory> inventoryList = inventoryRepository.findByProductColorProductSkuCode(productSkuCode);
-		if (inventoryList.isEmpty()) {
-			log.error("[ON getProductCardColorQuantityStatus]:: Product quantity information not found.");
-		}
-		Map<String, String> map = new HashMap<>();
-		for (Inventory inventory : inventoryList) {
-			String quantityStatus = ProductQuantityStatus.getStatusByQuantity(inventory.getQuantity());
-			map.put(inventory.getProductColor().getColorHex(),quantityStatus);
-		}
-		int quantity = inventoryList.stream().mapToInt(Inventory::getQuantity).sum();
-		result.setColorQuantityStatus(map);
-		result.setStatus(ProductQuantityStatus.getStatusByQuantity(quantity));
-		log.info("Get quantity status dto for product [" + productSkuCode + "]");
-		return result;
+		List<Inventory> inventories = inventoryRepository.findByProductColorProductSkuCode(productSkuCode);
+		return createQuantityStatusDto(inventories);
 	}
+
+
 
 	@Override
 	public List<InventoryForBasketDto> getProductAvailableStatus(List<ProductColorDto> productColorDto) {
@@ -101,5 +77,18 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 
 		return checkAvailableAndStatus;
+	}
+
+	private QuantityStatusDto createQuantityStatusDto(List<Inventory> inventories) {
+		Map<String, String> colorHexStatus = new HashMap<>();
+		int quantity = inventories.stream().mapToInt(Inventory::getQuantity).sum();
+		String generalStatus = ProductQuantityStatus.getStatusByQuantity(quantity);
+
+		for (Inventory inventory : inventories) {
+			String status = ProductQuantityStatus.getStatusByQuantity(inventory.getQuantity());
+			colorHexStatus.put(inventory.getProductColor().getColorHex(), status);
+		}
+
+		return new QuantityStatusDto(generalStatus, colorHexStatus);
 	}
 }
