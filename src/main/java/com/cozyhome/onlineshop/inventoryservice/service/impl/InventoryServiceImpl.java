@@ -39,6 +39,12 @@ public class InventoryServiceImpl implements InventoryService {
 	}
 
 	@Override
+	public String getQuantityStatusByProductColor(ProductColorDto request) {
+		int productQuantity = getQuantityByProductColor(request);
+		return ProductQuantityStatus.getStatusByQuantity(productQuantity);
+	}
+
+	@Override
 	public Map<String, QuantityStatusDto> getQuantityStatusBySkuCodeList(List<String> productSkuCodeList) {
 		List<Inventory> inventoryList = inventoryRepository.findByProductColorProductSkuCodeIn(productSkuCodeList);
 		Map<String, QuantityStatusDto> skuCodeQuantityStatusMap = new HashMap<>();
