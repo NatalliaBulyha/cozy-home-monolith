@@ -18,7 +18,7 @@ public class ImageBuilder {
     private String imagePathBase;
 
     public List<ImageDto> buildImageDtoList(List<ImageProduct> images) {
-        if (images == null) {
+        if (images == null || images.isEmpty()) {
             return Collections.emptyList();
         }
         return images.stream().map(this::buildPreviewImageDto).toList();

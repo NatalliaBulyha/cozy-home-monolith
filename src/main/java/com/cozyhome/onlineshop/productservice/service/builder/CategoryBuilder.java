@@ -6,6 +6,7 @@ import com.cozyhome.onlineshop.dto.CategoryWithSubCategoriesDto;
 import com.cozyhome.onlineshop.productservice.model.Category;
 import com.cozyhome.onlineshop.productservice.model.ImageCategory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CategoryBuilder {
@@ -24,7 +26,7 @@ public class CategoryBuilder {
     @Value("${image.category.path.base}")
     private String imagePathBase;
     public List<CategoryWithSubCategoriesDto> buildParentCategoryWithCategoriesDtoList(List<Category> categories,
-                                                                                          List<ImageCategory> images) {
+                                                                                       List<ImageCategory> images) {
         Map<ObjectId, List<Category>> categoryMap = getCategoryMap(categories);
         List<CategoryWithSubCategoriesDto> parentCategoryWithCategoriesDtoList = new ArrayList<>();
         for (Category category : categoryMap.get(null)) {
@@ -33,10 +35,15 @@ public class CategoryBuilder {
                 .name(category.getName())
                 .categoryDtos(buildCategoryDtoList(categoryMap.get(category.getId())))
                 .build();
-            Optional<String> imagePath = images.stream()
-                .filter(imageCategory -> imageCategory.getCategory().getId().equals(category.getId()))
-                .map(ImageCategory::getCategoryImageName).findFirst();
-            imagePath.ifPresent(s -> categoryDto.setCategoryImagePath(imagePathBase + s));
+            if (images.isEmpty()) {
+                log.info("[ON buildParentCategoryWithCategoriesDtoList]:: Images for categories not found.");
+                categoryDto.setCategoryImagePath("");
+            } else {
+                Optional<String> imagePath = images.stream()
+                        .filter(imageCategory -> imageCategory.getCategory().getId().equals(category.getId()))
+                        .map(ImageCategory::getCategoryImageName).findFirst();
+                imagePath.ifPresent(s -> categoryDto.setCategoryImagePath(imagePathBase + s));
+            }
             parentCategoryWithCategoriesDtoList.add(categoryDto);
         }
         return parentCategoryWithCategoriesDtoList;
@@ -46,9 +53,9 @@ public class CategoryBuilder {
         return categories.stream().map(x -> modelMapper.map(x, CategoryDto.class)).toList();
     }
 
-    private Map<ObjectId, List<Category>> getCategoryMap(List<Category> images) {
+    private Map<ObjectId, List<Category>> getCategoryMap(List<Category> categoryList) {
         List<Category> categories = new ArrayList<>();
-        Map<ObjectId, List<Category>> map = images.stream()
+        Map<ObjectId, List<Category>> map = categoryList.stream()
             .peek(x -> {
                 if (x.getParentId() == null) {
                     categories.add(x);

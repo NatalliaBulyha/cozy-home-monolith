@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.cozyhome.onlineshop.exception.AuthException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,6 @@ import com.cozyhome.onlineshop.dto.auth.NewPasswordRequest;
 import com.cozyhome.onlineshop.dto.auth.SignupRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
-import com.cozyhome.onlineshop.exception.AuthenticationException;
 import com.cozyhome.onlineshop.exception.DataAlreadyExistException;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.userservice.model.Role;
@@ -161,7 +161,7 @@ public class UserServiceImpl implements UserService {
 			if (encoder.matches(userInformationDto.getOldPassword(), user.getPassword())) {
 				user.setPassword(encoder.encode(userInformationDto.getNewPassword()));
 			} else {
-				throw new AuthenticationException("Wrong old password entered.");
+				throw new AuthException("Wrong old password entered.");
 			}
 		}
 

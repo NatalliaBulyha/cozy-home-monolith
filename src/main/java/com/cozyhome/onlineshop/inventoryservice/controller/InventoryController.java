@@ -33,7 +33,7 @@ public class InventoryController {
 	
 	//for preview
 	@PostMapping("/quantity-status-map/product-skuCode-list")
-	public ResponseEntity<Map<String, String>> getProductQuantityStatusMap(@RequestBody List<String> productSkuCodeList){
+	public ResponseEntity<Map<String, QuantityStatusDto>> getProductQuantityStatusMap(@RequestBody List<String> productSkuCodeList){
 		return ResponseEntity.ok(inventoryService.getQuantityStatusBySkuCodeList(productSkuCodeList));
 	}
 

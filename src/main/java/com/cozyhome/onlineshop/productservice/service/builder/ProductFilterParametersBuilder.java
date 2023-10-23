@@ -55,6 +55,9 @@ public class ProductFilterParametersBuilder {
     }
     private List<ParameterDetailsDto> getColors(List<String> productsSkuCodes) {
         List<Color> colors = imageRepositoryCustom.findColorsByProductSkuCodeIn(productsSkuCodes);
+        if (colors.isEmpty()) {
+            return new ArrayList<>();
+        }
         return colors.stream()
             .map(color -> new ParameterDetailsDto(color.getId(), color.getName())).toList();
     }
