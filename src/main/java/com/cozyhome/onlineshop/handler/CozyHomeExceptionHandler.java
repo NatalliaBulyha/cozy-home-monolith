@@ -1,6 +1,5 @@
 package com.cozyhome.onlineshop.handler;
 
-import com.cozyhome.onlineshop.exception.AuthenticationException;
 import com.cozyhome.onlineshop.exception.DataAlreadyExistException;
 import com.cozyhome.onlineshop.exception.AuthException;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;

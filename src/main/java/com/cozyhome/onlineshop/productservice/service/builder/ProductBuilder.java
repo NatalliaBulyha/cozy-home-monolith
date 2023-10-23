@@ -77,13 +77,13 @@ public class ProductBuilder {
 				.name(product.getName())
 				.shortDescription(product.getShortDescription())
 				.price(roundBigDecimalToZeroDecimalPlace(product.getPrice()))
-				.imagesList(imageBuilder.buildImageDtoList(images))
+				.imageDtoList(imageBuilder.buildImageDtoList(images))
 				.build();
 		if (quantityStatus.getStatus() != null) {
 			productDto.setProductQuantityStatus(quantityStatus.getStatus());
 		}
 		if (quantityStatus.getColorQuantityStatus() != null) {
-			productDto.setColorsList(convertMapToColorDtoList(quantityStatus.getColorQuantityStatus()));
+			productDto.setColorDtoList(convertMapToColorDtoList(quantityStatus.getColorQuantityStatus()));
 		}
 		BigDecimal discount = BigDecimal.valueOf(product.getDiscount());
 		if (!discount.equals(NULL_PERCENT)) {
