@@ -62,6 +62,6 @@ public class AddressServiceImpl implements AddressService {
     public List<AddressResponse> getUserAddresses(String userId) {
         List<Address> addresses = addressRepository.findAllByUserId(userId);
 
-        return addresses.stream().map( address -> modelMapper.map(address, AddressResponse.class)).toList();
+        return addresses.stream().map(address -> modelMapper.map(address, AddressResponse.class)).toList();
     }
 }
