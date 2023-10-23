@@ -1,6 +1,5 @@
 package com.cozyhome.onlineshop.userservice.controller;
 
-import com.cozyhome.onlineshop.dto.user.AddressResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -27,8 +26,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-
 @CrossOrigin(origins = { "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
 		"${api.front.additional_url}", "${api.front.main.url}" }, allowedHeaders = { "Authorization" },
 	    exposedHeaders = { "Access-Control-Allow-Methods" })
@@ -40,7 +37,7 @@ import java.util.List;
 @RequestMapping("${api.secure.basePath}/user")
 public class UserSecuredController {
     @Value("${header.name.user-id}")
-    private String userIdName;
+    private String userIdAttribute;
     private final UserService userService;
     private final TokenBlackListService tokenBlackListService;
     private final JwtTokenUtil jwtTokenUtil;
@@ -52,7 +49,7 @@ public class UserSecuredController {
     @PutMapping("/profile/update")
     public ResponseEntity<UserInformationResponse> updateUserInfo(@RequestBody @Valid UserInformationRequest userInformationDto,
                                                                   HttpServletRequest request) {
-        String userId = (String) request.getAttribute(userIdName);
+        String userId = (String) request.getAttribute(userIdAttribute);
         return ResponseEntity.ok(userService.updateUserData(userInformationDto, userId));
     }
 
@@ -62,7 +59,7 @@ public class UserSecuredController {
     @Secured({"ROLE_CUSTOMER"})
     @GetMapping("/profile")
     public ResponseEntity<UserInformationResponse> getUserInfo(HttpServletRequest request) {
-        String userId = (String) request.getAttribute(userIdName);
+        String userId = (String) request.getAttribute(userIdAttribute);
         return ResponseEntity.ok(userService.getUserInfo(userId));
     }
 
@@ -76,15 +73,5 @@ public class UserSecuredController {
         tokenBlackListService.saveTokenToBlackList(jwtToken);
         log.warn("[ON logout] :: JwtToken {} was added to Black List.", jwtToken);
         return ResponseEntity.ok().build();
-    }
-
-    @Operation(summary = "Logout.", description = "Logout.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
-    @Secured({"ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_ADMIN"})
-    @GetMapping("/address")
-    public ResponseEntity<List<AddressResponse>> getUserAddresses(HttpServletRequest request) {
-        String userId = (String) request.getAttribute(userIdName);
-        return ResponseEntity.ok(userService.getUserAddresses(userId));
     }
 }

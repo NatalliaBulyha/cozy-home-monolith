@@ -2,12 +2,9 @@ package com.cozyhome.onlineshop.userservice.security.service;
 
 import com.cozyhome.onlineshop.dto.auth.NewPasswordRequest;
 import com.cozyhome.onlineshop.dto.auth.SignupRequest;
-import com.cozyhome.onlineshop.dto.user.AddressResponse;
 import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
 import com.cozyhome.onlineshop.userservice.model.User;
-
-import java.util.List;
 
 public interface UserService {
 	
@@ -24,7 +21,4 @@ public interface UserService {
 	UserInformationResponse getUserInfo(String userId);
 
 	void deleteUser(String email);
-
-	List<AddressResponse> getUserAddresses(String userId);
-	
 }

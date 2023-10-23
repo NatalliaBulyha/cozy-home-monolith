@@ -2,19 +2,16 @@ package com.cozyhome.onlineshop.userservice.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -22,6 +19,7 @@ import java.util.Objects;
 public class Address {
 
     @Id
+    @EqualsAndHashCode.Exclude
     private String id;
     private String city;
     private String street;
@@ -30,25 +28,10 @@ public class Address {
     private Integer entrance;
     private Integer floor;
     private boolean withLift;
+    @EqualsAndHashCode.Exclude
     private LocalDateTime createdAt;
+    @EqualsAndHashCode.Exclude
     private LocalDateTime modifiedAt;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Address address = (Address) o;
-        return withLift == address.withLift &&
-                Objects.equals(city, address.city) &&
-                Objects.equals(street, address.street) &&
-                Objects.equals(house, address.house) &&
-                Objects.equals(apartment, address.apartment) &&
-                Objects.equals(entrance, address.entrance) &&
-                Objects.equals(floor, address.floor);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(city, street, house, apartment, entrance, floor, withLift);
-    }
+    @DBRef
+    private User user;
 }

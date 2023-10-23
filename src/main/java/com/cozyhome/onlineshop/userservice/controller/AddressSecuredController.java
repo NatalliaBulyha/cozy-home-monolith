@@ -17,10 +17,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @CrossOrigin(origins = { "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
 		"${api.front.additional_url}", "${api.front.main.url}" }, allowedHeaders = { "Authorization" },
@@ -33,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("${api.secure.basePath}/address")
 public class AddressSecuredController {
     @Value("${header.name.user-id}")
-    private String userIdName;
+    private String userIdAttribute;
     private final AddressService addressService;
 
     @Operation(summary = "New address", description = "The user adds new address to his personal account.")
@@ -43,7 +46,7 @@ public class AddressSecuredController {
     @PostMapping("/new")
     public ResponseEntity<AddressResponse> saveAddress(@RequestBody @Valid AddressRequest addressRequest,
                                                        HttpServletRequest request) {
-        String userId = (String) request.getAttribute(userIdName);
+        String userId = (String) request.getAttribute(userIdAttribute);
         return ResponseEntity.ok(addressService.saveAddress(addressRequest, userId));
     }
 
@@ -52,8 +55,18 @@ public class AddressSecuredController {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @PostMapping
     public ResponseEntity<Void> deleteAddress(@RequestBody @Valid AddressIdDto addressId, HttpServletRequest request) {
-        String userId = (String) request.getAttribute(userIdName);
+        String userId = (String) request.getAttribute(userIdAttribute);
         addressService.deleteAddress(addressId, userId);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Get addresses.", description = "Get all addresses for user.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
+    @Secured({"ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_ADMIN"})
+    @GetMapping
+    public ResponseEntity<List<AddressResponse>> getUserAddresses(HttpServletRequest request) {
+        String userId = (String) request.getAttribute(userIdAttribute);
+        return ResponseEntity.ok(addressService.getUserAddresses(userId));
     }
 }
