@@ -20,8 +20,8 @@ public class ProductDto {
     private BigDecimal price;
     private Byte discount;
     private BigDecimal priceWithDiscount;
-    private List<ImageDto> imagesList;
-    private List<ColorQuantityStatusDto> colorsList;
+    private List<ImageDto> imageDtoList;
+    private List<ColorQuantityStatusDto> colorDtoList;
     private String productQuantityStatus;
 
 }
