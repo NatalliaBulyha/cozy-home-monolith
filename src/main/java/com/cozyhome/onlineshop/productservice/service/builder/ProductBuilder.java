@@ -30,7 +30,6 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -77,13 +76,13 @@ public class ProductBuilder {
 				.name(product.getName())
 				.shortDescription(product.getShortDescription())
 				.price(roundBigDecimalToZeroDecimalPlace(product.getPrice()))
-				.imagesList(imageBuilder.buildImageDtoList(images))
+				.imageDtoList(imageBuilder.buildImageDtoList(images))
 				.build();
 		if (quantityStatus.getStatus() != null) {
 			productDto.setProductQuantityStatus(quantityStatus.getStatus());
 		}
 		if (quantityStatus.getColorQuantityStatus() != null) {
-			productDto.setColorsList(convertMapToColorDtoList(quantityStatus.getColorQuantityStatus()));
+			productDto.setColorDtoList(convertMapToColorDtoList(quantityStatus.getColorQuantityStatus()));
 		}
 		BigDecimal discount = BigDecimal.valueOf(product.getDiscount());
 		if (!discount.equals(NULL_PERCENT)) {
@@ -227,13 +226,5 @@ public class ProductBuilder {
 	private Map<String, List<ImageProduct>> getImageMap(List<ImageProduct> images) {
 		return images.stream()
 				.collect(Collectors.groupingBy(image -> image.getProduct().getSkuCode(), Collectors.toList()));
-	}
-
-	private Map<String, List<ImageProduct>> getEmptyImageMap(List<String> productsSkuCodes) {
-		Map<String, List<ImageProduct>> emptyImageMap = new HashMap<>();
-		for (String st : productsSkuCodes) {
-			emptyImageMap.put(st, new ArrayList<>());
-		}
-		return emptyImageMap;
 	}
 }
