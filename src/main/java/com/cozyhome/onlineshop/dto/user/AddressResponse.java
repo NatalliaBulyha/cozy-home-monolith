@@ -15,7 +15,5 @@ public class AddressResponse {
     private String street;
     private String house;
     private Integer apartment;
-    private Integer entrance;
-    private Integer floor;
-    private Boolean withLift;
+    private Integer comment;
 }

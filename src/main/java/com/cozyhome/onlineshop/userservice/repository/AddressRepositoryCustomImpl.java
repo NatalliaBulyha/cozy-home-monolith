@@ -22,9 +22,6 @@ public class AddressRepositoryCustomImpl implements AddressRepositoryCustom {
                 .and("street").is(address.getStreet())
                 .and("house").is(address.getHouse())
                 .and("apartment").is(address.getApartment())
-                .and("entrance").is(address.getEntrance())
-                .and("floor").is(address.getFloor())
-                .and("withLift").is(address.isWithLift())
                 .and("user").is(address.getUser()));
 
         return Optional.ofNullable(mongoTemplate.findOne(query, Address.class));

@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -82,7 +83,7 @@ public class ReviewSecuredController {
     @Operation(summary = "Remove review for the product.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_DELETED_DESCRIPTION) })
-    @PostMapping
+    @DeleteMapping
     @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     public ResponseEntity<Void> removeReviewById(@RequestParam @ValidUUID String reviewId,
                                                  HttpServletRequest request) {

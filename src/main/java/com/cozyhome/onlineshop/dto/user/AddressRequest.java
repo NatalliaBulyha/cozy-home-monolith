@@ -2,7 +2,6 @@ package com.cozyhome.onlineshop.dto.user;
 
 import com.cozyhome.onlineshop.validation.ValidHouse;
 import com.cozyhome.onlineshop.validation.ValidName;
-import com.cozyhome.onlineshop.validation.ValidOptionalBoolean;
 import com.cozyhome.onlineshop.validation.ValidOptionalNumber;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,9 +24,5 @@ public class AddressRequest {
     @ValidOptionalNumber(message = "Invalid apartment. Apartment must be not null and contains numbers only.")
     private String apartment;
     @ValidOptionalNumber(message = "Invalid entrance. Entrance must be not null and contains numbers only.")
-    private String entrance;
-    @ValidOptionalNumber(message = "Invalid floor. Floor must be not null and contains numbers only.")
-    private String floor;
-    @ValidOptionalBoolean
-    private String withLift;
+    private String comment;
 }

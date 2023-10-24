@@ -25,9 +25,7 @@ public class Address {
     private String street;
     private String house;
     private Integer apartment;
-    private Integer entrance;
-    private Integer floor;
-    private boolean withLift;
+    private Integer comment;
     @EqualsAndHashCode.Exclude
     private LocalDateTime createdAt;
     @EqualsAndHashCode.Exclude
