@@ -1,19 +1,25 @@
 package com.cozyhome.onlineshop.userservice.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cozyhome.onlineshop.dto.FavoriteItemDto;
+import com.cozyhome.onlineshop.dto.request.ProductColorDto;
 import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
 import com.cozyhome.onlineshop.productservice.controller.swagger.SwaggerResponse;
 import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenUtil;
+import com.cozyhome.onlineshop.userservice.security.service.FavoriteItemsService;
 import com.cozyhome.onlineshop.userservice.security.service.TokenBlackListService;
 import com.cozyhome.onlineshop.userservice.security.service.UserService;
 
@@ -37,10 +43,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("${api.secure.basePath}/user")
 public class UserSecuredController {
     @Value("${header.name.user-id}")
-    private String userIdName;
+    private String userIdAttribute;
     private final UserService userService;
     private final TokenBlackListService tokenBlackListService;
     private final JwtTokenUtil jwtTokenUtil;
+    private final FavoriteItemsService favoriteItemService;
 
     @Operation(summary = "Update user information")
     @ApiResponses(value = {
@@ -49,7 +56,7 @@ public class UserSecuredController {
     @PutMapping("/profile/update")
     public ResponseEntity<UserInformationResponse> updateUserInfo(@RequestBody @Valid UserInformationRequest userInformationDto,
                                                                   HttpServletRequest request) {
-        String userId = (String) request.getAttribute(userIdName);
+        String userId = (String) request.getAttribute(userIdAttribute);
         return ResponseEntity.ok(userService.updateUserData(userInformationDto, userId));
     }
 
@@ -59,7 +66,7 @@ public class UserSecuredController {
     @Secured({"ROLE_CUSTOMER"})
     @GetMapping("/profile")
     public ResponseEntity<UserInformationResponse> getUserInfo(HttpServletRequest request) {
-        String userId = (String) request.getAttribute(userIdName);
+        String userId = (String) request.getAttribute(userIdAttribute);
         return ResponseEntity.ok(userService.getUserInfo(userId));
     }
 
@@ -73,5 +80,27 @@ public class UserSecuredController {
         tokenBlackListService.saveTokenToBlackList(jwtToken);
         log.warn("[ON logout] :: JwtToken {} was added to Black List.", jwtToken);
         return ResponseEntity.ok().build();
-    }    
+    } 
+    
+    @Operation(summary = "Add item to favorite.", description = "Add item to favorite by product skuCode and color hex.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
+    @Secured({"ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_ADMIN"})
+    @PostMapping("/favorite-items/update")
+    public ResponseEntity<Void> updateUserFavoriteItems(HttpServletRequest request, @Valid @RequestBody ProductColorDto dtoRequest) {
+    	String userId = (String) request.getAttribute(userIdAttribute);        
+        favoriteItemService.updateUserFavoriteItems(userId, dtoRequest);
+        return ResponseEntity.ok().build();
+    } 
+    
+    @Operation(summary = "Get all of the user's favorite items.", description = "Get all of the user's favorite items.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
+    @Secured({"ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_ADMIN"})
+    @GetMapping("/favorite-items")
+    public ResponseEntity<List<FavoriteItemDto>> getFavoriteItemsForUser(HttpServletRequest request) {
+    	String userId = (String) request.getAttribute(userIdAttribute);
+        log.info("[ON getFavoriteItems] :: Get all favorite items for user with id {}", userId);
+        return ResponseEntity.ok(favoriteItemService.getFavoriteItemsByUserId(userId));
+    } 
 }
