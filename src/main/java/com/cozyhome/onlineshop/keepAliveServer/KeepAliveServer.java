@@ -15,7 +15,7 @@ public class KeepAliveServer {
 
 	private final String keepAliveEndpoint = "http://localhost:8080/api/v1/ping";
 	
-	@Scheduled(fixedRate = 60000)
+	@Scheduled(fixedRate = 300000)
 	public void sendKeepAliveRequest() {
 		 try {
 	            HttpClient client = HttpClients.createDefault();
