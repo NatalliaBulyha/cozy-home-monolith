@@ -5,11 +5,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.cozyhome.onlineshop.dto.FavoriteItemDto;
+import com.cozyhome.onlineshop.dto.request.PageableDto;
 import com.cozyhome.onlineshop.dto.request.ProductColorDto;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.inventoryservice.model.ProductColor;
@@ -20,6 +24,7 @@ import com.cozyhome.onlineshop.productservice.model.Product;
 import com.cozyhome.onlineshop.productservice.model.enums.ColorsEnum;
 import com.cozyhome.onlineshop.productservice.repository.ImageRepositoryCustom;
 import com.cozyhome.onlineshop.productservice.repository.ProductRepository;
+import com.cozyhome.onlineshop.productservice.service.CategoryService;
 import com.cozyhome.onlineshop.userservice.model.FavoriteItem;
 import com.cozyhome.onlineshop.userservice.repository.FavoriteItemRepository;
 import com.cozyhome.onlineshop.userservice.security.service.FavoriteItemsService;
@@ -37,6 +42,7 @@ public class FavoriteItemsServiceImpl implements FavoriteItemsService {
 	private final ProductRepository productRepository;
 	private final ImageRepositoryCustom imageRepositoryCustom;
 	private final InventoryService inventoryService;
+	private final CategoryService categoryService;
 
 	private final ModelMapper modelMapper;
 
@@ -74,9 +80,10 @@ public class FavoriteItemsServiceImpl implements FavoriteItemsService {
 	}
 
 	@Override
-	public List<FavoriteItemDto> getFavoriteItemsByUserId(String userId) {
-		List<FavoriteItem> items = favoriteItemsRepository.findAllByUserId(userId);
-		return buildFavoriteItemDtoList(items);
+	public List<FavoriteItemDto> getFavoriteItemsByUserId(String userId, PageableDto pageable) {
+		Page<FavoriteItem> items = favoriteItemsRepository.findAllByUserId(userId, PageRequest.of(pageable.getPage(), pageable.getSize()));
+		
+		return buildFavoriteItemDtoList(items.getContent());
 	}
 
 	private List<FavoriteItemDto> buildFavoriteItemDtoList(List<FavoriteItem> favoriteItemlist) {
@@ -109,15 +116,36 @@ public class FavoriteItemsServiceImpl implements FavoriteItemsService {
 		FavoriteItemDto dto = FavoriteItemDto.builder()
 				.skuCode(product.getSkuCode())
 				.productName(product.getName())
+				.shortDescription(product.getShortDescription())
 				.price(product.getPrice()).imagePath(imagePah)
+				.categoryId(product.getSubCategory().getId().toString())
 				.colorHex(favoriteItem.getProductColor().getColorHex())
 				.colorName(ColorsEnum.getColorNameByHex(favoriteItem.getProductColor().getColorHex()))
 				.quantityStatus(quantityStatus)
 				.build();
 
 		if (product.getDiscount() > 0) {
+			dto.setDiscount(product.getDiscount());
 			dto.setPriceWithDiscount(product.getPriceWithDiscount());
 		}
 		return dto;
+	}
+
+	@Override
+	public List<FavoriteItemDto> getFavoriteItemsByUserIdAndCategoryId(String userId, String categoryId,
+			PageableDto pageable) {
+		List<ObjectId> categoriesIds = categoryService.getCategoriesIdsByParentId(categoryId);
+		if (categoriesIds.isEmpty()) {
+			log.error(
+					"[ON getRandomProductsByStatusAndCategoryId]:: Subcategory for category with id {} doesn't exist.",
+					categoryId);
+			throw new DataNotFoundException(
+					String.format("Subcategories for category with id %s not found.", categoryId));
+		}
+		List<FavoriteItemDto> items = getFavoriteItemsByUserId(userId, pageable).stream()
+				.filter(dto -> categoriesIds.stream().anyMatch(c -> c.equals(new ObjectId(dto.getCategoryId()))))
+				.toList();
+		
+		return items;
 	}
 }

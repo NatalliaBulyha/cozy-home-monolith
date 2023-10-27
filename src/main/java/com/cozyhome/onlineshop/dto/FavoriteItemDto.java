@@ -11,8 +11,11 @@ public class FavoriteItemDto {
 
 	private String skuCode;
     private String productName;
+    private String shortDescription;
+    private String categoryId;
     private BigDecimal price;
     private BigDecimal priceWithDiscount;
+    private byte discount;
     private String imagePath;
     private String colorHex;
     private String colorName;
