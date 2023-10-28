@@ -89,7 +89,7 @@ public class ProductBuilder {
 			productDto.setDiscount(product.getDiscount());
 			productDto.setPriceWithDiscount(roundBigDecimalToZeroDecimalPlace(product.getPriceWithDiscount()));
 		}
-		log.info("PRODUCT DTO[" + productDto + "]");
+		log.info("[ON buildProductDto] :: build product dto with sku [{}]", productDto.getSkuCode());
 		return productDto;
 	}
 
