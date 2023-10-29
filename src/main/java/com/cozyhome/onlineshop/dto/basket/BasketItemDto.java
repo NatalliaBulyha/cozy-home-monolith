@@ -1,4 +1,4 @@
-package com.cozyhome.onlineshop.dto.shoppingcart;
+package com.cozyhome.onlineshop.dto.basket;
 
 import com.cozyhome.onlineshop.validation.ValidColorHex;
 import com.cozyhome.onlineshop.validation.ValidSkuCode;

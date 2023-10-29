@@ -11,15 +11,18 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
 @Entity
+@NoArgsConstructor
 @Table(name = "product_color")
 public class ProductColor {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@EqualsAndHashCode.Exclude
     private int id;
 
 	@Column(name = "product_skucode")
@@ -33,4 +36,9 @@ public class ProductColor {
 	@EqualsAndHashCode.Exclude
 	@OneToOne(mappedBy = "productColor")
 	private Inventory inventory;
+	
+	public ProductColor(String productSkuCode, String colorHex) {
+		this.productSkuCode = productSkuCode;
+		this.colorHex = colorHex;
+	}
 }

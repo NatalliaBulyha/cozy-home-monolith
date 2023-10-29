@@ -1,4 +1,4 @@
-package com.cozyhome.onlineshop.dto.shoppingcart;
+package com.cozyhome.onlineshop.dto.basket;
 
 import java.math.BigDecimal;
 
@@ -18,4 +18,5 @@ public class BasketDto {
     private String colorName;
     private int quantity;
     private String quantityStatus;
+    private boolean isFavorite;
 }

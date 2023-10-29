@@ -26,7 +26,7 @@ import com.cozyhome.onlineshop.productservice.repository.ImageRepositoryCustom;
 import com.cozyhome.onlineshop.productservice.repository.ProductRepository;
 import com.cozyhome.onlineshop.productservice.service.CategoryService;
 import com.cozyhome.onlineshop.userservice.model.FavoriteItem;
-import com.cozyhome.onlineshop.userservice.repository.FavoriteItemRepository;
+import com.cozyhome.onlineshop.userservice.repository.FavoriteItemsRepository;
 import com.cozyhome.onlineshop.userservice.security.service.FavoriteItemsService;
 
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class FavoriteItemsServiceImpl implements FavoriteItemsService {
 
-	private final FavoriteItemRepository favoriteItemsRepository;
+	private final FavoriteItemsRepository favoriteItemsRepository;
 	private final ProductColorRepository productColorRepository;
 	private final ProductRepository productRepository;
 	private final ImageRepositoryCustom imageRepositoryCustom;

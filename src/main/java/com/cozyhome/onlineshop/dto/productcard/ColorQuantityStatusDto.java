@@ -13,4 +13,11 @@ public class ColorQuantityStatusDto {
 	private String id;
     private String name;
     private String quantityStatus;
+    private boolean isFavorite;
+    
+    public ColorQuantityStatusDto(String id, String name, String quantityStatus) {
+    	this.id = id;
+    	this.name = name;
+    	this.quantityStatus = quantityStatus;
+    }
 }

@@ -23,5 +23,4 @@ public class ProductDto {
     private List<ImageDto> imageDtoList;
     private List<ColorQuantityStatusDto> colorDtoList;
     private String productQuantityStatus;
-
 }
