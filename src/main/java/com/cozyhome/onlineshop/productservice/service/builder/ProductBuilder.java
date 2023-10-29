@@ -81,7 +81,7 @@ public class ProductBuilder {
 			productDto.setDiscount(product.getDiscount());
 			productDto.setPriceWithDiscount(roundBigDecimalToZeroDecimalPlace(product.getPriceWithDiscount()));
 		}
-		log.info("PRODUCT DTO[" + productDto + "]");
+		log.info("[ON buildProductDto] :: build product dto with skuCode {}", productDto.getSkuCode());
 		return productDto;
 	}
 
@@ -204,9 +204,11 @@ public class ProductBuilder {
 
 	private float roundFloatToOneDecimalPlace(Float floatValue) {
 		float roundedFloat = 0.0f;
-		String format = "%.1f";
+//		String format = "%.1f";
+		String format = "%.0f";
 		if (floatValue != null) {
-			roundedFloat = Float.parseFloat(String.format(format, floatValue));
+			roundedFloat = Float.valueOf(String.format(format, floatValue));
+//			roundedFloat = Float.parseFloat(String.format(format, floatValue));
 		}
 		return roundedFloat;
 	}

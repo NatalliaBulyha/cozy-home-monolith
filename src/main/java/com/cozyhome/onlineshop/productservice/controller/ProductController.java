@@ -68,7 +68,7 @@ public class ProductController {
     	String userId = (String) request.getAttribute(userIdAttribute);
     	List<ProductDto> products = productService.getRandomProductsByStatus(status, countOfProducts);
     	if(userId != null) {
-    		products = productService.markFavoritesForUser(userId, products);
+    		productService.markFavoriteForUser(userId, products);
     	}
         return ResponseEntity.ok(products);
     }
@@ -84,7 +84,7 @@ public class ProductController {
     	String userId = (String) request.getAttribute(userIdAttribute);
     	List<ProductDto> products = productService.getRandomProductsByStatusAndCategoryId(status, categoryId, countOfProducts);
     	if(userId != null) {
-    		products = productService.markFavoritesForUser(userId, products);
+    		productService.markFavoriteForUser(userId, products);
     	}
     	return ResponseEntity.ok(products);
     }
@@ -99,7 +99,7 @@ public class ProductController {
     	String userId = (String) request.getAttribute(userIdAttribute);
     	List<ProductDto> products = productService.getProductsByCategoryId(categoryId, pageable);
     	if(userId != null) {
-    		products = productService.markFavoritesForUser(userId, products);
+    		productService.markFavoriteForUser(userId, products);
     	}
     	return ResponseEntity.ok(products);
     }
@@ -124,14 +124,18 @@ public class ProductController {
         return new ResponseEntity<>(productService.getFilterParameters(filter, size), HttpStatus.OK);
     }
 
-    //TODO add favorities 
     @Operation(summary = "Get Product by skuCode and color's hex", description = "Get product by provided product's skuCode and color's hex.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION),
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_400, description = SwaggerResponse.Message.CODE_400) })
     @PostMapping("/skuCode")
-    public ResponseEntity<ProductCardDto> getProductCard(@RequestBody @Valid ProductColorDto dto){
-        return ResponseEntity.ok().body(productService.getProductCard(dto));
+    public ResponseEntity<ProductCardDto> getProductCard(@RequestBody @Valid ProductColorDto dto, HttpServletRequest request){
+    	String userId = (String) request.getAttribute(userIdAttribute);
+    	ProductCardDto productCardDto = productService.getProductCard(dto);
+    	if(userId != null) {
+    		productService.markFavoriteForUser(userId, productCardDto);
+    	}
+    	return ResponseEntity.ok().body(productCardDto);
     }
 
     @Operation(summary = "Get Products by collection name excluding provided skuCode", description = "Get list of products by collection name excluding provided skuCode.")
@@ -144,7 +148,7 @@ public class ProductController {
     	String userId = (String) request.getAttribute(userIdAttribute);
     	List<ProductDto> products = productService.getProductsByCollectionExcludeSkuCode(collectionId, productSkuCode);
     	if(userId != null) {
-    		products = productService.markFavoritesForUser(userId, products);
+    		productService.markFavoriteForUser(userId, products);
     	}
     	return ResponseEntity.ok(products);
     }

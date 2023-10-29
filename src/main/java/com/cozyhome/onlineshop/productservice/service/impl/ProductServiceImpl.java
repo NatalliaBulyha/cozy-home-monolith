@@ -1,11 +1,29 @@
 package com.cozyhome.onlineshop.productservice.service.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
+import org.springframework.stereotype.Service;
+
+import com.cozyhome.onlineshop.dto.ProductDto;
+import com.cozyhome.onlineshop.dto.ProductForBasketDto;
+import com.cozyhome.onlineshop.dto.ProductStatusDto;
+import com.cozyhome.onlineshop.dto.filter.FilterDto;
 import com.cozyhome.onlineshop.dto.inventory.CheckingProductAvailableAndStatusDto;
 import com.cozyhome.onlineshop.dto.inventory.InventoryForBasketDto;
-import com.cozyhome.onlineshop.dto.ProductDto;
-import com.cozyhome.onlineshop.dto.ProductStatusDto;
-import com.cozyhome.onlineshop.dto.ProductForBasketDto;
-import com.cozyhome.onlineshop.dto.filter.FilterDto;
 import com.cozyhome.onlineshop.dto.productcard.ColorQuantityStatusDto;
 import com.cozyhome.onlineshop.dto.productcard.ProductCardDto;
 import com.cozyhome.onlineshop.dto.request.PageableDto;
@@ -25,26 +43,10 @@ import com.cozyhome.onlineshop.productservice.service.CategoryService;
 import com.cozyhome.onlineshop.productservice.service.ProductService;
 import com.cozyhome.onlineshop.productservice.service.builder.ProductBuilder;
 import com.cozyhome.onlineshop.productservice.service.builder.ProductFilterParametersBuilder;
-import com.cozyhome.onlineshop.userservice.model.FavoriteItem;
 import com.cozyhome.onlineshop.userservice.repository.FavoriteItemsRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bson.types.ObjectId;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.domain.Sort.Order;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -163,13 +165,12 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public ProductCardDto getProductCard(ProductColorDto productColor) {
 		Optional<Product> product = productRepository.findBySkuCode(productColor.getProductSkuCode());
-		if (product.isPresent()) {
+		if (!product.isPresent()) {
 			log.info("[ON getProductCard]:: Product with sku code {} and color hex {} doesn't exist.",
 					productColor.getProductSkuCode(), productColor.getColorHex());
-			return productBuilder.buildProductCardDto(product.get(), productColor.getColorHex());
-		} else {
 			return new ProductCardDto();
-		}
+		}		
+		return productBuilder.buildProductCardDto(product.get(), productColor.getColorHex());
 	}
 
 	@Override
@@ -210,19 +211,24 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<ProductDto> markFavoritesForUser(String userId, List<ProductDto> products) {
-		List<FavoriteItem> favoriteItems = favoriteItemsRepository.findAllByUserId(userId);
-		for (ProductDto dto : products) {
-			for (ColorQuantityStatusDto colorDto : dto.getColorDtoList()) {
-				ProductColor productColor = new ProductColor(dto.getSkuCode(), colorDto.getId());
-				boolean isFavorite = favoriteItems.stream()
-						.anyMatch(item -> item.getProductColor().equals(productColor));
-				if (isFavorite) {
-					colorDto.setFavorite(isFavorite);
-				}
-			}
+	public void markFavoriteForUser(String userId, List<ProductDto> products) {		
+		for (ProductDto productDto : products) {
+			doMarkFavorites(userId, productDto.getSkuCode(), productDto.getColorDtoList());
 		}
-		return products;
+	}
+
+	@Override
+	public void markFavoriteForUser(String userId, ProductCardDto productCard) {		
+		doMarkFavorites(userId, productCard.getSkuCode(), productCard.getColors());
+	}
+	
+	private void doMarkFavorites(String userId, String skuCode, List<ColorQuantityStatusDto> colorsDto){
+		Set<ProductColor> favoriteProductColors = favoriteItemsRepository.findAllByUserId(userId).stream()
+				.map(item -> item.getProductColor()).collect(Collectors.toSet());
+		for (ColorQuantityStatusDto colorDto : colorsDto) {
+			ProductColor productColor = new ProductColor(skuCode, colorDto.getId());
+			colorDto.setFavorite(favoriteProductColors.contains(productColor));
+		}
 	}
 
 	private Pageable buildPageable(PageableDto pageable, SortDto sortDto) {

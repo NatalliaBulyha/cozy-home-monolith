@@ -30,5 +30,7 @@ public interface ProductService {
 
     List<ProductForBasketDto> getProductsForBasket(List<ProductColorDto> dto);
     
-    List<ProductDto> markFavoritesForUser(String userId, List<ProductDto> products);
+    void markFavoriteForUser(String userId, List<ProductDto> products);
+    
+    void markFavoriteForUser(String userId, ProductCardDto productCard);
 }
