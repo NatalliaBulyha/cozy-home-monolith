@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cozyhome.onlineshop.dto.FavoriteItemDto;
+import com.cozyhome.onlineshop.dto.FavoriteProductDto;
 import com.cozyhome.onlineshop.dto.request.PageableDto;
 import com.cozyhome.onlineshop.dto.request.ProductColorDto;
 import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
 import com.cozyhome.onlineshop.productservice.controller.swagger.SwaggerResponse;
 import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenUtil;
-import com.cozyhome.onlineshop.userservice.security.service.FavoriteItemsService;
+import com.cozyhome.onlineshop.userservice.security.service.FavoriteProductsService;
 import com.cozyhome.onlineshop.userservice.security.service.TokenBlackListService;
 import com.cozyhome.onlineshop.userservice.security.service.UserService;
 import com.cozyhome.onlineshop.validation.ValidId;
@@ -50,7 +50,7 @@ public class UserSecuredController {
     private final UserService userService;
     private final TokenBlackListService tokenBlackListService;
     private final JwtTokenUtil jwtTokenUtil;
-    private final FavoriteItemsService favoriteItemService;
+    private final FavoriteProductsService favoriteProductService;
 
     @Operation(summary = "Update user information")
     @ApiResponses(value = {
@@ -85,37 +85,37 @@ public class UserSecuredController {
         return ResponseEntity.ok().build();
     } 
     
-    @Operation(summary = "Add item to favorite.", description = "Add item to favorite by product skuCode and color hex.")
+    @Operation(summary = "Add product to favorite.", description = "Add product to favorite by product skuCode and color hex.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @Secured({"ROLE_CUSTOMER"})
     @PostMapping("/favorite-items/update")
-    public ResponseEntity<Void> updateUserFavoriteItems(HttpServletRequest request, @Valid @RequestBody ProductColorDto dtoRequest) {
+    public ResponseEntity<Void> updateUserFavoriteProducts(HttpServletRequest request, @Valid @RequestBody ProductColorDto dtoRequest) {
     	String userId = (String) request.getAttribute(userIdAttribute);        
-        favoriteItemService.updateUserFavoriteItems(userId, dtoRequest);
+        favoriteProductService.updateUserFavoriteProducts(userId, dtoRequest);
         return ResponseEntity.ok().build();
     } 
     
-    @Operation(summary = "Get all of the user's favorite items.", description = "Get all of the user's favorite items.")
+    @Operation(summary = "Get all of the user's favorite products.", description = "Get all of the user's favorite products.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @Secured({"ROLE_CUSTOMER"})
-    @GetMapping("/favorite-items")
-    public ResponseEntity<List<FavoriteItemDto>> getFavoriteItemsForUser(HttpServletRequest request, PageableDto pageable) {
+    @GetMapping("/favorite-products")
+    public ResponseEntity<List<FavoriteProductDto>> getFavoriteProductsForUserId(HttpServletRequest request, PageableDto pageable) {
     	String userId = (String) request.getAttribute(userIdAttribute);
-        log.info("[ON getFavoriteItems] :: Get all favorite items for user with id {}", userId);
-        return ResponseEntity.ok(favoriteItemService.getFavoriteItemsByUserId(userId, pageable));
+        log.info("[ON getFavoriteProductsForUser] :: Get all favorite products for user with id {}", userId);
+        return ResponseEntity.ok(favoriteProductService.getFavoriteProductsByUserId(userId, pageable));
     } 
     
-    @Operation(summary = "Get user's favorite items by category id.", description = "Get user's favorite items by category id.")
+    @Operation(summary = "Get user's favorite products by category id.", description = "Get user's favorite products by category id.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @Secured({"ROLE_CUSTOMER"})
-    @GetMapping("/favorite-items/category-id")
-    public ResponseEntity<List<FavoriteItemDto>> getFavoriteItemsForUserAndCategoryId(HttpServletRequest request, @RequestParam @ValidId String categoryId,
+    @GetMapping("/favorite-products/category-id")
+    public ResponseEntity<List<FavoriteProductDto>> getFavoriteProductsForUserAndCategoryId(HttpServletRequest request, @RequestParam @ValidId String categoryId,
     		PageableDto pageable) {
     	String userId = (String) request.getAttribute(userIdAttribute);
-        log.info("[ON getFavoriteItems] :: Get all favorite items for user with id {} and category id {}.", userId, categoryId);
-        return ResponseEntity.ok(favoriteItemService.getFavoriteItemsByUserIdAndCategoryId(userId, categoryId, pageable));
+        log.info("[ON getFavoriteProductsForUserAndCategoryId] :: Get all favorite items for user with id {} and category id {}.", userId, categoryId);
+        return ResponseEntity.ok(favoriteProductService.getFavoriteProductsByUserIdAndCategoryId(userId, categoryId, pageable));
     }
 }

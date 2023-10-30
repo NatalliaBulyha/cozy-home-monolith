@@ -12,7 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import com.cozyhome.onlineshop.dto.FavoriteItemDto;
+import com.cozyhome.onlineshop.dto.FavoriteProductDto;
 import com.cozyhome.onlineshop.dto.request.PageableDto;
 import com.cozyhome.onlineshop.dto.request.ProductColorDto;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
@@ -25,9 +25,9 @@ import com.cozyhome.onlineshop.productservice.model.enums.ColorsEnum;
 import com.cozyhome.onlineshop.productservice.repository.ImageRepositoryCustom;
 import com.cozyhome.onlineshop.productservice.repository.ProductRepository;
 import com.cozyhome.onlineshop.productservice.service.CategoryService;
-import com.cozyhome.onlineshop.userservice.model.FavoriteItem;
-import com.cozyhome.onlineshop.userservice.repository.FavoriteItemRepository;
-import com.cozyhome.onlineshop.userservice.security.service.FavoriteItemsService;
+import com.cozyhome.onlineshop.userservice.model.FavoriteProduct;
+import com.cozyhome.onlineshop.userservice.repository.FavoriteProductRepository;
+import com.cozyhome.onlineshop.userservice.security.service.FavoriteProductsService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +35,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class FavoriteItemsServiceImpl implements FavoriteItemsService {
+public class FavoriteProductsServiceImpl implements FavoriteProductsService {
 
-	private final FavoriteItemRepository favoriteItemsRepository;
+	private final FavoriteProductRepository favoriteProductsRepository;
 	private final ProductColorRepository productColorRepository;
 	private final ProductRepository productRepository;
 	private final ImageRepositoryCustom imageRepositoryCustom;
@@ -50,7 +50,7 @@ public class FavoriteItemsServiceImpl implements FavoriteItemsService {
 	private String imagePathBase;
 
 	@Override
-	public void updateUserFavoriteItems(String userId, ProductColorDto dtoRequest) {
+	public void updateUserFavoriteProducts(String userId, ProductColorDto dtoRequest) {
 		String productSkuCode = dtoRequest.getProductSkuCode();
 		String colorHex = dtoRequest.getColorHex();
 
@@ -63,64 +63,64 @@ public class FavoriteItemsServiceImpl implements FavoriteItemsService {
 					String.format("No ProductColor found with skuCode %s and hex %s", productSkuCode, colorHex));
 		}
 
-		Optional<FavoriteItem> favoriteItem = favoriteItemsRepository.findByProductColorAndUserId(productColor.get(),
+		Optional<FavoriteProduct> favoriteProduct = favoriteProductsRepository.findByProductColorAndUserId(productColor.get(),
 				userId);
 
-		if (favoriteItem.isPresent()) {
-			favoriteItemsRepository.delete(favoriteItem.get());
+		if (favoriteProduct.isPresent()) {
+			favoriteProductsRepository.delete(favoriteProduct.get());
 			log.info(
-					"[ON updateUserFavoriteItems] :: Item with skuCode [{}] and color hex [{}] was deleted from user's [{}] favorite items.",
+					"[ON updateUserFavoriteProducts] :: Item with skuCode [{}] and color hex [{}] was deleted from user's [{}] favorite items.",
 					productSkuCode, colorHex, userId);
 		} else {
-			favoriteItemsRepository.save(new FavoriteItem(productColor.get(), userId));
+			favoriteProductsRepository.save(new FavoriteProduct(productColor.get(), userId));
 			log.info(
-					"[ON updateUserFavoriteItems] :: Item with skuCode [{}] and color hex [{}] was added to user's [{}] favorite items.",
+					"[ON updateUserFavoriteProducts] :: Item with skuCode [{}] and color hex [{}] was added to user's [{}] favorite items.",
 					productSkuCode, colorHex, userId);			
 		}
 	}
 
 	@Override
-	public List<FavoriteItemDto> getFavoriteItemsByUserId(String userId, PageableDto pageable) {
-		Page<FavoriteItem> items = favoriteItemsRepository.findAllByUserId(userId, PageRequest.of(pageable.getPage(), pageable.getSize()));
+	public List<FavoriteProductDto> getFavoriteProductsByUserId(String userId, PageableDto pageable) {
+		Page<FavoriteProduct> favoriteProducts = favoriteProductsRepository.findAllByUserId(userId, PageRequest.of(pageable.getPage(), pageable.getSize()));
 		
-		return buildFavoriteItemDtoList(items.getContent());
+		return buildFavoriteProductsDtoList(favoriteProducts.getContent());
 	}
 
-	private List<FavoriteItemDto> buildFavoriteItemDtoList(List<FavoriteItem> favoriteItemlist) {
-		Map<ProductColorDto, ImageProduct> imageMap = getImageMap(favoriteItemlist);
-		List<FavoriteItemDto> favoriteItemDtoList = new ArrayList<>();
-		for (FavoriteItem favoriteItem : favoriteItemlist) {
-			String skuCode = favoriteItem.getProductColor().getProductSkuCode();
-			String hex = favoriteItem.getProductColor().getColorHex();
-			FavoriteItemDto dto = buildFavoriteItemDto(favoriteItem, imageMap.get(new ProductColorDto(skuCode, hex)));
-			favoriteItemDtoList.add(dto);
+	private List<FavoriteProductDto> buildFavoriteProductsDtoList(List<FavoriteProduct> favoriteProductlist) {
+		Map<ProductColorDto, ImageProduct> imageMap = getImageMap(favoriteProductlist);
+		List<FavoriteProductDto> favoriteProductDtoList = new ArrayList<>();
+		for (FavoriteProduct favoriteProduct : favoriteProductlist) {
+			String skuCode = favoriteProduct.getProductColor().getProductSkuCode();
+			String hex = favoriteProduct.getProductColor().getColorHex();
+			FavoriteProductDto dto = buildFavoriteProductDto(favoriteProduct, imageMap.get(new ProductColorDto(skuCode, hex)));
+			favoriteProductDtoList.add(dto);
 		}
-		return favoriteItemDtoList;
+		return favoriteProductDtoList;
 	}
 
-	private Map<ProductColorDto, ImageProduct> getImageMap(List<FavoriteItem> favoriteItemlist) {
-		List<ProductColorDto> dtos = favoriteItemlist.stream()
+	private Map<ProductColorDto, ImageProduct> getImageMap(List<FavoriteProduct> favoriteProductlist) {
+		List<ProductColorDto> dtos = favoriteProductlist.stream()
 				.map(line -> modelMapper.map(line.getProductColor(), ProductColorDto.class)).toList();
 		return imageRepositoryCustom.findMainImagesByProductColorList(dtos);
 	}
 
-	private FavoriteItemDto buildFavoriteItemDto(FavoriteItem favoriteItem, ImageProduct imageProduct) {
-		Product product = productRepository.findBySkuCode(favoriteItem.getProductColor().getProductSkuCode())
+	private FavoriteProductDto buildFavoriteProductDto(FavoriteProduct favoriteProduct, ImageProduct imageProduct) {
+		Product product = productRepository.findBySkuCode(favoriteProduct.getProductColor().getProductSkuCode())
 				.orElseThrow(() -> new IllegalArgumentException(
-						"No product found by skuCode " + favoriteItem.getProductColor().getProductSkuCode()));
+						"No product found by skuCode " + favoriteProduct.getProductColor().getProductSkuCode()));
 
 		String imagePah = imagePathBase + imageProduct.getSliderImageName();
 		String quantityStatus = inventoryService.getQuantityStatusByProductColor(
-				modelMapper.map(favoriteItem.getProductColor(), ProductColorDto.class));
+				modelMapper.map(favoriteProduct.getProductColor(), ProductColorDto.class));
 
-		FavoriteItemDto dto = FavoriteItemDto.builder()
+		FavoriteProductDto dto = FavoriteProductDto.builder()
 				.skuCode(product.getSkuCode())
 				.productName(product.getName())
 				.shortDescription(product.getShortDescription())
 				.price(product.getPrice()).imagePath(imagePah)
 				.categoryId(product.getSubCategory().getId().toString())
-				.colorHex(favoriteItem.getProductColor().getColorHex())
-				.colorName(ColorsEnum.getColorNameByHex(favoriteItem.getProductColor().getColorHex()))
+				.colorHex(favoriteProduct.getProductColor().getColorHex())
+				.colorName(ColorsEnum.getColorNameByHex(favoriteProduct.getProductColor().getColorHex()))
 				.quantityStatus(quantityStatus)
 				.build();
 
@@ -132,7 +132,7 @@ public class FavoriteItemsServiceImpl implements FavoriteItemsService {
 	}
 
 	@Override
-	public List<FavoriteItemDto> getFavoriteItemsByUserIdAndCategoryId(String userId, String categoryId,
+	public List<FavoriteProductDto> getFavoriteProductsByUserIdAndCategoryId(String userId, String categoryId,
 			PageableDto pageable) {
 		List<ObjectId> categoriesIds = categoryService.getCategoriesIdsByParentId(categoryId);
 		if (categoriesIds.isEmpty()) {
@@ -142,10 +142,10 @@ public class FavoriteItemsServiceImpl implements FavoriteItemsService {
 			throw new DataNotFoundException(
 					String.format("Subcategories for category with id %s not found.", categoryId));
 		}
-		List<FavoriteItemDto> items = getFavoriteItemsByUserId(userId, pageable).stream()
+		List<FavoriteProductDto> favoriteProductDtos = getFavoriteProductsByUserId(userId, pageable).stream()
 				.filter(dto -> categoriesIds.stream().anyMatch(c -> c.equals(new ObjectId(dto.getCategoryId()))))
 				.toList();
 		
-		return items;
+		return favoriteProductDtos;
 	}
 }

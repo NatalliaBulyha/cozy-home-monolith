@@ -1,7 +1,6 @@
 package com.cozyhome.onlineshop.userservice.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +15,8 @@ import com.cozyhome.onlineshop.dto.auth.LoginRequest;
 import com.cozyhome.onlineshop.dto.auth.MessageResponse;
 import com.cozyhome.onlineshop.dto.auth.NewPasswordRequest;
 import com.cozyhome.onlineshop.dto.auth.SignupRequest;
-import com.cozyhome.onlineshop.exception.AuthException;
 import com.cozyhome.onlineshop.dto.auth.TokenResponseDto;
+import com.cozyhome.onlineshop.exception.AuthException;
 import com.cozyhome.onlineshop.productservice.controller.swagger.SwaggerResponse;
 import com.cozyhome.onlineshop.userservice.model.User;
 import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenUtil;

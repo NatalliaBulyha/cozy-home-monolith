@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Builder
 @Data
-public class FavoriteItemDto {
+public class FavoriteProductDto {
 
 	private String skuCode;
     private String productName;

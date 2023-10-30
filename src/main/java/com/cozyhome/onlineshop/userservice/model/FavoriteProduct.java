@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "favorite_items")
-public class FavoriteItem {
+public class FavoriteProduct {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +36,7 @@ public class FavoriteItem {
 	@Column(name = "user_id")
 	private String userId;
 	
-	public FavoriteItem(ProductColor productColor, String userId) {
+	public FavoriteProduct(ProductColor productColor, String userId) {
 		this.productColor = productColor;
 		this.userId = userId;
 	}
