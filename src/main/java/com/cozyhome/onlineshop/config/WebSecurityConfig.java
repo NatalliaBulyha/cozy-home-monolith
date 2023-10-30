@@ -1,5 +1,7 @@
 package com.cozyhome.onlineshop.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.web.cors.CorsConfiguration;
 
 import com.cozyhome.onlineshop.userservice.security.JWT.JwtAuthEntryPoint;
 import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenFilter;
@@ -63,6 +66,13 @@ public class WebSecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		 CorsConfiguration corsConfiguration = new CorsConfiguration();
+	        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+	        corsConfiguration.setAllowedOrigins(List.of("*"));
+	        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PUT","OPTIONS","PATCH", "DELETE"));
+	        corsConfiguration.setAllowCredentials(true);
+	        corsConfiguration.setExposedHeaders(List.of("Authorization"));
+	        
 		http.csrf(csrf -> csrf.disable())
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
