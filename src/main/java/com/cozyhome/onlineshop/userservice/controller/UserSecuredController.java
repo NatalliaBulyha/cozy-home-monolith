@@ -89,7 +89,7 @@ public class UserSecuredController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @Secured({"ROLE_CUSTOMER"})
-    @PostMapping("/favorite-items/update")
+    @PostMapping("/favorite-products/update")
     public ResponseEntity<Void> updateUserFavoriteProducts(HttpServletRequest request, @Valid @RequestBody ProductColorDto dtoRequest) {
     	String userId = (String) request.getAttribute(userIdAttribute);        
         favoriteProductService.updateUserFavoriteProducts(userId, dtoRequest);

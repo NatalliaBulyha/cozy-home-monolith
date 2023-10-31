@@ -55,12 +55,9 @@ public class ProductBuilder {
 
 	public List<ProductDto> buildProductDtoList(List<Product> products, boolean isMain) {
 		List<String> productsSkuCodes = extractSkuCodes(products);
-
 		List<ImageProduct> images = imageRepositoryCustom.findImagesByMainPhotoAndProductSkuCodeIn(productsSkuCodes, isMain);
 		Map<String, List<ImageProduct>> imageMap = getImageMap(images);
 		Map<String, QuantityStatusDto> quantityStatusMap = inventoryService.getQuantityStatusBySkuCodeList(productsSkuCodes);
-		log.info("GET PRODUCT QUANTITY STATUS MAP " + quantityStatusMap);
-
 		return products.stream().map(product -> buildProductDto(product, imageMap.get(product.getSkuCode()),
 				quantityStatusMap.get(product.getSkuCode()))).toList();
 	}
