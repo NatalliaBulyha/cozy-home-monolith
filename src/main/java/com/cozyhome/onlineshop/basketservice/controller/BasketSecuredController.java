@@ -26,9 +26,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@CrossOrigin(origins = { "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
-		"${api.front.additional_url}", "${api.front.main.url}" }, allowedHeaders = {
-				"Authorization" }, exposedHeaders = { "Access-Control-Allow-Methods" })
+@CrossOrigin
+//(origins = { "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
+//		"${api.front.additional_url}", "${api.front.main.url}" }, allowedHeaders = {
+//				"Authorization" }, exposedHeaders = { "Access-Control-Allow-Methods" })
 @Tag(name = "Basket")
 @ApiResponse
 @RequiredArgsConstructor
