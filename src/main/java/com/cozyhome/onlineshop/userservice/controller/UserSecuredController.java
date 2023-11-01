@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
@@ -26,10 +27,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-//@CrossOrigin
-//(origins = { "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
-//		"${api.front.additional_url}", "${api.front.main.url}" }, allowedHeaders = { "Authorization" },
-//	    exposedHeaders = { "Access-Control-Allow-Methods" })
+@CrossOrigin
+(origins = { "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
+		"${api.front.additional_url}", "${api.front.main.url}" }, allowedHeaders = {
+				"Authorization" },methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE },
+						exposedHeaders = { "Access-Control-Allow-Methods" })
 @Tag(name = "User")
 @ApiResponse
 @RequiredArgsConstructor

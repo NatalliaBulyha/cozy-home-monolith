@@ -27,15 +27,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Set;
 
-//@CrossOrigin(origins = { "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
-//		"${api.front.additional_url}", "${api.front.main.url}" }, allowedHeaders = { "Authorization" },
-//	    exposedHeaders = { "Access-Control-Allow-Methods" })
+@CrossOrigin
+(origins = { "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
+		"${api.front.additional_url}", "${api.front.main.url}" }, allowedHeaders = {
+				"Authorization" },methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE },
+						exposedHeaders = { "Access-Control-Allow-Methods" })
 @Validated
 @CommonApiResponses
 @Tag(name = "Review")
