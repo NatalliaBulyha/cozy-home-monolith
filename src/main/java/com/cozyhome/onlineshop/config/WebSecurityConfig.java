@@ -19,6 +19,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import com.cozyhome.onlineshop.userservice.security.JWT.JwtAuthEntryPoint;
 import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenFilter;
@@ -65,14 +68,7 @@ public class WebSecurityConfig {
 	}
 
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		 CorsConfiguration corsConfiguration = new CorsConfiguration();
-	        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
-	        corsConfiguration.setAllowedOrigins(List.of("*"));
-	        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PUT","OPTIONS","PATCH", "DELETE"));
-	        corsConfiguration.setAllowCredentials(true);
-	        corsConfiguration.setExposedHeaders(List.of("Authorization"));
-	        
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {	        
 		http.csrf(csrf -> csrf.disable())
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -80,10 +76,23 @@ public class WebSecurityConfig {
 						auth -> auth.requestMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated());
 
 		http.authenticationProvider(authenticationProvider());
-		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-		http.cors(Customizer.withDefaults());
+		http.addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);		
 		return http.build();
 	}
+	
+	@Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedOrigins(List.of("*"));
+        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setExposedHeaders(List.of("Authorization"));
+        source.registerCorsConfiguration("/**", corsConfiguration);
+        return new CorsFilter(source);
+    }
 
 	@Bean
 	public SecurityFilterChain filterLogoutChain(HttpSecurity http) throws Exception {
