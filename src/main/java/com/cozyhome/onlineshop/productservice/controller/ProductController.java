@@ -36,7 +36,7 @@ import lombok.RequiredArgsConstructor;
 
 @CrossOrigin
 (origins = { "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
-		"${api.front.additional_url}", "${api.front.main.url}" }, allowedHeaders = {
+		"${api.front.additional_url}", "${api.front.main.url}", "${api.front.temporal.url}", "${api.front.temporal.url}" }, allowedHeaders = {
 				"Authorization" },methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE },
 						exposedHeaders = { "Access-Control-Allow-Methods" })
 @Tag(name = "Product")

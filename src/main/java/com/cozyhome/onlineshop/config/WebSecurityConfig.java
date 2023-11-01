@@ -76,24 +76,24 @@ public class WebSecurityConfig {
 						auth -> auth.requestMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated());
 
 		http.authenticationProvider(authenticationProvider());
-		http.addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class);
+//		http.addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class);
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);		
 		return http.build();
 	}
 	
-	@Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(allowedOrigins);
-        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
-        corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setExposedHeaders(List.of("Authorization"));
-        source.registerCorsConfiguration("/api/v1/**", corsConfiguration);
-        source.registerCorsConfiguration("/api-secure/v1/**", corsConfiguration);
-        return new CorsFilter(source);
-    }
+//	@Bean
+//    public CorsFilter corsFilter() {
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        CorsConfiguration corsConfiguration = new CorsConfiguration();
+//        corsConfiguration.setAllowedOrigins(allowedOrigins);
+//        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+//        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+//        corsConfiguration.setAllowCredentials(true);
+//        corsConfiguration.setExposedHeaders(List.of("Authorization"));
+//        source.registerCorsConfiguration("/api/v1/**", corsConfiguration);
+//        source.registerCorsConfiguration("/api-secure/v1/**", corsConfiguration);
+//        return new CorsFilter(source);
+//    }
 
 	@Bean
 	public SecurityFilterChain filterLogoutChain(HttpSecurity http) throws Exception {
