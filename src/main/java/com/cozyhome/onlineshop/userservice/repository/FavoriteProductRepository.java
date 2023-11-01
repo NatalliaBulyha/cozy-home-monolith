@@ -1,5 +1,6 @@
 package com.cozyhome.onlineshop.userservice.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -13,6 +14,8 @@ public interface FavoriteProductRepository extends JpaRepository<FavoriteProduct
 
 	
 	Page<FavoriteProduct> findAllByUserId(String userId, Pageable pageable);
+	
+	List<FavoriteProduct> findAllByUserId(String userId);
 	
 	Optional<FavoriteProduct> findByProductColorAndUserId(ProductColor productColor, String userId);
 

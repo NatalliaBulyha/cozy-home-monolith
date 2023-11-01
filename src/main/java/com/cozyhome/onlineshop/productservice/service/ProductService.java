@@ -29,5 +29,8 @@ public interface ProductService {
     List<ProductDto> getProductsByCollectionExcludeSkuCode(String collection, String skuCodeToExclude);
 
     List<ProductForBasketDto> getProductsForBasket(List<ProductColorDto> dto);
-
+    
+    void markFavoriteForUser(String userId, List<ProductDto> products);
+    
+    void markFavoriteForUser(String userId, ProductCardDto productCard);
 }
