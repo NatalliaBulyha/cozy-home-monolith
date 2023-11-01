@@ -33,8 +33,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@CrossOrigin({ "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
-        "${api.front.additional_url}", "${api.front.main.url}" })
+//@CrossOrigin({ "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
+//        "${api.front.additional_url}", "${api.front.main.url}" })
 @Tag(name = "Product")
 @ApiResponse
 @RequiredArgsConstructor
