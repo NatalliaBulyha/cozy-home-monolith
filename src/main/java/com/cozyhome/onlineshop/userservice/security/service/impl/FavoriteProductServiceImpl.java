@@ -3,22 +3,22 @@ package com.cozyhome.onlineshop.userservice.security.service.impl;
 import java.util.List;
 import java.util.Optional;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import com.cozyhome.onlineshop.dto.FavoriteProductDto;
+import com.cozyhome.onlineshop.dto.ProductDto;
 import com.cozyhome.onlineshop.dto.request.PageableDto;
 import com.cozyhome.onlineshop.dto.request.ProductColorDto;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.inventoryservice.model.ProductColor;
 import com.cozyhome.onlineshop.inventoryservice.repository.ProductColorRepository;
-import com.cozyhome.onlineshop.productservice.service.CategoryService;
+import com.cozyhome.onlineshop.productservice.model.Product;
+import com.cozyhome.onlineshop.productservice.repository.ProductRepository;
+import com.cozyhome.onlineshop.productservice.service.builder.ProductBuilder;
 import com.cozyhome.onlineshop.userservice.model.FavoriteProduct;
 import com.cozyhome.onlineshop.userservice.repository.FavoriteProductRepository;
-import com.cozyhome.onlineshop.userservice.security.service.FavoriteProductsService;
-import com.cozyhome.onlineshop.userservice.security.service.builder.FavoriteProductsBuilder;
+import com.cozyhome.onlineshop.userservice.security.service.FavoriteProductService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +26,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class FavoriteProductsServiceImpl implements FavoriteProductsService {
+public class FavoriteProductServiceImpl implements FavoriteProductService {
 
 	private final FavoriteProductRepository favoriteProductsRepository;
 	private final ProductColorRepository productColorRepository;
-	private final CategoryService categoryService;
-	private final FavoriteProductsBuilder favoriteProductsBuilder;
+	private final ProductRepository productRepository;
+	private final ProductBuilder productBuilder;
 
 	@Override
 	public void updateUserFavoriteProducts(String userId, ProductColorDto dtoRequest) {
@@ -64,27 +64,26 @@ public class FavoriteProductsServiceImpl implements FavoriteProductsService {
 	}
 
 	@Override
-	public List<FavoriteProductDto> getFavoriteProductsByUserId(String userId, PageableDto pageable) {
-		Page<FavoriteProduct> favoriteProducts = favoriteProductsRepository.findAllByUserId(userId,
-				PageRequest.of(pageable.getPage(), pageable.getSize()));
-		return favoriteProductsBuilder.buildFavoriteProductsDtoList(favoriteProducts.getContent());
+	public List<ProductDto> getFavoriteProductsByUserId(String userId, PageableDto pageable) {
+		List<Product> products = getProductsByUserId(userId, pageable);
+		return productBuilder.buildProductDtoList(products, true);
 	}
 
 	@Override
-	public List<FavoriteProductDto> getFavoriteProductsByUserIdAndCategoryId(String userId, String categoryId,
-			PageableDto pageable) {
-		List<ObjectId> categoriesIds = categoryService.getCategoriesIdsByParentId(categoryId);
-		if (categoriesIds.isEmpty()) {
-			log.error(
-					"[ON getRandomProductsByStatusAndCategoryId]:: Subcategory for category with id {} doesn't exist.",
-					categoryId);
-			throw new DataNotFoundException(
-					String.format("Subcategories for category with id %s not found.", categoryId));
-		}
-		List<FavoriteProductDto> favoriteProductDtos = getFavoriteProductsByUserId(userId, pageable).stream()
-				.filter(dto -> categoriesIds.stream().anyMatch(c -> c.equals(new ObjectId(dto.getCategoryId()))))
+	public List<ProductDto> getFavoriteProductsByUserIdAndCategoryId(String userId, String categoryId,
+			PageableDto pageable) {	
+		List<Product> products = getProductsByUserId(userId, pageable)
+				.stream().filter(product -> categoryId.equals(product.getSubCategory().getParentId().toString()))
 				.toList();
+		return productBuilder.buildProductDtoList(products, true);
+	}
 
-		return favoriteProductDtos;
+	private List<Product> getProductsByUserId(String userId, PageableDto pageable) {
+		Page<FavoriteProduct> favoriteProducts = favoriteProductsRepository.findAllByUserId(userId,
+				PageRequest.of(pageable.getPage(), pageable.getSize()));
+		List<String> productSkuCodes = favoriteProducts.getContent().stream()
+				.map(product -> product.getProductColor().getProductSkuCode()).toList();
+		List<Product> products = productRepository.findAllByStatusNotDeletedAndSkuCodeIn(productSkuCodes);
+		return products;
 	}
 }
