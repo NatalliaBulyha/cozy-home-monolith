@@ -12,6 +12,6 @@ public class PageNumberValidator implements ConstraintValidator<ValidPageNumber,
 
     @Override
     public boolean isValid(Integer page, ConstraintValidatorContext constraintValidatorContext) {
-        return page.toString().matches("[0-9]+");
+        return page.toString().matches("^[0-9]+$");
     }
 }

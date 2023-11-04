@@ -20,7 +20,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface ValidName {
     String message() default "Invalid name. Name must be not null, greater than or equal to 2 and less than or equal " +
-            "to 32, letters only.";
+            "to 32, letters and - only.";
 
     Class<?>[] groups() default {};
 
