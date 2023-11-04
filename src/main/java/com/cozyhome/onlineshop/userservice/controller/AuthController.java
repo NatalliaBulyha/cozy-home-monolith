@@ -1,6 +1,7 @@
 package com.cozyhome.onlineshop.userservice.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -113,10 +114,14 @@ public class AuthController {
 		return ResponseEntity.ok().body(new TokenResponseDto(token));
 	}
 	
+	@CrossOrigin(origins = { "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
+			"${api.front.additional_url}", "${api.front.main.url}", "${api.front.temporal.url}" }, allowedHeaders = { "Authorization", "Content-Type" },
+		    exposedHeaders = { "Access-Control-Allow-Methods" })
 	@Operation(summary = "Delete user.", description = "Delete user.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @PostMapping("/delete-account")
+	@Secured({"ROLE_ADMIN", "ROLE_CUSTOMER", "ROLE_MANAGER"})
     public ResponseEntity<String> deleteUser(@RequestBody EmailRequest emailRequest) {
         userService.deleteUser(emailRequest.getEmail());
         log.info("[ON deleteUser] :: user deleted successfully!");
