@@ -40,7 +40,7 @@ public class WebSecurityConfig {
 	private final JwtAuthEntryPoint unauthorizedHandler;
 	private final String logoutURL = "${api.secure.basePath}/user/logout";
 	private final List<String> allowedOrigins = List.of("${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
-		"${api.front.additional_url}", "${api.front.main.url}", "${api.front.temporal.url}");
+		"${api.front.additional_url}", "${api.front.main.url}");
 
 	@Value("${api.auth.whitelist}")
 	private final String[] AUTH_WHITELIST;
