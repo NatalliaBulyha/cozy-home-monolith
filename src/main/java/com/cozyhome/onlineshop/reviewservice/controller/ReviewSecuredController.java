@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Set;
 
 @CrossOrigin(origins = { "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
-		"${api.front.additional_url}", "${api.front.main.url}" }, allowedHeaders = { "Authorization" },
+		"${api.front.additional_url}", "${api.front.main.url}", "${api.front.temporal.url}" }, allowedHeaders = { "Authorization" },
 	    exposedHeaders = { "Access-Control-Allow-Methods" })
 @Validated
 @CommonApiResponses
