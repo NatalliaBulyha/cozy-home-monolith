@@ -58,11 +58,11 @@ public class BasketSecuredController {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
 	@Secured({ "ROLE_CUSTOMER" })
 	@PostMapping()
-	public ResponseEntity<List<BasketDto>> refreshBasket(HttpServletRequest request,
+	public ResponseEntity<List<BasketDto>> mergeUserBaskets(HttpServletRequest request,
 			@Valid @RequestBody List<BasketItemDto> dtoList, int pageSize) {
 
 		String userId = (String) request.getAttribute(userIdAttribute);		
-		return ResponseEntity.ok(basketService.refreshBasket(userId, dtoList, pageSize));
+		return ResponseEntity.ok(basketService.mergeUserBaskets(userId, dtoList, pageSize));
 	}
 	
 	@Operation(summary = "Replace user's basket when logging out.")

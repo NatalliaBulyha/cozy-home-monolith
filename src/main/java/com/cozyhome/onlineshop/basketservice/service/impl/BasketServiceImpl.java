@@ -38,7 +38,7 @@ public class BasketServiceImpl implements BasketService {
 	
 
 	@Override
-	public List<BasketDto> refreshBasket(String userId, List<BasketItemDto> newBasket, int pageSize) {
+	public List<BasketDto> mergeUserBaskets(String userId, List<BasketItemDto> newBasket, int pageSize) {
 		final int firstPage = 0;
 	    List<BasketItem> existingBasket = basketRepository.findByUserId(userId);
 
