@@ -46,7 +46,7 @@ public class ReviewSecuredController {
 
     private final ReviewService reviewService;
     @Value("${header.name.user-id}")
-    private String userIdName;
+    private String userIdAttribute;
     @Value("${header.name.user-role}")
     private String userRoleAttributeName;
 
@@ -66,7 +66,7 @@ public class ReviewSecuredController {
     @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     public ResponseEntity<ReviewResponse> addNewReview(@RequestBody @Valid ReviewRequest review,
                                                        HttpServletRequest request) {
-        String userId = (String) request.getAttribute(userIdName);
+        String userId = (String) request.getAttribute(userIdAttribute);
         return new ResponseEntity<>(reviewService.addNewReview(review, userId), HttpStatus.CREATED);
     }
 
@@ -86,7 +86,7 @@ public class ReviewSecuredController {
     @Secured({"ROLE_ADMIN", "ROLE_CUSTOMER"})
     public ResponseEntity<Void> removeReviewById(@RequestParam @ValidUUID String reviewId,
                                                  HttpServletRequest request) {
-        String userId = (String) request.getAttribute(userIdName);
+        String userId = (String) request.getAttribute(userIdAttribute);
         Set<Role> roles = (Set<Role>) request.getAttribute(userRoleAttributeName);
         reviewService.removeReviewById(new ReviewToRemoveDto(reviewId, userId, roles));
         return new ResponseEntity<>(HttpStatus.OK);

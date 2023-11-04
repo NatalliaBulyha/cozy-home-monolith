@@ -26,9 +26,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-//@CrossOrigin(origins = { "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
-//		"${api.front.additional_url}", "${api.front.main.url}" }, allowedHeaders = { "Authorization" },
-//	    exposedHeaders = { "Access-Control-Allow-Methods" })
+@CrossOrigin(origins = { "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
+		"${api.front.additional_url}", "${api.front.main.url}" }, allowedHeaders = { "Authorization" },
+	    exposedHeaders = { "Access-Control-Allow-Methods" })
 @Tag(name = "User")
 @ApiResponse
 @RequiredArgsConstructor
@@ -37,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("${api.secure.basePath}/user")
 public class UserSecuredController {
     @Value("${header.name.user-id}")
-    private String userIdName;
+    private String userIdAttribute;
     private final UserService userService;
     private final TokenBlackListService tokenBlackListService;
     private final JwtTokenUtil jwtTokenUtil;
@@ -49,7 +49,7 @@ public class UserSecuredController {
     @PutMapping("/profile/update")
     public ResponseEntity<UserInformationResponse> updateUserInfo(@RequestBody @Valid UserInformationRequest userInformationDto,
                                                                   HttpServletRequest request) {
-        String userId = (String) request.getAttribute(userIdName);
+        String userId = (String) request.getAttribute(userIdAttribute);
         return ResponseEntity.ok(userService.updateUserData(userInformationDto, userId));
     }
 
@@ -59,7 +59,7 @@ public class UserSecuredController {
     @Secured({"ROLE_CUSTOMER"})
     @GetMapping("/profile")
     public ResponseEntity<UserInformationResponse> getUserInfo(HttpServletRequest request) {
-        String userId = (String) request.getAttribute(userIdName);
+        String userId = (String) request.getAttribute(userIdAttribute);
         return ResponseEntity.ok(userService.getUserInfo(userId));
     }
 
