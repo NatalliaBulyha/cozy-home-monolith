@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 
 @CrossOrigin(origins = { "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
 		"${api.front.additional_url}", "${api.front.main.url}", "${api.front.temporal.url}" }, allowedHeaders = {
-				"Authorization" }, exposedHeaders = { "Access-Control-Allow-Methods" })
+				"Authorization", "Content-Type" }, exposedHeaders = { "Access-Control-Allow-Methods" })
 @Tag(name = "Basket")
 @ApiResponse
 @RequiredArgsConstructor
