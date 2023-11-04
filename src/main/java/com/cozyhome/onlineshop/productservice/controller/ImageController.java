@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@CrossOrigin({ "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
+@CrossOrigin(origins = { "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
 		"${api.front.additional_url}", "${api.front.main.url}" })
 @Tag(name = "Image")
 @CommonApiResponses

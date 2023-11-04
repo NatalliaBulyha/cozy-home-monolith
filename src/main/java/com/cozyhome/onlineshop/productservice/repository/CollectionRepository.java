@@ -9,5 +9,6 @@ import java.util.List;
 
 @Repository
 public interface CollectionRepository extends MongoRepository<Collection, ObjectId> {
+	
     List<Collection> findAllByActive(Boolean active);
 }

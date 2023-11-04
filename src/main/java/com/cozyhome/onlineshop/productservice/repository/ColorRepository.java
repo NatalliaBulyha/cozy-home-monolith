@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface ColorRepository extends MongoRepository<Color, ObjectId> {
+	
     List<Color> findAllByActive(boolean active);
-
 }
