@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Server
 public class KeepAliveServer {
+
 	private final String keepAliveEndpoint = "http://localhost:8080/api/v1/ping";
 	
 	@Scheduled(fixedRate = 300000)
