@@ -38,7 +38,8 @@ public class BasketServiceImpl implements BasketService {
 	
 
 	@Override
-	public List<BasketDto> refreshBasket(String userId, List<BasketItemDto> newBasket, PageableDto pageable) {
+	public List<BasketDto> refreshBasket(String userId, List<BasketItemDto> newBasket, int pageSize) {
+		final int firstPage = 0;
 	    List<BasketItem> existingBasket = basketRepository.findByUserId(userId);
 
 	    for (BasketItemDto newBasketItem : newBasket) {
@@ -61,7 +62,7 @@ public class BasketServiceImpl implements BasketService {
 	        }
 	    }	    
 	    basketRepository.saveAll(existingBasket);
-	    return getBasket(userId, pageable);
+	    return getBasket(userId, new PageableDto(firstPage, pageSize));
 	}
 
 	@Override

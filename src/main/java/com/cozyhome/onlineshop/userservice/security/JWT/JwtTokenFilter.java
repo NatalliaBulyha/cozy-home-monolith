@@ -37,7 +37,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 	@Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-//        if (shouldFilter(request)) {
             String username = null;
             String jwtToken = jwtTokenUtil.resolveToken(request);
             if (jwtToken != null) {
@@ -63,14 +62,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     log.info("[ON doFilterInternal]:: set authentication to SecurityContextHolder - {}", authToken);
                 }
             }
-//        }
         log.info("[ON doFilterInternal]:: filtering request and response by FilterChain");
         filterChain.doFilter(request, response);
-    }
-
-    private boolean shouldFilter(HttpServletRequest request) {
-        String requestUri = request.getRequestURI();
-        return  !requestUri.toLowerCase().startsWith(noAuthPathUrl);
     }
 	
 }

@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "favorite_items")
+@Table(name = "favorite_products")
 public class FavoriteProduct {
 	
 	@Id

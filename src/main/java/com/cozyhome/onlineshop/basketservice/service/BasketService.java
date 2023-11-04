@@ -10,7 +10,7 @@ public interface BasketService {
 	
 	List<BasketDto> getBasket(String userId, PageableDto pageable);
 	
-	List<BasketDto> refreshBasket(String userId, List<BasketItemDto> dtoList, PageableDto pageable);
+	List<BasketDto> refreshBasket(String userId, List<BasketItemDto> dtoList, int pageSize);
 	
 	void replaceBasket(String userId, List<BasketItemDto> dtoList);
 

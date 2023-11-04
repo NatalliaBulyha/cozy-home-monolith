@@ -59,10 +59,10 @@ public class BasketSecuredController {
 	@Secured({ "ROLE_CUSTOMER" })
 	@PostMapping()
 	public ResponseEntity<List<BasketDto>> refreshBasket(HttpServletRequest request,
-			@Valid @RequestBody List<BasketItemDto> dtoList, @Valid PageableDto pageable) {
+			@Valid @RequestBody List<BasketItemDto> dtoList, int pageSize) {
 
 		String userId = (String) request.getAttribute(userIdAttribute);		
-		return ResponseEntity.ok(basketService.refreshBasket(userId, dtoList, pageable));
+		return ResponseEntity.ok(basketService.refreshBasket(userId, dtoList, pageSize));
 	}
 	
 	@Operation(summary = "Replace user's basket when logging out.")
