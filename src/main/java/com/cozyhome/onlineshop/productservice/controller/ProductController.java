@@ -68,7 +68,7 @@ public class ProductController {
     	String userId = (String) request.getAttribute(userIdAttribute);
     	List<ProductDto> products = productService.getRandomProductsByStatus(status, countOfProducts);
     	if(userId != null) {
-    		productService.markFavoriteForUser(userId, products);
+    		productService.markFavoritesForUser(userId, products);
     	}
         return ResponseEntity.ok(products);
     }
@@ -84,7 +84,7 @@ public class ProductController {
     	String userId = (String) request.getAttribute(userIdAttribute);
     	List<ProductDto> products = productService.getRandomProductsByStatusAndCategoryId(status, categoryId, countOfProducts);
     	if(userId != null) {
-    		productService.markFavoriteForUser(userId, products);
+    		productService.markFavoritesForUser(userId, products);
     	}
     	return ResponseEntity.ok(products);
     }
@@ -99,7 +99,7 @@ public class ProductController {
     	String userId = (String) request.getAttribute(userIdAttribute);
     	List<ProductDto> products = productService.getProductsByCategoryId(categoryId, pageable);
     	if(userId != null) {
-    		productService.markFavoriteForUser(userId, products);
+    		productService.markFavoritesForUser(userId, products);
     	}
     	return ResponseEntity.ok(products);
     }
@@ -133,7 +133,7 @@ public class ProductController {
     	String userId = (String) request.getAttribute(userIdAttribute);
     	ProductCardDto productCardDto = productService.getProductCard(dto);
     	if(userId != null) {
-    		productService.markFavoriteForUser(userId, productCardDto);
+    		productService.markFavoritesForUser(userId, productCardDto);
     	}
     	return ResponseEntity.ok().body(productCardDto);
     }
@@ -148,7 +148,7 @@ public class ProductController {
     	String userId = (String) request.getAttribute(userIdAttribute);
     	List<ProductDto> products = productService.getProductsByCollectionExcludeSkuCode(collectionId, productSkuCode);
     	if(userId != null) {
-    		productService.markFavoriteForUser(userId, products);
+    		productService.markFavoritesForUser(userId, products);
     	}
     	return ResponseEntity.ok(products);
     }
@@ -160,5 +160,14 @@ public class ProductController {
     @PostMapping("/basket")
     public ResponseEntity<List<ProductForBasketDto>> getProductsForBasket(@RequestBody @Valid List<ProductColorDto> productColorDtos){
         return ResponseEntity.ok().body(productService.getProductsForBasket(productColorDtos));
+    }
+    
+    @Operation(summary = "Search for products by keyword.", description = "Search for products by keyword. The keyword can be a partial or complete skuCode or name.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION),
+            @ApiResponse(responseCode = SwaggerResponse.Code.CODE_400, description = SwaggerResponse.Message.CODE_400) })
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductDto>> search(@RequestParam String keyWord, @Valid PageableDto pageable){
+        return ResponseEntity.ok(productService.search(keyWord, pageable));
     }
 }

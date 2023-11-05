@@ -80,11 +80,6 @@ public class ProductServiceImpl implements ProductService {
 	public List<ProductDto> getRandomProductsByStatus(Byte status, int productCount) {
 		List<Product> products = productRepositoryCustom
 				.getRandomByStatusAndInStock(ProductStatus.valueOfDescription(status), productCount);
-		if (products.isEmpty()) {
-			log.info("[ON getRandomProductsByStatus]:: Product with status {} not found.",
-					ProductStatus.valueOfDescription(status));
-			return new ArrayList<>();
-		}
 		return productBuilder.buildProductDtoList(products, isMain);
 	}
 
@@ -101,12 +96,6 @@ public class ProductServiceImpl implements ProductService {
 		}
 		List<Product> products = productRepositoryCustom.getRandomByStatusAndCategoryIdAndInStock(
 				ProductStatus.valueOfDescription(status), categoriesIds, countOfProducts);
-		if (products.isEmpty()) {
-			log.info(
-					"[ON getRandomProductsByStatusAndCategoryId]:: Product with status {} and category id {} not found.",
-					ProductStatus.valueOfDescription(status), categoriesIds);
-			return new ArrayList<>();
-		}
 		return productBuilder.buildProductDtoList(products, isMain);
 	}
 
@@ -122,10 +111,6 @@ public class ProductServiceImpl implements ProductService {
 			products = productRepository.findAllByStatusNotDeletedAndCategoryIdIn(objectIds,
 					buildPageable(pageable, new SortDto(null, null)));
 		}
-		if (products.isEmpty()) {
-			log.info("[ON getProductsByCategoryId]:: Product with category id {} not found.", categoryId);
-			return new ArrayList<>();
-		}
 		return productBuilder.buildProductDtoList(products.getContent(), isMain);
 	}
 
@@ -133,10 +118,6 @@ public class ProductServiceImpl implements ProductService {
 	public List<ProductDto> getFilteredProducts(FilterDto filter, PageableDto pageable, SortDto sortDto) {
 		Pageable currentPageable = buildPageable(pageable, sortDto);
 		List<Product> products = productRepositoryCustom.filterProductsByCriterias(filter, currentPageable);
-		if (products.isEmpty()) {
-			log.info("[ON getFilteredProducts]:: Products by the given parameters don't found.");
-			return new ArrayList<>();
-		}
 		return productBuilder.buildProductDtoList(products, isMain);
 	}
 
@@ -169,7 +150,7 @@ public class ProductServiceImpl implements ProductService {
 			log.info("[ON getProductCard]:: Product with sku code {} and color hex {} doesn't exist.",
 					productColor.getProductSkuCode(), productColor.getColorHex());
 			return new ProductCardDto();
-		}		
+		}
 		return productBuilder.buildProductCardDto(product.get(), productColor.getColorHex());
 	}
 
@@ -177,11 +158,6 @@ public class ProductServiceImpl implements ProductService {
 	public List<ProductDto> getProductsByCollectionExcludeSkuCode(String collectionId, String skuCodeToExclude) {
 		List<Product> products = productRepository
 				.findAllByStatusNotDeletedAndCollectionIdExcludeSkuCode(new ObjectId(collectionId), skuCodeToExclude);
-		if (products.isEmpty()) {
-			log.info("[ON getProductsByCollectionExcludeSkuCode]:: Products from collection with id {} don't found.",
-					collectionId);
-			return new ArrayList<>();
-		}
 		return productBuilder.buildProductDtoList(products, isMain);
 	}
 
@@ -211,18 +187,18 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public void markFavoriteForUser(String userId, List<ProductDto> products) {		
+	public void markFavoritesForUser(String userId, List<ProductDto> products) {
 		for (ProductDto productDto : products) {
 			doMarkFavorites(userId, productDto.getSkuCode(), productDto.getColorDtoList());
 		}
 	}
 
 	@Override
-	public void markFavoriteForUser(String userId, ProductCardDto productCard) {		
+	public void markFavoritesForUser(String userId, ProductCardDto productCard) {
 		doMarkFavorites(userId, productCard.getSkuCode(), productCard.getColors());
 	}
-	
-	private void doMarkFavorites(String userId, String skuCode, List<ColorQuantityStatusDto> colorsDto){
+
+	private void doMarkFavorites(String userId, String skuCode, List<ColorQuantityStatusDto> colorsDto) {
 		Set<ProductColor> favoriteProductColors = favoriteItemsRepository.findAllByUserId(userId).stream()
 				.map(item -> item.getProductColor()).collect(Collectors.toSet());
 		for (ColorQuantityStatusDto colorDto : colorsDto) {
@@ -242,5 +218,15 @@ public class ProductServiceImpl implements ProductService {
 			orders.add(new Order(DIRECTION_FOR_DEFAULT_SORTING, FIELD_NAME_FOR_ADDITIONAL_SORTING));
 		}
 		return PageRequest.of(pageable.getPage(), pageable.getSize(), Sort.by(orders));
+	}
+
+	private Pageable buildPageable(PageableDto pageable) {
+		return PageRequest.of(pageable.getPage(), pageable.getSize());
+	}
+
+	@Override
+	public List<ProductDto> search(String keyWord, PageableDto pageable) {		
+		List<Product> product = productRepositoryCustom.search(keyWord, buildPageable(pageable));		
+		return productBuilder.buildProductDtoList(product, isMain);
 	}
 }
