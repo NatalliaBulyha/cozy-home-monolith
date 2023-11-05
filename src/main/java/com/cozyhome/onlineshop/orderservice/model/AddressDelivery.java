@@ -14,6 +14,6 @@ import lombok.experimental.SuperBuilder;
 public class AddressDelivery extends Delivery {
     private String street;
     private String house;
-    private Integer apartment;
+    private String apartment;
     private String comment;
 }
