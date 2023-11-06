@@ -32,7 +32,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Value("${header.name.user-role}")
     private String userRoleAttributeName;
     @Value("${api.secure.basePath}")
-    private String noAuthPathUrl;
+    private String authPathUrl;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -68,7 +68,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private boolean shouldFilter(HttpServletRequest request) {
         String requestUri = request.getRequestURI();
-        return requestUri.toLowerCase().startsWith(noAuthPathUrl);
+        return requestUri.toLowerCase().startsWith(authPathUrl);
     }
 
 }

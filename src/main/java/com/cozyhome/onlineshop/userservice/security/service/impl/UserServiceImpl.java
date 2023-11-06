@@ -128,6 +128,7 @@ public class UserServiceImpl implements UserService {
 
         User user = resetToken.getUser();
         user.setPassword(encoder.encode(newPassword.getPassword()));
+		user.setModifiedAt(LocalDateTime.now());
         userRepository.save(user);
 
         securityTokenRepository.delete(resetToken);	
@@ -143,6 +144,7 @@ public class UserServiceImpl implements UserService {
 		user.setLastName(userInformationDto.getLastName());
 		user.setFirstName(userInformationDto.getFirstName());
 		user.setPhoneNumber(userInformationDto.getPhoneNumber());
+		user.setModifiedAt(LocalDateTime.now());
 
 		if (!user.getEmail().equals(userInformationDto.getEmail())) {
 			if (userRepository.existsByEmail(userInformationDto.getEmail()) ) {
@@ -178,7 +180,9 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void deleteUser(String email) {
 		User user = userRepository.getByEmail(email).orElseThrow(() -> new IllegalArgumentException("Not user found by the email " + email));
-		log.info("[ON deleteUser] :: request to delete user with email {}", email);
-		userRepository.delete(user);
+		user.setModifiedAt(LocalDateTime.now());
+		user.setStatus(UserStatusE.DELETED);
+		log.info("[ON deleteUser] :: changed the user status to DELETED for the user with email {}", email);
+		userRepository.save(user);
 	}
 }
