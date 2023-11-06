@@ -17,8 +17,8 @@ public class KeepAliveServer {
 	@Value("${server.keep-alive.url}")
 	private String keepAliveEndpoint;	
 	
-	@Scheduled(fixedRate = 60000)
-	public void sendKeepAliveRequest() {		
+	@Scheduled(fixedRate = 300000)
+	public void sendKeepAliveRequest() {
 		 try {
 	            HttpClient client = HttpClients.createDefault();
 	            HttpGet request = new HttpGet(keepAliveEndpoint);
