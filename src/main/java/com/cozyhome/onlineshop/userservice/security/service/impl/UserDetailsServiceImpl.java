@@ -22,13 +22,13 @@ public class UserDetailsServiceImpl implements ExtendedUserDetailsService {
 	
 	@Override
 	public AuthenticatedUserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-		Optional<User> user = userRepository.getByEmail(email);
+		Optional<User> user = userRepository.findByEmail(email);
 		if(!user.isPresent()) {
-			log.warn("[ON loadUserByUsername]:: user with username::[ {} ] not found", email);
+			log.error("[ON loadUserByUsername]:: user with username::[ {} ] not found", email);
             throw new UsernameNotFoundException("User not found for username - " + email);
 		}
 		log.info("[ON loadUserByUsername]:: loaded user with username [ {} ] and roles [ {} ]", user.get().getEmail(),
-                user.get().getRoles());
+                user.get().getRoles().stream().map(role -> role.getName()).toList());
         return new AuthenticatedUserDetails(user.get());
 	}		
 
