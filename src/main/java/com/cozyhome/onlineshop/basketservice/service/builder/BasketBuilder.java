@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.cozyhome.onlineshop.basketservice.model.BasketItem;
+import com.cozyhome.onlineshop.dto.basket.BasketDto;
+import com.cozyhome.onlineshop.dto.basket.BasketItemDto;
 import com.cozyhome.onlineshop.dto.request.ProductColorDto;
-import com.cozyhome.onlineshop.dto.shoppingcart.BasketDto;
-import com.cozyhome.onlineshop.dto.shoppingcart.BasketItemDto;
 import com.cozyhome.onlineshop.inventoryservice.model.ProductColor;
 import com.cozyhome.onlineshop.inventoryservice.model.enums.ProductQuantityStatus;
 import com.cozyhome.onlineshop.inventoryservice.repository.ProductColorRepository;
@@ -20,6 +20,7 @@ import com.cozyhome.onlineshop.productservice.model.Product;
 import com.cozyhome.onlineshop.productservice.model.enums.ColorsEnum;
 import com.cozyhome.onlineshop.productservice.repository.ImageRepositoryCustom;
 import com.cozyhome.onlineshop.productservice.repository.ProductRepository;
+import com.cozyhome.onlineshop.userservice.model.FavoriteProduct;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,13 +37,17 @@ public class BasketBuilder {
 	@Value("${image.product.path.base}")
     private String imagePathBase;
 
-	public List<BasketDto> buildBasketDtoList(List<BasketItem> basketItemlist){
+	public List<BasketDto> buildBasketDtoList(List<BasketItem> basketItemlist, List<FavoriteProduct> favoriteProductList){
 		Map<ProductColorDto, ImageProduct> imageMap = getImageMap(basketItemlist);
 		List<BasketDto> basketDtoList = new ArrayList<>();
 		for(BasketItem basketItem : basketItemlist) {
 			String skuCode = basketItem.getProductColor().getProductSkuCode();
 			String hex = basketItem.getProductColor().getColorHex();
 			BasketDto dto = buildBasketDto(basketItem, imageMap.get(new ProductColorDto(skuCode, hex)));
+			boolean isFavorite = favoriteProductList.stream().anyMatch(item -> item.getProductColor().equals(basketItem.getProductColor()));
+			if(isFavorite) {
+				dto.setFavorite(isFavorite);
+			}
 			basketDtoList.add(dto);
 		}
 		return basketDtoList;

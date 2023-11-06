@@ -1,26 +1,24 @@
 package com.cozyhome.onlineshop.dto;
 
-import com.cozyhome.onlineshop.dto.productcard.ColorQuantityStatusDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 import java.util.List;
 
-@AllArgsConstructor
-@NoArgsConstructor
+import com.cozyhome.onlineshop.dto.productcard.ColorQuantityStatusDto;
+
+import lombok.Builder;
+import lombok.Data;
+
 @Builder
 @Data
-public class ProductDto {
-    private String skuCode;
-    private String name;
+public class FavoriteProductDto {
+
+	private String skuCode;
+    private String productName;
     private String shortDescription;
+    private String categoryId;
     private BigDecimal price;
-    private Byte discount;
     private BigDecimal priceWithDiscount;
+    private byte discount;
     private List<ImageDto> imageDtoList;
     private List<ColorQuantityStatusDto> colorDtoList;
-    private String productQuantityStatus;
 }

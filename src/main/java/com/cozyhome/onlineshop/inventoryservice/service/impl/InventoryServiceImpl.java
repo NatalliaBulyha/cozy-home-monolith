@@ -27,12 +27,12 @@ public class InventoryServiceImpl implements InventoryService {
 
 	@Override
 	public int getQuantityByProductColor(ProductColorDto request) {
-		int quantity = -1;
+		int quantity = 0;
 		Optional<Inventory> inventory = inventoryRepository.findByProductColorProductSkuCodeAndProductColorColorHex(
 				request.getProductSkuCode(), request.getColorHex());
 		if (inventory.isPresent()) {
 			quantity = inventory.get().getQuantity();
-			log.info("GET QUANTITY [" + quantity + "] for product skuCode [" + request.getProductSkuCode()
+			log.info("[ON getQuantityByProductColor] :: get quantity [" + quantity + "] for product skuCode [" + request.getProductSkuCode()
 					+ "] and color hex [" + request.getColorHex() + "].");
 		}
 		return quantity;

@@ -55,18 +55,10 @@ public class ProductBuilder {
 
 	public List<ProductDto> buildProductDtoList(List<Product> products, boolean isMain) {
 		List<String> productsSkuCodes = extractSkuCodes(products);
-
-		List<ImageProduct> images = imageRepositoryCustom.findImagesByMainPhotoAndProductSkuCodeIn(productsSkuCodes, isMain);
-		Map<String, List<ImageProduct>> imageMap = getImageMap(images);
+		Map<String, List<ImageProduct>> imageMap = getImageMap(productsSkuCodes, isMain);
 		Map<String, QuantityStatusDto> quantityStatusMap = inventoryService.getQuantityStatusBySkuCodeList(productsSkuCodes);
-		log.info("GET PRODUCT QUANTITY STATUS MAP " + quantityStatusMap);
-
 		return products.stream().map(product -> buildProductDto(product, imageMap.get(product.getSkuCode()),
 				quantityStatusMap.get(product.getSkuCode()))).toList();
-	}
-
-	private List<String> extractSkuCodes(List<Product> products) {
-		return products.stream().map(Product::getSkuCode).toList();
 	}
 
 	public ProductDto buildProductDto(Product product, List<ImageProduct> images,
@@ -89,7 +81,7 @@ public class ProductBuilder {
 			productDto.setDiscount(product.getDiscount());
 			productDto.setPriceWithDiscount(roundBigDecimalToZeroDecimalPlace(product.getPriceWithDiscount()));
 		}
-		log.info("PRODUCT DTO[" + productDto + "]");
+		log.info("[ON buildProductDto] :: build product dto with skuCode {}", productDto.getSkuCode());
 		return productDto;
 	}
 
@@ -213,7 +205,9 @@ public class ProductBuilder {
 	private float roundFloatToOneDecimalPlace(Float floatValue) {
 		float roundedFloat = 0.0f;
 		String format = "%.1f";
+//		String format = "%.0f";
 		if (floatValue != null) {
+//			roundedFloat = Float.valueOf(String.format(format, floatValue));
 			roundedFloat = Float.parseFloat(String.format(format, floatValue));
 		}
 		return roundedFloat;
@@ -223,7 +217,12 @@ public class ProductBuilder {
 		return value.setScale(digitsAfterDecimal, RoundingMode.HALF_UP);
 	}
 
-	private Map<String, List<ImageProduct>> getImageMap(List<ImageProduct> images) {
+	private List<String> extractSkuCodes(List<Product> products) {
+		return products.stream().map(Product::getSkuCode).toList();
+	}
+	
+	private Map<String, List<ImageProduct>> getImageMap(List<String> productsSkuCodes, boolean isMain) {
+		List<ImageProduct> images = imageRepositoryCustom.findImagesByMainPhotoAndProductSkuCodeIn(productsSkuCodes, isMain);
 		return images.stream()
 				.collect(Collectors.groupingBy(image -> image.getProduct().getSkuCode(), Collectors.toList()));
 	}
