@@ -1,13 +1,10 @@
 package com.cozyhome.onlineshop.productservice.repository.impl;
 
-import com.cozyhome.onlineshop.dto.filter.FilterDto;
-import com.cozyhome.onlineshop.dto.filter.ParametersDto;
-import com.cozyhome.onlineshop.productservice.model.Product;
-import com.cozyhome.onlineshop.productservice.model.enums.MaxLoadEnum;
-import com.cozyhome.onlineshop.productservice.model.enums.ProductStatus;
-import com.cozyhome.onlineshop.productservice.repository.ProductRepositoryCustom;
-import com.cozyhome.onlineshop.productservice.service.CategoryService;
-import lombok.RequiredArgsConstructor;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.sample;
+
+import java.util.List;
+
 import org.bson.types.Decimal128;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Pageable;
@@ -19,10 +16,15 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.cozyhome.onlineshop.dto.filter.FilterDto;
+import com.cozyhome.onlineshop.dto.filter.ParametersDto;
+import com.cozyhome.onlineshop.productservice.model.Product;
+import com.cozyhome.onlineshop.productservice.model.enums.MaxLoadEnum;
+import com.cozyhome.onlineshop.productservice.model.enums.ProductStatus;
+import com.cozyhome.onlineshop.productservice.repository.ProductRepositoryCustom;
+import com.cozyhome.onlineshop.productservice.service.CategoryService;
 
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.sample;
+import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
@@ -33,21 +35,18 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
 	@Override
 	public List<Product> getRandomByStatusAndInStock(ProductStatus status, int productCount) {
-		Aggregation aggregation = Aggregation.newAggregation(
-            match(Criteria.where("status").is(status)),
-            match(Criteria.where("available").is(true)),
-            sample(productCount));
+		Aggregation aggregation = Aggregation.newAggregation(match(Criteria.where("status").is(status)),
+				match(Criteria.where("available").is(true)), sample(productCount));
 
 		List<Product> result = mongoTemplate.aggregate(aggregation, Product.class, Product.class).getMappedResults();
 		return result;
 	}
 
 	@Override
-	public List<Product> getRandomByStatusAndCategoryIdAndInStock(ProductStatus status, List<ObjectId> categoriesIds, int count) {
+	public List<Product> getRandomByStatusAndCategoryIdAndInStock(ProductStatus status, List<ObjectId> categoriesIds,
+			int count) {
 		Aggregation aggregation = Aggregation.newAggregation(match(Criteria.where("subCategory").in(categoriesIds)),
-            match(Criteria.where("status").is(status)),
-            match(Criteria.where("available").is(true)),
-            sample(count));
+				match(Criteria.where("status").is(status)), match(Criteria.where("available").is(true)), sample(count));
 
 		List<Product> result = mongoTemplate.aggregate(aggregation, Product.class, Product.class).getMappedResults();
 		return result;
@@ -135,20 +134,23 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 			query.addCriteria(Criteria.where("bedWidth").lte(filter.getBedWidthMax()).gte(filter.getBedWidthMin()));
 		}
 
-        if (filter.getMaxLoad() != null) {
-            MaxLoadEnum.MaxLoad maxLoad = MaxLoadEnum.findValues(filter.getMaxLoad());
+		if (filter.getMaxLoad() != null) {
+			MaxLoadEnum.MaxLoad maxLoad = MaxLoadEnum.findValues(filter.getMaxLoad());
 
-            if (maxLoad.getLoadMin() > 0 && maxLoad.getLoadMax() > 0 && maxLoad.getLess() == 0 && maxLoad.getMore() == 0) {
-                query.addCriteria(Criteria.where("maxLoad").lte(maxLoad.getLoadMax()).gte(maxLoad.getLoadMin()));
-            } else if (maxLoad.getLoadMin() == 0 && maxLoad.getLoadMax() == 0 && maxLoad.getLess() > 0 && maxLoad.getMore() > 0){
-                query.addCriteria(Criteria.where("maxLoad").lte(maxLoad.getLess()).gte(maxLoad.getMore()));
-            }
-        }
+			if (maxLoad.getLoadMin() > 0 && maxLoad.getLoadMax() > 0 && maxLoad.getLess() == 0
+					&& maxLoad.getMore() == 0) {
+				query.addCriteria(Criteria.where("maxLoad").lte(maxLoad.getLoadMax()).gte(maxLoad.getLoadMin()));
+			} else if (maxLoad.getLoadMin() == 0 && maxLoad.getLoadMax() == 0 && maxLoad.getLess() > 0
+					&& maxLoad.getMore() > 0) {
+				query.addCriteria(Criteria.where("maxLoad").lte(maxLoad.getLess()).gte(maxLoad.getMore()));
+			}
+		}
 
 		return mongoTemplate.find(query, Product.class);
 	}
 
-    private List<Product> findByCategoryIdAndColorId(List<ObjectId> categoriesIds, List<? extends ParametersDto> colorsId) {
+	private List<Product> findByCategoryIdAndColorId(List<ObjectId> categoriesIds,
+			List<? extends ParametersDto> colorsId) {
 		List<String> colorsIdsObjectId = convertColorToStringIdList(colorsId);
 		LookupOperation lookup = LookupOperation.newLookup().from("ImageProduct").localField("_id")
 				.foreignField("product.$id").as("imageProduct");
@@ -165,8 +167,20 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 		return stringList.stream().map(ParametersDto::getId).map(ObjectId::new).toList();
 	}
 
-    private List<String> convertColorToStringIdList(List<? extends ParametersDto> stringList) {
-        return stringList.stream().map(ParametersDto::getId).toList();
-    }
+	private List<String> convertColorToStringIdList(List<? extends ParametersDto> stringList) {
+		return stringList.stream().map(ParametersDto::getId).toList();
+	}
+
+	@Override
+	public List<Product> search(String keyWord, Pageable pageable) {
+		final Query query = pageable == null ? new Query() : new Query().with(pageable);
+		final String pattern = ".*" + keyWord + ".*";
+		final String caseInsensitive = "i";
+		Criteria skuCodeCriteria = Criteria.where("skuCode").regex(pattern);		
+	    Criteria nameCriteria = Criteria.where("name").regex(pattern, caseInsensitive);	
+
+		query.addCriteria(new Criteria().orOperator(skuCodeCriteria, nameCriteria));
+	    return mongoTemplate.find(query, Product.class);
+	}
 
 }
