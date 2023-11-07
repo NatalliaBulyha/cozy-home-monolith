@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cozyhome.onlineshop.basketservice.service.BasketService;
-import com.cozyhome.onlineshop.dto.shoppingcart.BasketDto;
-import com.cozyhome.onlineshop.dto.shoppingcart.BasketItemDto;
+import com.cozyhome.onlineshop.dto.basket.BasketDto;
+import com.cozyhome.onlineshop.dto.basket.BasketItemDto;
 import com.cozyhome.onlineshop.productservice.controller.swagger.SwaggerResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,11 +57,11 @@ public class BasketSecuredController {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
 	@Secured({ "ROLE_CUSTOMER" })
 	@PostMapping()
-	public ResponseEntity<List<BasketDto>> refreshBasket(HttpServletRequest request,
+	public ResponseEntity<List<BasketDto>> mergeUserBaskets(HttpServletRequest request,
 			@Valid @RequestBody List<BasketItemDto> dtoList) {
 
 		String userId = (String) request.getAttribute(userIdAttribute);		
-		return ResponseEntity.ok(basketService.refreshBasket(userId, dtoList));
+		return ResponseEntity.ok(basketService.mergeUserBaskets(userId, dtoList));
 	}
 	
 	@Operation(summary = "Replace user's basket when logging out.")

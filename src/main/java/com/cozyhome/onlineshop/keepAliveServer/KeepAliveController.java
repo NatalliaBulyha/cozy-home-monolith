@@ -14,7 +14,7 @@ public class KeepAliveController {
 	
 	@GetMapping()
 	public ResponseEntity<String> pingServer() {
-	    log.info("[ON pingServer] :: Received a keep-alive request at /api/v1/ping");
+	    log.warn("[ON pingServer] :: Received a keep-alive request at /api/v1/ping");
 	    return ResponseEntity.ok().build();
 	}
 }

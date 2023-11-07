@@ -70,5 +70,4 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         String requestUri = request.getRequestURI();
         return requestUri.toLowerCase().startsWith(authPathUrl);
     }
-
 }

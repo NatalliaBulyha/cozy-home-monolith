@@ -9,10 +9,12 @@ import com.cozyhome.onlineshop.basketservice.model.BasketItem;
 import com.cozyhome.onlineshop.basketservice.repository.BasketRepository;
 import com.cozyhome.onlineshop.basketservice.service.BasketService;
 import com.cozyhome.onlineshop.basketservice.service.builder.BasketBuilder;
-import com.cozyhome.onlineshop.dto.shoppingcart.BasketDto;
-import com.cozyhome.onlineshop.dto.shoppingcart.BasketItemDto;
+import com.cozyhome.onlineshop.dto.basket.BasketDto;
+import com.cozyhome.onlineshop.dto.basket.BasketItemDto;
 import com.cozyhome.onlineshop.inventoryservice.model.ProductColor;
 import com.cozyhome.onlineshop.inventoryservice.repository.ProductColorRepository;
+import com.cozyhome.onlineshop.userservice.model.FavoriteProduct;
+import com.cozyhome.onlineshop.userservice.repository.FavoriteProductRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,16 +25,18 @@ public class BasketServiceImpl implements BasketService {
 	private final BasketRepository basketRepository;
 	private final ProductColorRepository productColorRepository;
 	private final BasketBuilder basketBuilder;
+	private final FavoriteProductRepository favoriteProductRepository;
 
 	@Override
 	public List<BasketDto> getBasket(String userId) {
-		List<BasketItem> list = basketRepository.findByUserId(userId);		
-		return basketBuilder.buildBasketDtoList(list);
+		List<BasketItem> list = basketRepository.findByUserId(userId);
+		List<FavoriteProduct> favoriteItems = favoriteProductRepository.findAllByUserId(userId);
+		return basketBuilder.buildBasketDtoList(list, favoriteItems);
 	}	
 	
 
 	@Override
-	public List<BasketDto> refreshBasket(String userId, List<BasketItemDto> newBasket) {
+	public List<BasketDto> mergeUserBaskets(String userId, List<BasketItemDto> newBasket) {
 	    List<BasketItem> existingBasket = basketRepository.findByUserId(userId);
 
 	    for (BasketItemDto newBasketItem : newBasket) {
