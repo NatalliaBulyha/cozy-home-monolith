@@ -9,20 +9,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class ReviewBuilder {
     private final UserRepository userRepository;
-    public List<ReviewResponse> buildReviewsResponse(List<Review> reviews) {
-        return reviews.stream().map(this::buildReviewResponse).toList();
-    }
 
     public ReviewResponse buildReviewResponse(Review review) {
         String userId = review.getUserId();
-        User user = userRepository.getUserById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new DataNotFoundException(String.format("User with id = %s doesn't found", userId)));
         log.info("[ON getReviewsForProductAllInf]:: build review with id: {} for user: {}.", review.getId(), review.getUserId());
         return ReviewResponse.builder()

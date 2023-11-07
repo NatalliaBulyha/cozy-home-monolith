@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public boolean existsByEmail(String email) {
-		return userRepository.existsByEmail(email);
+		return userRepository.existsByEmailAndStatus(email, UserStatusE.ACTIVE);
 	}
 
 	@Override
@@ -137,7 +137,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserInformationResponse updateUserData(UserInformationRequest userInformationDto, String userId) {
-		User user = userRepository.findById(userId)
+		User user = userRepository.findByIdAndStatus(userId, UserStatusE.ACTIVE)
 				.orElseThrow(() -> new DataNotFoundException(
 						String.format("User with email = %s not found.", userInformationDto.getEmail())));
 
@@ -147,7 +147,7 @@ public class UserServiceImpl implements UserService {
 		user.setModifiedAt(LocalDateTime.now());
 
 		if (!user.getEmail().equals(userInformationDto.getEmail())) {
-			if (userRepository.existsByEmail(userInformationDto.getEmail()) ) {
+			if (userRepository.existsByEmailAndStatus(userInformationDto.getEmail(), UserStatusE.ACTIVE) ) {
 				throw new DataAlreadyExistException(String.format("Email %s is already in use", userInformationDto.getEmail()));
 			}
 			user.setEmail(userInformationDto.getEmail());
@@ -172,14 +172,15 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserInformationResponse getUserInfo(String userId) {
-		User user = userRepository.findById(userId)
+		User user = userRepository.findByIdAndStatus(userId, UserStatusE.ACTIVE)
 				.orElseThrow(() -> new DataNotFoundException(String.format("User with id = %s not found.", userId)));
 		return userBuilder.buildUserInformationResponse(user);
 	}
 
 	@Override
 	public void deleteUser(String email) {
-		User user = userRepository.getByEmail(email).orElseThrow(() -> new IllegalArgumentException("Not user found by the email " + email));
+		User user = userRepository.findByEmailAndStatus(email, UserStatusE.ACTIVE)
+				.orElseThrow(() -> new IllegalArgumentException("Not user found by the email " + email));
 		user.setModifiedAt(LocalDateTime.now());
 		user.setStatus(UserStatusE.DELETED);
 		log.info("[ON deleteUser] :: changed the user status to DELETED for the user with email {}", email);
