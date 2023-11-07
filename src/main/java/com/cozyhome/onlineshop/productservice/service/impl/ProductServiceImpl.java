@@ -10,12 +10,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import com.cozyhome.onlineshop.dto.ProductDto;
@@ -76,6 +78,7 @@ public class ProductServiceImpl implements ProductService {
 				.map(status -> new ProductStatusDto(status.toString(), status.getDescription())).toList();
 	}
 
+	@Cacheable(value = "randomProduct", key = "#status", cacheManager = "cacheManagerWithExpiration")
 	@Override
 	public List<ProductDto> getRandomProductsByStatus(Byte status, int productCount) {
 		List<Product> products = productRepositoryCustom
@@ -83,6 +86,7 @@ public class ProductServiceImpl implements ProductService {
 		return productBuilder.buildProductDtoList(products, isMain);
 	}
 
+	@Cacheable(value = "randomProductsByStatusAndCategoryId", key = "#categoryId", cacheManager = "cacheManagerWithExpiration")
 	@Override
 	public List<ProductDto> getRandomProductsByStatusAndCategoryId(Byte status, String categoryId,
 			int countOfProducts) {
@@ -99,6 +103,7 @@ public class ProductServiceImpl implements ProductService {
 		return productBuilder.buildProductDtoList(products, isMain);
 	}
 
+	@Cacheable(value = "productsByCategoryId", key = "#categoryId")
 	@Override
 	public List<ProductDto> getProductsByCategoryId(String categoryId, PageableDto pageable) {
 		boolean isSubcategory = categoryRepository.hasParentById(new ObjectId(categoryId));
@@ -155,7 +160,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<ProductDto> getProductsByCollectionExcludeSkuCode(String collectionId, String skuCodeToExclude) {
+	public List<ProductDto> getProductsByCollectionExcludeSkuCode(String collectionId, @Param("#skuCode") String skuCodeToExclude) {
 		List<Product> products = productRepository
 				.findAllByStatusNotDeletedAndCollectionIdExcludeSkuCode(new ObjectId(collectionId), skuCodeToExclude);
 		return productBuilder.buildProductDtoList(products, isMain);

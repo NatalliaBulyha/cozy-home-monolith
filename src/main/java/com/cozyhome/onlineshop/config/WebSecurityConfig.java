@@ -22,10 +22,8 @@ import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenFilter;
 import com.cozyhome.onlineshop.userservice.security.service.impl.UserDetailsServiceImpl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
-@Slf4j
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
