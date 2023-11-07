@@ -1,5 +1,6 @@
 package com.cozyhome.onlineshop.userservice.security.service.impl;
 
+import com.cozyhome.onlineshop.userservice.model.UserStatusE;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,7 +38,7 @@ public class SecurityServiceImpl implements SecurityService {
 
 	@Override
 	public boolean isActivated(String username) {
-		User user = userRepository.findByEmail(username)
+		User user = userRepository.findByEmailAndStatus(username, UserStatusE.ACTIVE)
 				.orElseThrow(() -> new DataNotFoundException("No user found by username " + username));
 		return user.isActivated();
 	}
