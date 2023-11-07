@@ -1,5 +1,6 @@
 package com.cozyhome.onlineshop.userservice.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.cozyhome.onlineshop.userservice.model.UserStatusE;

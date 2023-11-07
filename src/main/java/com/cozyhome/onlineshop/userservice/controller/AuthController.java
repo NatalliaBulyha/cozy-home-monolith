@@ -16,8 +16,8 @@ import com.cozyhome.onlineshop.dto.auth.LoginRequest;
 import com.cozyhome.onlineshop.dto.auth.MessageResponse;
 import com.cozyhome.onlineshop.dto.auth.NewPasswordRequest;
 import com.cozyhome.onlineshop.dto.auth.SignupRequest;
-import com.cozyhome.onlineshop.exception.AuthException;
 import com.cozyhome.onlineshop.dto.auth.TokenResponseDto;
+import com.cozyhome.onlineshop.exception.AuthException;
 import com.cozyhome.onlineshop.productservice.controller.swagger.SwaggerResponse;
 import com.cozyhome.onlineshop.userservice.model.User;
 import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenUtil;
@@ -36,7 +36,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @CrossOrigin({ "${api.front.base_url}", "${api.front.localhost}", "${api.front.test_url}",
-		"${api.front.additional_url}", "${api.front.main.url}" })
+		"${api.front.additional_url}", "${api.front.main.url}", "${api.front.temporal.url}" })
 @Tag(name = "Auth")
 @RequiredArgsConstructor
 @Slf4j
@@ -59,13 +59,14 @@ public class AuthController {
 	public ResponseEntity<TokenResponseDto> login(@RequestBody @Valid LoginRequest loginRequest) {
 		String username = loginRequest.getUsername();
 		boolean isAuthenticated = securityService.isAuthenticated(username, loginRequest.getPassword());
-
-		if (isAuthenticated) {
+		boolean isActivated = securityService.isActivated(username);
+		log.info("[ON login] :: User with email {} is active - {}", loginRequest.getUsername(), isActivated);
+		if (isAuthenticated && isActivated) {
 			String token = jwtTokenUtil.generateToken(username);
 			return ResponseEntity.ok().body(new TokenResponseDto(token));
 		} else {
 			log.warn("[ON login]:: Authentication failed for user: {}", username);
-			throw new AuthException("Authentication failed for user");
+			throw new AuthException("Authentication failed for user - " + username);
 		}
 	}
 
