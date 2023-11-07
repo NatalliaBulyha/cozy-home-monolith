@@ -1,6 +1,6 @@
 package com.cozyhome.onlineshop.validation;
 
-import com.cozyhome.onlineshop.validation.impl.PageNumberValidator;
+import com.cozyhome.onlineshop.validation.impl.EnumValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -15,13 +15,12 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Documented
-@Constraint(validatedBy = PageNumberValidator.class)
+@Constraint(validatedBy = EnumValidator.class)
 @Target({ TYPE, FIELD, ANNOTATION_TYPE, PARAMETER })
 @Retention(RUNTIME)
-public @interface ValidPageNumber {
-    String message() default "Invalid page. Page must be number greater than or equal to 0.";
-
+public @interface ValidEnum {
+    Class<? extends Enum<?>> enumClass();
+    String message() default "Invalid enum value";
     Class<?>[] groups() default {};
-
     Class<? extends Payload>[] payload() default {};
 }

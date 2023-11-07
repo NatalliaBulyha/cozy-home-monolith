@@ -15,6 +15,6 @@ public class NameValidator implements ConstraintValidator<ValidName, String> {
         if (name == null) {
             return false;
         }
-        return name.matches("^[а-яА-Яa-zA-ZґҐєЄіІїЇ]{2,32}$");
+        return name.matches("^[а-яА-Яa-zA-ZґҐєЄіІїЇ]{2,32}(?:-[а-яА-Яa-zA-ZґҐєЄіІїЇ]{2,32})?$");
     }
 }

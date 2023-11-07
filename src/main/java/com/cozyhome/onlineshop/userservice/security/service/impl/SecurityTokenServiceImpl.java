@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
+import com.cozyhome.onlineshop.userservice.model.UserStatusE;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -81,7 +82,7 @@ public class SecurityTokenServiceImpl implements SecurityTokenService {
 
     @Override
     public void createPasswordResetToken(String userEmail, String ipAddress) {
-        User user = userRepository.findByEmail(userEmail)
+        User user = userRepository.findByEmailAndStatus(userEmail, UserStatusE.ACTIVE)
                 .orElseThrow(() -> new DataNotFoundException(String.format("User with email %s doesn't found.", userEmail)));
         log.info("[ON createPasswordResetToken] :: got user by email " + userEmail);
         String token = generateRandomToken();

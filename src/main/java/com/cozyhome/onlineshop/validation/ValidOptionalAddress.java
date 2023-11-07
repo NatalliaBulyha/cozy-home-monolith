@@ -1,6 +1,6 @@
 package com.cozyhome.onlineshop.validation;
 
-import com.cozyhome.onlineshop.validation.impl.PageNumberValidator;
+import com.cozyhome.onlineshop.validation.impl.OptionalAddressValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -15,11 +15,11 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Documented
-@Constraint(validatedBy = PageNumberValidator.class)
+@Constraint(validatedBy = OptionalAddressValidator.class)
 @Target({ TYPE, FIELD, ANNOTATION_TYPE, PARAMETER })
 @Retention(RUNTIME)
-public @interface ValidPageNumber {
-    String message() default "Invalid page. Page must be number greater than or equal to 0.";
+public @interface ValidOptionalAddress {
+    String message() default "Address must be greater than or equal to 2 and less than or equal to 32.";
 
     Class<?>[] groups() default {};
 
