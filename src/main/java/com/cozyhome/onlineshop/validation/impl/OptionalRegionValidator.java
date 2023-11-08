@@ -6,7 +6,6 @@ import jakarta.validation.ConstraintValidatorContext;
 
 public class OptionalRegionValidator implements ConstraintValidator<ValidOptionalRegion, String> {
 
-    private final String pattern = "^[а-яА-Яa-zA-ZґҐєЄіІїЇ]{2,32}(?:-[а-яА-Яa-zA-ZґҐєЄіІїЇ]{2,32})?$";
     @Override
     public void initialize(ValidOptionalRegion constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
@@ -14,9 +13,10 @@ public class OptionalRegionValidator implements ConstraintValidator<ValidOptiona
 
     @Override
     public boolean isValid(String region, ConstraintValidatorContext constraintValidatorContext) {
-        if (region != null && !region.isEmpty()) {
-            return region.matches(pattern);
+        if (region == null || region.isEmpty()) {
+            return true;
         }
-        return true;
+        String pattern = "^[а-яА-Яa-zA-ZґҐєЄіІїЇ]{2,32}(?:-[а-яА-Яa-zA-ZґҐєЄіІїЇ]{2,32})?$";
+        return region.matches(pattern);
     }
 }

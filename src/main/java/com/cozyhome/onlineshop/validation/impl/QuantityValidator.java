@@ -15,7 +15,7 @@ public class QuantityValidator implements ConstraintValidator<ValidQuantity, Sho
         if (value == null) {
             return false;
         }
-
-        return value.toString().matches("^[1-9]\\d*$");
+        String pattern = "^[1-9]\\d*$";
+        return value.toString().matches(pattern);
     }
 }

@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 public class NameValidator implements ConstraintValidator<ValidName, String> {
+
     @Override
     public void initialize(ValidName constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
@@ -15,6 +16,7 @@ public class NameValidator implements ConstraintValidator<ValidName, String> {
         if (name == null) {
             return false;
         }
-        return name.matches("^[а-яА-Яa-zA-ZґҐєЄіІїЇ]{2,32}(?:-[а-яА-Яa-zA-ZґҐєЄіІїЇ]{2,32})?$");
+        String pattern = "^[а-яА-Яa-zA-ZґҐєЄіІїЇ]{2,32}(?:-[а-яА-Яa-zA-ZґҐєЄіІїЇ]{2,32})?$";
+        return name.matches(pattern);
     }
 }

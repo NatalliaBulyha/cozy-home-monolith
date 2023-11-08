@@ -153,7 +153,7 @@ public class UserServiceImpl implements UserService {
 			user.setEmail(userInformationDto.getEmail());
 		}
 
-		if (!userInformationDto.getBirthday().isEmpty()) {
+		if (userInformationDto.getBirthday() != null && !userInformationDto.getBirthday().isEmpty()) {
 			LocalDate birthday = LocalDate.parse(userInformationDto.getBirthday());
 			user.setBirthday(birthday);
 		}

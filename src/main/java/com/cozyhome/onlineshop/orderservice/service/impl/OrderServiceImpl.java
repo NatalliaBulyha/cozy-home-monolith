@@ -44,7 +44,7 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         Delivery delivery;
-        if (orderDto.getDelivery().getDeliveryCompanyName() == null) {
+        if (orderDto.getDelivery().getDeliveryCompanyName() == null || orderDto.getDelivery().getDeliveryCompanyName().isEmpty()) {
             delivery = deliveryBuilder.buildPostalDelivery(orderDto.getDelivery());
         } else {
             delivery = deliveryBuilder.buildAddressDelivery(orderDto.getDelivery());
@@ -52,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
         }
         order.setDelivery(delivery);
 
-        if (!orderDto.getEmail().isEmpty()) {
+        if (orderDto.getEmail() != null && !orderDto.getEmail().isEmpty()) {
             order.setEmail(orderDto.getEmail());
         }
         if (userId != null) {

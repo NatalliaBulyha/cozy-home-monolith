@@ -6,17 +6,17 @@ import jakarta.validation.ConstraintValidatorContext;
 
 public class OptionalNameValidator implements ConstraintValidator<ValidOptionalName, String> {
 
-    private final String pattern = "^[а-яА-Яa-zA-ZґҐєЄіІїЇ0-9\\s-.]{2,32}?$";
     @Override
     public void initialize(ValidOptionalName constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 
     @Override
-    public boolean isValid(String region, ConstraintValidatorContext constraintValidatorContext) {
-        if (region != null && !region.isEmpty()) {
-            return region.matches(pattern);
+    public boolean isValid(String name, ConstraintValidatorContext constraintValidatorContext) {
+        if (name == null || name.isEmpty()) {
+            return true;
         }
-        return true;
+        String pattern = "^[а-яА-Яa-zA-ZґҐєЄіІїЇ0-9\\s-.]{2,32}?$";
+        return name.matches(pattern);
     }
 }
