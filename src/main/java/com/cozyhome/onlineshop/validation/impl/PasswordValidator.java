@@ -6,7 +6,6 @@ import jakarta.validation.ConstraintValidatorContext;
 
 public class PasswordValidator implements ConstraintValidator<ValidPassword, String> {
 
-    private final String pattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$";
     @Override
     public void initialize(ValidPassword constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
@@ -14,9 +13,10 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Str
 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext constraintValidatorContext) {
-        if (password == null && password.isEmpty()) {
+        if (password == null) {
             return false;
         }
+        String pattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$";
         return password.matches(pattern);
     }
 }
