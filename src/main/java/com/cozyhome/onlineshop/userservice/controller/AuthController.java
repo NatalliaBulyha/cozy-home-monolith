@@ -56,10 +56,10 @@ public class AuthController {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
 	@PostMapping("/login")
 	public ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
-		String username = loginRequest.getUsername();
+		String username = loginRequest.getEmail();
 		boolean isAuthenticated = securityService.isAuthenticated(username, loginRequest.getPassword());
 		boolean isActivated = securityService.isActivated(username);
-		log.info("[ON login] :: User with email {} is active - {}", loginRequest.getUsername(), isActivated);
+		log.info("[ON login] :: User with email {} is active - {}", loginRequest.getEmail(), isActivated);
 		if (isAuthenticated && isActivated) {
 			String token = jwtTokenUtil.generateToken(username);
 			return ResponseEntity.ok().body(new TokenResponse(token));
