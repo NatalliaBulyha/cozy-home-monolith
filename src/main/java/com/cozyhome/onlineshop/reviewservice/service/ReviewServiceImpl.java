@@ -4,13 +4,13 @@ import com.cozyhome.onlineshop.dto.review.ReviewToRemoveDto;
 import com.cozyhome.onlineshop.dto.review.ReviewResponse;
 import com.cozyhome.onlineshop.dto.review.ReviewAdminResponse;
 import com.cozyhome.onlineshop.dto.review.ReviewRequest;
+import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.reviewservice.model.Review;
 import com.cozyhome.onlineshop.reviewservice.repository.ReviewRepository;
 import com.cozyhome.onlineshop.reviewservice.service.builder.ReviewBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -53,7 +53,7 @@ public class ReviewServiceImpl implements ReviewService{
             repository.deleteById(UUID.fromString(reviewRemoveDto.getReviewId()));
         } else {
             log.error("[ON removeReviewById]:: Review with id {} doesn't exist.", reviewRemoveDto.getReviewId());
-            throw new AccessDeniedException(String.format("[ON removeReviewById]:: Review with id %s doesn't exist.", reviewRemoveDto.getReviewId()));
+            throw new DataNotFoundException(String.format("[ON removeReviewById]:: Review with id %s doesn't exist.", reviewRemoveDto.getReviewId()));
         }
     }
 
