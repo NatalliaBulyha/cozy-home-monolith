@@ -139,13 +139,12 @@ public class UserServiceImpl implements UserService {
     public void updateUserPassword(PasswordUpdateRequest passwords, String userId) {
         User user = userRepository.findByIdAndStatus(userId, UserStatusE.ACTIVE)
                 .orElseThrow(() -> new DataNotFoundException("Unable to update password. User not found."));
-        user.setPassword(encoder.encode(passwords.getNewPassword()));
         if (encoder.matches(passwords.getOldPassword(), user.getPassword())) {
             user.setPassword(encoder.encode(passwords.getNewPassword()));
+            userRepository.save(user);
         } else {
             throw new AuthException("Wrong old password entered.");
         }
-        userRepository.save(user);
     }
 
     @Override
