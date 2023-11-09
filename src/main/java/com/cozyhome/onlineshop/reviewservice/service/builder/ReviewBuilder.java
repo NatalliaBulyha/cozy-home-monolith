@@ -4,6 +4,7 @@ import com.cozyhome.onlineshop.dto.review.ReviewResponse;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.reviewservice.model.Review;
 import com.cozyhome.onlineshop.userservice.model.User;
+import com.cozyhome.onlineshop.userservice.model.UserStatusE;
 import com.cozyhome.onlineshop.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,14 +17,14 @@ public class ReviewBuilder {
     private final UserRepository userRepository;
 
     public ReviewResponse buildReviewResponse(Review review) {
-        String userId = review.getUserId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new DataNotFoundException(String.format("User with id = %s doesn't found", userId)));
-        log.info("[ON getReviewsForProductAllInf]:: build review with id: {} for user: {}.", review.getId(), review.getUserId());
+        String email = review.getEmail();
+        User user = userRepository.findByEmailAndStatus(email, UserStatusE.ACTIVE)
+                .orElseThrow(() -> new DataNotFoundException(String.format("User with email = %s doesn't found", email)));
+        log.info("[ON getReviewsForProductAllInf]:: build review with id: {} for user: {}.", review.getId(), review.getEmail());
         return ReviewResponse.builder()
                     .reviewId(review.getId().toString())
-                    .rating((byte) review.getRating())
-                    .userName(user.getFirstName() + " " + user.getLastName())
+                    .rating(review.getRating())
+                    .userName(review.getUserName())
                     .review(review.getComment())
                     .data(review.getModifiedAt().toLocalDate())
                     .build();

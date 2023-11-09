@@ -4,14 +4,13 @@ import com.cozyhome.onlineshop.dto.review.ReviewToRemoveDto;
 import com.cozyhome.onlineshop.dto.review.ReviewResponse;
 import com.cozyhome.onlineshop.dto.review.ReviewAdminResponse;
 import com.cozyhome.onlineshop.dto.review.ReviewRequest;
+import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.reviewservice.model.Review;
 import com.cozyhome.onlineshop.reviewservice.repository.ReviewRepository;
 import com.cozyhome.onlineshop.reviewservice.service.builder.ReviewBuilder;
-import com.cozyhome.onlineshop.userservice.model.RoleE;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -33,9 +32,8 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public ReviewResponse addNewReview(ReviewRequest reviewRequest, String userId) {
+    public ReviewResponse addNewReview(ReviewRequest reviewRequest) {
         Review review = mapper.map(reviewRequest, Review.class);
-        review.setUserId(userId);
         review.setCreatedAt(LocalDateTime.now());
         review.setModifiedAt(LocalDateTime.now());
         Review savedReview = repository.save(review);
@@ -50,15 +48,12 @@ public class ReviewServiceImpl implements ReviewService{
 
     @Override
     public void removeReviewById(ReviewToRemoveDto reviewRemoveDto) {
-        Review review = repository.findById(UUID.fromString(reviewRemoveDto.getReviewId()))
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Review with id = %s doesn't found",
-                        reviewRemoveDto.getReviewId())));
-        if (reviewRemoveDto.getUserId().equals(review.getUserId())
-                || reviewRemoveDto.getRoles().stream().anyMatch(role -> role.getName().equals(RoleE.ROLE_ADMIN))) {
+        boolean isExist = repository.existsById(UUID.fromString(reviewRemoveDto.getReviewId()));
+        if (isExist) {
             repository.deleteById(UUID.fromString(reviewRemoveDto.getReviewId()));
         } else {
-            log.error("[ON removeReviewById]:: You can only delete your own reviews.");
-            throw new AccessDeniedException("You can only delete your own reviews.");
+            log.error("[ON removeReviewById]:: Review with id {} doesn't exist.", reviewRemoveDto.getReviewId());
+            throw new DataNotFoundException(String.format("[ON removeReviewById]:: Review with id %s doesn't exist.", reviewRemoveDto.getReviewId()));
         }
     }
 

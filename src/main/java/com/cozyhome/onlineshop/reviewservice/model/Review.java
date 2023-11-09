@@ -26,15 +26,17 @@ public class Review {
     @Column(name = "id")
     private UUID id;
     @Column(name = "rating")
-    private int rating;
+    private byte rating;
     @Column(name = "comment")
     private String comment;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "modified_at")
     private LocalDateTime modifiedAt;
-    @Column(name = "user_id")
-    private String userId;
+    @Column(name = "user_name")
+    private String userName;
+    @Column(name = "email")
+    private String email;
     @Column(name = "product_sku_code")
     private String productSkuCode;
 }
