@@ -1,5 +1,7 @@
 package com.cozyhome.onlineshop.dto.review;
 
+import com.cozyhome.onlineshop.validation.ValidEmail;
+import com.cozyhome.onlineshop.validation.ValidName;
 import com.cozyhome.onlineshop.validation.ValidSkuCode;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -21,4 +23,8 @@ public class ReviewRequest {
     private String comment;
     @ValidSkuCode
     private String productSkuCode;
+    @ValidName
+    private String userName;
+    @ValidEmail
+    private String email;
 }
