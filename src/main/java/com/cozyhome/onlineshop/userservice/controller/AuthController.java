@@ -15,7 +15,7 @@ import com.cozyhome.onlineshop.dto.auth.LoginRequest;
 import com.cozyhome.onlineshop.dto.auth.MessageResponse;
 import com.cozyhome.onlineshop.dto.auth.NewPasswordRequest;
 import com.cozyhome.onlineshop.dto.auth.SignupRequest;
-import com.cozyhome.onlineshop.dto.auth.TokenResponseDto;
+import com.cozyhome.onlineshop.dto.auth.TokenResponse;
 import com.cozyhome.onlineshop.exception.AuthException;
 import com.cozyhome.onlineshop.productservice.controller.swagger.SwaggerResponse;
 import com.cozyhome.onlineshop.userservice.model.User;
@@ -55,14 +55,14 @@ public class AuthController {
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
 	@PostMapping("/login")
-	public ResponseEntity<TokenResponseDto> login(@RequestBody @Valid LoginRequest loginRequest) {
+	public ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
 		String username = loginRequest.getUsername();
 		boolean isAuthenticated = securityService.isAuthenticated(username, loginRequest.getPassword());
 		boolean isActivated = securityService.isActivated(username);
 		log.info("[ON login] :: User with email {} is active - {}", loginRequest.getUsername(), isActivated);
 		if (isAuthenticated && isActivated) {
 			String token = jwtTokenUtil.generateToken(username);
-			return ResponseEntity.ok().body(new TokenResponseDto(token));
+			return ResponseEntity.ok().body(new TokenResponse(token));
 		} else {
 			log.warn("[ON login]:: Authentication failed for user: {}", username);
 			throw new AuthException("Authentication failed for user - " + username);
@@ -86,10 +86,10 @@ public class AuthController {
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
 	@GetMapping("/activate")
-	public ResponseEntity<TokenResponseDto> activateUser(@RequestParam @ValidUUID String activationToken) {
+	public ResponseEntity<TokenResponse> activateUser(@RequestParam @ValidUUID String activationToken) {
 		User activatedUser = userService.activateUser(activationToken);
 		String token = jwtTokenUtil.generateToken(activatedUser.getEmail());
-		return ResponseEntity.ok().body(new TokenResponseDto(token));
+		return ResponseEntity.ok().body(new TokenResponse(token));
 	}
 
 	@Operation(summary = "Send a password reset link to the user's email address", description = "Sends a password reset link to the user's email address if the user have forgotten his password.")
@@ -106,18 +106,18 @@ public class AuthController {
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
 	@PostMapping("/login/reset")
-	public ResponseEntity<TokenResponseDto> resetPassword(@RequestParam @ValidUUID String resetPasswordToken,
-			@RequestBody @Valid NewPasswordRequest newPassword) {
+	public ResponseEntity<TokenResponse> resetPassword(@RequestParam @ValidUUID String resetPasswordToken,
+													   @RequestBody @Valid NewPasswordRequest newPassword) {
 		User user = userService.resetPassword(resetPasswordToken, newPassword);
 		String token = jwtTokenUtil.generateToken(user.getEmail());
-		return ResponseEntity.ok().body(new TokenResponseDto(token));
+		return ResponseEntity.ok().body(new TokenResponse(token));
 	}
 	
 	@Operation(summary = "Delete user.", description = "Delete user.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @PostMapping("/delete-account")
-    public ResponseEntity<String> deleteUser(@RequestBody EmailRequest emailRequest) {
+    public ResponseEntity<String> deleteUser(@RequestBody @Valid EmailRequest emailRequest) {
         userService.deleteUser(emailRequest.getEmail());
         log.info("[ON deleteUser] :: user deleted successfully!");
         return ResponseEntity.ok().build();

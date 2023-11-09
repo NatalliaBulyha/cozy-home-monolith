@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class EmailRequest {
-//	@ValidEmail
+	@ValidEmail
 	private String email;
 
 }

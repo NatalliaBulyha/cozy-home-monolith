@@ -41,6 +41,13 @@ public class DeliveryBuilder {
     }
 
     public Delivery buildAddressDelivery(DeliveryDto deliveryDto) {
+        String comment;
+        if (deliveryDto.getComment() == null || deliveryDto.getComment().isEmpty()) {
+            comment = "";
+        } else {
+            comment = deliveryDto.getComment();
+        }
+
         Delivery delivery = AddressDelivery.builder()
                 .city(deliveryDto.getCity())
                 .paymentMethod(PaymentMethod.valueOf(deliveryDto.getPaymentMethod().toUpperCase()))
@@ -48,7 +55,7 @@ public class DeliveryBuilder {
                 .street(deliveryDto.getStreet())
                 .house(deliveryDto.getHouse())
                 .apartment(deliveryDto.getApartment())
-                .comment(deliveryDto.getComment())
+                .comment(comment)
                 .build();
 
         return deliveryRepository.save(delivery);

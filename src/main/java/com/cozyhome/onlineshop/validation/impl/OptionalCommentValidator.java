@@ -6,17 +6,17 @@ import jakarta.validation.ConstraintValidatorContext;
 
 public class OptionalCommentValidator implements ConstraintValidator<ValidOptionalComment, String> {
 
-    private final String pattern = "^[а-яА-Яa-zA-ZґҐєЄіІїЇ0-9\\s-.+]{2,50}+$";
     @Override
     public void initialize(ValidOptionalComment constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 
     @Override
-    public boolean isValid(String name, ConstraintValidatorContext constraintValidatorContext) {
-        if (name != null && !name.isEmpty()) {
-            return name.matches(pattern);
+    public boolean isValid(String comment, ConstraintValidatorContext constraintValidatorContext) {
+        if (comment == null || comment.isEmpty()) {
+            return true;
         }
-        return true;
+        String pattern = "^[а-яА-Яa-zA-ZґҐєЄіІїЇ0-9\\s-.+]{2,50}+$";
+        return comment.matches(pattern);
     }
 }

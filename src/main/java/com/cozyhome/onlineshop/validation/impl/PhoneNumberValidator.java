@@ -12,6 +12,10 @@ public class PhoneNumberValidator implements ConstraintValidator<ValidPhoneNumbe
 
     @Override
     public boolean isValid(String phoneNumber, ConstraintValidatorContext constraintValidatorContext) {
-        return phoneNumber.matches("\\+38 \\(\\d{3}\\) \\d{3} - \\d{2} - \\d{2}");
+        if (phoneNumber == null) {
+            return false;
+        }
+        String pattern = "\\+38 \\(\\d{3}\\) \\d{3} - \\d{2} - \\d{2}";
+        return phoneNumber.matches(pattern);
     }
 }

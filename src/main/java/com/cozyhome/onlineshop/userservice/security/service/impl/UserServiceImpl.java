@@ -36,91 +36,91 @@ import java.util.Set;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder encoder;
-    private final SecurityTokenRepository securityTokenRepository;
-    private final SecurityTokenService securityTokenService;
-    private final UserBuilder userBuilder;
+	private final UserRepository userRepository;
+	private final RoleRepository roleRepository;
+	private final PasswordEncoder encoder;
+	private final SecurityTokenRepository securityTokenRepository;
+	private final SecurityTokenService securityTokenService;
+	private final UserBuilder userBuilder;
 
-    private final String admin = "admin";
-    private final String manager = "manager";
-    private final String roleErrorMessage = "Error: Role is not found.";
+	private final String admin = "admin";
+	private final String manager = "manager";
+	private final String roleErrorMessage = "Error: Role is not found.";
 
-    @Override
-    public void saveUser(SignupRequest signupRequest) {
-        User user = User.builder()
-                .email(signupRequest.getEmail())
-                .password(encoder.encode(signupRequest.getPassword()))
-                .firstName(signupRequest.getFirstName())
-                .lastName(signupRequest.getLastName())
-                .phoneNumber(signupRequest.getPhoneNumber())
-                .createdAt(LocalDateTime.now())
-                .status(UserStatusE.ACTIVE)
-                .build();
+	@Override
+	public void saveUser(SignupRequest signupRequest) {
+		User user = User.builder()
+				.email(signupRequest.getEmail())
+				.password(encoder.encode(signupRequest.getPassword()))
+				.firstName(signupRequest.getFirstName())
+				.lastName(signupRequest.getLastName())
+				.phoneNumber(signupRequest.getPhoneNumber())
+				.createdAt(LocalDateTime.now())
+				.status(UserStatusE.ACTIVE)
+				.build();
 
-        if (signupRequest.getBirthday() != null && !signupRequest.getBirthday().isEmpty()) {
-            LocalDate birthday = LocalDate.parse(signupRequest.getBirthday());
-            user.setBirthday(birthday);
-        }
+		if (signupRequest.getBirthday() != null && !signupRequest.getBirthday().isEmpty()) {
+			LocalDate birthday = LocalDate.parse(signupRequest.getBirthday());
+			user.setBirthday(birthday);
+		}
 
-        Set<String> userRoles = signupRequest.getRoles();
-        Set<Role> roles = new HashSet<>();
+		Set<String> userRoles = signupRequest.getRoles();
+		Set<Role> roles = new HashSet<>();
 
-        if (userRoles == null) {
-            Role userRole = roleRepository.getByName(RoleE.ROLE_CUSTOMER)
-                    .orElseThrow(() -> new RuntimeException(roleErrorMessage));
-            roles.add(userRole);
-        } else {
-            userRoles.forEach(role -> {
-                switch (role) {
-                    case admin:
-                        Role adminRole = roleRepository.getByName(RoleE.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException(roleErrorMessage));
-                        roles.add(adminRole);
-                        break;
-                    case manager:
-                        Role managerRole = roleRepository.getByName(RoleE.ROLE_MANAGER)
-                                .orElseThrow(() -> new RuntimeException(roleErrorMessage));
-                        roles.add(managerRole);
-                        break;
-                    default:
-                        Role userRole = roleRepository.getByName(RoleE.ROLE_CUSTOMER)
-                                .orElseThrow(() -> new RuntimeException(roleErrorMessage));
-                        roles.add(userRole);
-                }
-            });
-        }
-        user.setRoles(roles);
-        User savedUser = userRepository.save(user);
-        securityTokenService.createActivationUserToken(savedUser);
-    }
+		if (userRoles == null) {
+			Role userRole = roleRepository.getByName(RoleE.ROLE_CUSTOMER)
+					.orElseThrow(() -> new RuntimeException(roleErrorMessage));
+			roles.add(userRole);
+		} else {
+			userRoles.forEach(role -> {
+				switch (role) {
+				case admin:
+					Role adminRole = roleRepository.getByName(RoleE.ROLE_ADMIN)
+							.orElseThrow(() -> new RuntimeException(roleErrorMessage));
+					roles.add(adminRole);
+					break;
+				case manager:
+					Role managerRole = roleRepository.getByName(RoleE.ROLE_MANAGER)
+							.orElseThrow(() -> new RuntimeException(roleErrorMessage));
+					roles.add(managerRole);
+					break;
+				default:
+					Role userRole = roleRepository.getByName(RoleE.ROLE_CUSTOMER)
+							.orElseThrow(() -> new RuntimeException(roleErrorMessage));
+					roles.add(userRole);
+				}
+			});
+		}
+		user.setRoles(roles);
+		User savedUser = userRepository.save(user);
+		securityTokenService.createActivationUserToken(savedUser);
+	}
 
-    @Override
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmailAndStatus(email, UserStatusE.ACTIVE);
-    }
+	@Override
+	public boolean existsByEmail(String email) {
+		return userRepository.existsByEmailAndStatus(email, UserStatusE.ACTIVE);
+	}
 
-    @Override
-    public User activateUser(String token) {
-        SecurityToken activationToken = securityTokenRepository.findByToken(token);
+	@Override
+	public User activateUser(String token) {
+		SecurityToken activationToken = securityTokenRepository.findByToken(token);
 
         if (activationToken == null || activationToken.isExpired()) {
             throw new InvalidTokenException("Invalid or expired activation token");
         }
 
-        User user = activationToken.getUser();
-        user.setActivated(true);
-        userRepository.save(user);
+		User user = activationToken.getUser();
+		user.setActivated(true);
+		userRepository.save(user);
 
-        securityTokenRepository.delete(activationToken);
+		securityTokenRepository.delete(activationToken);
 
-        return user;
-    }
+		return user;
+	}
 
-    @Override
-    public User resetPassword(String token, NewPasswordRequest newPassword) {
-        PasswordResetToken resetToken = (PasswordResetToken) securityTokenRepository.findByToken(token);
+	@Override
+	public User resetPassword(String token, NewPasswordRequest newPassword) {
+		PasswordResetToken resetToken = (PasswordResetToken) securityTokenRepository.findByToken(token);
 
         if (resetToken == null || resetToken.isExpired()) {
             throw new InvalidTokenException("Invalid or expired token");
@@ -128,12 +128,12 @@ public class UserServiceImpl implements UserService {
 
         User user = resetToken.getUser();
         user.setPassword(encoder.encode(newPassword.getPassword()));
-        user.setModifiedAt(LocalDateTime.now());
+		user.setModifiedAt(LocalDateTime.now());
         userRepository.save(user);
 
-        securityTokenRepository.delete(resetToken);
+        securityTokenRepository.delete(resetToken);	
         return user;
-    }
+	}
 
     @Override
     public void updateUserPassword(PasswordUpdateRequest passwords, String userId) {
@@ -153,10 +153,10 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new DataNotFoundException(
                         String.format("User with email = %s not found.", userInformationDto.getEmail())));
 
-        user.setLastName(userInformationDto.getLastName());
-        user.setFirstName(userInformationDto.getFirstName());
-        user.setPhoneNumber(userInformationDto.getPhoneNumber());
-        user.setModifiedAt(LocalDateTime.now());
+		user.setLastName(userInformationDto.getLastName());
+		user.setFirstName(userInformationDto.getFirstName());
+		user.setPhoneNumber(userInformationDto.getPhoneNumber());
+		user.setModifiedAt(LocalDateTime.now());
 
         if (!user.getEmail().equals(userInformationDto.getEmail())) {
             if (userRepository.existsByEmailAndStatus(userInformationDto.getEmail(), UserStatusE.ACTIVE)) {
@@ -165,21 +165,21 @@ public class UserServiceImpl implements UserService {
             user.setEmail(userInformationDto.getEmail());
         }
 
-        if (!userInformationDto.getBirthday().isEmpty()) {
-            LocalDate birthday = LocalDate.parse(userInformationDto.getBirthday());
-            user.setBirthday(birthday);
-        }
+		if (!userInformationDto.getBirthday().isEmpty()) {
+			LocalDate birthday = LocalDate.parse(userInformationDto.getBirthday());
+			user.setBirthday(birthday);
+		}
 
         User updatedUser = userRepository.save(user);
         return userBuilder.buildUserInformationResponse(updatedUser);
     }
 
-    @Override
-    public UserInformationResponse getUserInfo(String userId) {
-        User user = userRepository.findByIdAndStatus(userId, UserStatusE.ACTIVE)
-                .orElseThrow(() -> new DataNotFoundException(String.format("User with id = %s not found.", userId)));
-        return userBuilder.buildUserInformationResponse(user);
-    }
+	@Override
+	public UserInformationResponse getUserInfo(String userId) {
+		User user = userRepository.findByIdAndStatus(userId, UserStatusE.ACTIVE)
+				.orElseThrow(() -> new DataNotFoundException(String.format("User with id = %s not found.", userId)));
+		return userBuilder.buildUserInformationResponse(user);
+	}
 
     @Override
     public void deleteUser(String email) {

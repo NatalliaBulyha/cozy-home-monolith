@@ -13,7 +13,10 @@ public class SkuCodeValidator implements ConstraintValidator<ValidSkuCode, Strin
 
     @Override
     public boolean isValid(String skuCode, ConstraintValidatorContext constraintValidatorContext) {
-        return skuCode != null
-            && skuCode.matches("^\\d{6}$");
+        if (skuCode == null) {
+            return false;
+        }
+        String pattern = "^\\d{6}$";
+        return  skuCode.matches(pattern);
     }
 }

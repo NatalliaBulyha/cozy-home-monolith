@@ -20,6 +20,6 @@ public class OrderItemDto {
     @ValidQuantity
     private short quantity;
     @DecimalMin(value = "0", message = "Price of product must be greater than 0.")
-    @NotBlank(message = "Price must be ")
+    @NotBlank(message = "Price of product must be greater than 0.")
     private String price;
 }
