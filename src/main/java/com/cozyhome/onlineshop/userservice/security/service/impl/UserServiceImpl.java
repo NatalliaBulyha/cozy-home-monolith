@@ -8,6 +8,7 @@ import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
 import com.cozyhome.onlineshop.exception.AuthException;
 import com.cozyhome.onlineshop.exception.DataAlreadyExistException;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
+import com.cozyhome.onlineshop.exception.InvalidTokenException;
 import com.cozyhome.onlineshop.userservice.model.Role;
 import com.cozyhome.onlineshop.userservice.model.RoleE;
 import com.cozyhome.onlineshop.userservice.model.User;
@@ -105,7 +106,7 @@ public class UserServiceImpl implements UserService {
         SecurityToken activationToken = securityTokenRepository.findByToken(token);
 
         if (activationToken == null || activationToken.isExpired()) {
-            throw new IllegalArgumentException("Invalid or expired activation token");
+            throw new InvalidTokenException("Invalid or expired activation token");
         }
 
         User user = activationToken.getUser();
@@ -122,7 +123,7 @@ public class UserServiceImpl implements UserService {
         PasswordResetToken resetToken = (PasswordResetToken) securityTokenRepository.findByToken(token);
 
         if (resetToken == null || resetToken.isExpired()) {
-            throw new IllegalArgumentException("Invalid or expired token");
+            throw new InvalidTokenException("Invalid or expired token");
         }
 
         User user = resetToken.getUser();
@@ -136,9 +137,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUserPassword(PasswordUpdateRequest passwords, String userId) {
-        User user = userRepository.findByIdAndStatus("6525835b1578af3164f1c4d3", UserStatusE.ACTIVE)
+        User user = userRepository.findByIdAndStatus(userId, UserStatusE.ACTIVE)
                 .orElseThrow(() -> new DataNotFoundException("Unable to update password. User not found."));
-        user.setPassword(encoder.encode("admiN1$2"));
+        user.setPassword(encoder.encode(passwords.getNewPassword()));
         if (encoder.matches(passwords.getOldPassword(), user.getPassword())) {
             user.setPassword(encoder.encode(passwords.getNewPassword()));
         } else {
@@ -184,7 +185,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(String email) {
         User user = userRepository.findByEmailAndStatus(email, UserStatusE.ACTIVE)
-                .orElseThrow(() -> new IllegalArgumentException("Not user found by the email " + email));
+                .orElseThrow(() -> new DataNotFoundException("Not user found by the email " + email));
         user.setModifiedAt(LocalDateTime.now());
         user.setStatus(UserStatusE.DELETED);
         log.info("[ON deleteUser] :: changed the user status to DELETED for the user with email {}", email);

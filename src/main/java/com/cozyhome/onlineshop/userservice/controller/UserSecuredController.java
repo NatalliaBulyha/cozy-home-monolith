@@ -67,7 +67,7 @@ public class UserSecuredController {
     @Operation(summary = "Update user password in personal account")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
-    @Secured({"ROLE_CUSTOMER"})
+    @Secured({"ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_ADMIN"})
     @PutMapping("/profile/update/pass")
     public ResponseEntity<Void> updateUserPassword(@RequestBody @Valid PasswordUpdateRequest passwords,
                                                                   HttpServletRequest request) {
