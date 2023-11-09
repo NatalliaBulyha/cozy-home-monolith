@@ -45,7 +45,7 @@ public class BasketSecuredController {
 	@Operation(summary = "Get user's basket.")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
-	@Secured({ "ROLE_CUSTOMER" })
+	@Secured({ "ROLE_CUSTOMER", "ROLE_ADMIN", "ROLE_MANAGER" })
 	@GetMapping()
 	public ResponseEntity<List<BasketDto>> getBasket(HttpServletRequest request) {
 		String userId = (String) request.getAttribute(userIdAttribute);
@@ -55,7 +55,7 @@ public class BasketSecuredController {
 	@Operation(summary = "Refresh user's basket.")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
-	@Secured({ "ROLE_CUSTOMER" })
+	@Secured({ "ROLE_CUSTOMER", "ROLE_ADMIN", "ROLE_MANAGER" })
 	@PostMapping()
 	public ResponseEntity<List<BasketDto>> mergeUserBaskets(HttpServletRequest request,
 			@Valid @RequestBody List<BasketItemDto> dtoList) {
@@ -67,7 +67,7 @@ public class BasketSecuredController {
 	@Operation(summary = "Replace user's basket when logging out.")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
-	@Secured({ "ROLE_CUSTOMER" })
+	@Secured({ "ROLE_CUSTOMER", "ROLE_ADMIN", "ROLE_MANAGER" })
 	@PostMapping("/replace")
 	public ResponseEntity<Void> replaceBasket(HttpServletRequest request,
 			@Valid @RequestBody List<BasketItemDto> dtoList) {

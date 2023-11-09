@@ -2,6 +2,7 @@ package com.cozyhome.onlineshop.userservice.controller;
 
 import java.util.List;
 
+import com.cozyhome.onlineshop.dto.user.PasswordUpdateRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -52,7 +53,7 @@ public class UserSecuredController {
     private final JwtTokenUtil jwtTokenUtil;
     private final FavoriteProductService favoriteProductService;
 
-    @Operation(summary = "Update user information")
+    @Operation(summary = "Update user information in personal account")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @Secured({"ROLE_CUSTOMER"})
@@ -63,7 +64,19 @@ public class UserSecuredController {
         return ResponseEntity.ok(userService.updateUserData(userInformationDto, userId));
     }
 
-    @Operation(summary = "Get user information")
+    @Operation(summary = "Update user password in personal account")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
+    @Secured({"ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_ADMIN"})
+    @PutMapping("/profile/update/pass")
+    public ResponseEntity<Void> updateUserPassword(@RequestBody @Valid PasswordUpdateRequest passwords,
+                                                                  HttpServletRequest request) {
+        String userId = (String) request.getAttribute(userIdAttribute);
+        userService.updateUserPassword(passwords, userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Get user information from personal account")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @Secured({"ROLE_CUSTOMER"})
