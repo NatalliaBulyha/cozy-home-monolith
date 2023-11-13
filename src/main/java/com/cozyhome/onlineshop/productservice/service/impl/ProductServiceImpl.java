@@ -78,7 +78,7 @@ public class ProductServiceImpl implements ProductService {
 				.map(status -> new ProductStatusDto(status.toString(), status.getDescription())).toList();
 	}
 
-	@Cacheable(value = "randomProduct", key = "#status", cacheManager = "cacheManagerWithExpiration")
+//	@Cacheable(value = "randomProduct", key = "#status", cacheManager = "cacheManagerWithExpiration")
 	@Override
 	public List<ProductDto> getRandomProductsByStatus(Byte status, int productCount) {
 		List<Product> products = productRepositoryCustom
@@ -86,7 +86,7 @@ public class ProductServiceImpl implements ProductService {
 		return productBuilder.buildProductDtoList(products, isMain);
 	}
 
-	@Cacheable(value = "randomProductsByStatusAndCategoryId", key = "#categoryId", cacheManager = "cacheManagerWithExpiration")
+//	@Cacheable(value = "randomProductsByStatusAndCategoryId", key = "#categoryId", cacheManager = "cacheManagerWithExpiration")
 	@Override
 	public List<ProductDto> getRandomProductsByStatusAndCategoryId(Byte status, String categoryId,
 			int countOfProducts) {
@@ -103,7 +103,7 @@ public class ProductServiceImpl implements ProductService {
 		return productBuilder.buildProductDtoList(products, isMain);
 	}
 
-	@Cacheable(value = "productsByCategoryId", key = "#categoryId")
+//	@Cacheable(value = "productsByCategoryId", key = "#categoryId")
 	@Override
 	public List<ProductDto> getProductsByCategoryId(String categoryId, PageableDto pageable) {
 		boolean isSubcategory = categoryRepository.hasParentById(new ObjectId(categoryId));
