@@ -111,7 +111,7 @@ public class ProductBuilder {
 
 		buildAdditionalCharacteristics(product, productCardDto);
 		buildProductCardDetails(productSkuCode, productCardDto, colorId);
-
+		log.info("[ON buildProductCardDto] :: build product dto with skuCode {}", product.getSkuCode());
 		return productCardDto;
 	}
 
