@@ -24,7 +24,7 @@ import com.cozyhome.onlineshop.dto.ProductDto;
 import com.cozyhome.onlineshop.dto.ProductForBasketDto;
 import com.cozyhome.onlineshop.dto.ProductStatusDto;
 import com.cozyhome.onlineshop.dto.filter.FilterDto;
-import com.cozyhome.onlineshop.dto.inventory.CheckingProductAvailableAndStatusDto;
+import com.cozyhome.onlineshop.dto.inventory.ProductAvailabilityDto;
 import com.cozyhome.onlineshop.dto.inventory.InventoryForBasketDto;
 import com.cozyhome.onlineshop.dto.productcard.ColorQuantityStatusDto;
 import com.cozyhome.onlineshop.dto.productcard.ProductCardDto;
@@ -169,7 +169,7 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public List<ProductForBasketDto> getProductsForBasket(List<ProductColorDto> productColorDtos) {
 		Map<String, Product> productMap = new HashMap<>();
-		Map<ProductColorDto, CheckingProductAvailableAndStatusDto> productAvailableAndStatusMap = new HashMap<>();
+		Map<ProductColorDto, ProductAvailabilityDto> productAvailableAndStatusMap = new HashMap<>();
 		List<String> skuCodes = productColorDtos.stream().map(ProductColorDto::getProductSkuCode).toList();
 
 		List<Product> products = productRepository.findAllByStatusNotDeletedAndSkuCodeIn(skuCodes);
@@ -184,7 +184,7 @@ public class ProductServiceImpl implements ProductService {
 		products.forEach(product -> productMap.put(product.getSkuCode(), product));
 		if (!inventoryForBasket.isEmpty()) {
 			inventoryForBasket.forEach(inventory -> productAvailableAndStatusMap.put(inventory.getProductColorDto(),
-					inventory.getCheckingProductAvailableAndStatusDto()));
+					inventory.getProductAvailabilityDto()));
 		}
 
 		return productBuilder.buildProductsShopCard(productMap, imagesMap, productColorDtos,

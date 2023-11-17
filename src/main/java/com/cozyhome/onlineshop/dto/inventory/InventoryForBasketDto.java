@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 @Data
 public class InventoryForBasketDto {
     private ProductColorDto productColorDto;
-    private CheckingProductAvailableAndStatusDto checkingProductAvailableAndStatusDto;
+    private ProductAvailabilityDto productAvailabilityDto;
 }
