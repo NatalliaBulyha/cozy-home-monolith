@@ -17,6 +17,7 @@ public class BasketDto {
     private String colorHex;
     private String colorName;
     private int quantity;
+    private int availableProductQuantity;
     private String quantityStatus;
     private boolean isFavorite;
 }

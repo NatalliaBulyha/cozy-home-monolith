@@ -1,6 +1,6 @@
 package com.cozyhome.onlineshop.productservice.service.builder;
 
-import com.cozyhome.onlineshop.dto.inventory.CheckingProductAvailableAndStatusDto;
+import com.cozyhome.onlineshop.dto.inventory.ProductAvailabilityDto;
 import com.cozyhome.onlineshop.dto.CollectionDto;
 import com.cozyhome.onlineshop.dto.ProductDto;
 import com.cozyhome.onlineshop.dto.ProductForBasketDto;
@@ -167,7 +167,7 @@ public class ProductBuilder {
 
     public List<ProductForBasketDto> buildProductsShopCard(Map<String, Product> productsMap, Map<ProductColorDto, ImageProduct> imagesMap,
 														   List<ProductColorDto> productColorDtos,
-														   Map<ProductColorDto, CheckingProductAvailableAndStatusDto> productAvailableAndStatus) {
+														   Map<ProductColorDto, ProductAvailabilityDto> productAvailableAndStatus) {
         List<ProductForBasketDto> productShopCards = new ArrayList<>();
         productColorDtos.forEach(productColor -> {
             BigDecimal discount = BigDecimal.valueOf(productsMap.get(productColor.getProductSkuCode()).getDiscount());

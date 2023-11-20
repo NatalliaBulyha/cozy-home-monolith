@@ -1,6 +1,6 @@
 package com.cozyhome.onlineshop.inventoryservice.service.impl;
 
-import com.cozyhome.onlineshop.dto.inventory.CheckingProductAvailableAndStatusDto;
+import com.cozyhome.onlineshop.dto.inventory.ProductAvailabilityDto;
 import com.cozyhome.onlineshop.dto.inventory.InventoryForBasketDto;
 import com.cozyhome.onlineshop.dto.request.ProductColorDto;
 import com.cozyhome.onlineshop.dto.inventory.QuantityStatusDto;
@@ -32,8 +32,8 @@ public class InventoryServiceImpl implements InventoryService {
 				request.getProductSkuCode(), request.getColorHex());
 		if (inventory.isPresent()) {
 			quantity = inventory.get().getQuantity();
-			log.info("[ON getQuantityByProductColor] :: get quantity [" + quantity + "] for product skuCode [" + request.getProductSkuCode()
-					+ "] and color hex [" + request.getColorHex() + "].");
+			log.info("[ON getQuantityByProductColor] :: get quantity [" + quantity + "] for product skuCode ["
+					+ request.getProductSkuCode() + "] and color hex [" + request.getColorHex() + "].");
 		}
 		return quantity;
 	}
@@ -48,8 +48,8 @@ public class InventoryServiceImpl implements InventoryService {
 	public Map<String, QuantityStatusDto> getQuantityStatusBySkuCodeList(List<String> productSkuCodeList) {
 		List<Inventory> inventoryList = inventoryRepository.findByProductColorProductSkuCodeIn(productSkuCodeList);
 		Map<String, QuantityStatusDto> skuCodeQuantityStatusMap = new HashMap<>();
-		Map<String, List<Inventory>> skuCodeInventoryMap = inventoryList.stream().collect(Collectors.groupingBy(
-				inventory -> inventory.getProductColor().getProductSkuCode(), Collectors.toList()));
+		Map<String, List<Inventory>> skuCodeInventoryMap = inventoryList.stream().collect(Collectors
+				.groupingBy(inventory -> inventory.getProductColor().getProductSkuCode(), Collectors.toList()));
 
 		for (String skuCode : productSkuCodeList) {
 			List<Inventory> inventories = skuCodeInventoryMap.get(skuCode);
@@ -58,30 +58,29 @@ public class InventoryServiceImpl implements InventoryService {
 		return skuCodeQuantityStatusMap;
 	}
 
-  @Override
+	@Override
 	public QuantityStatusDto getProductCardColorQuantityStatus(String productSkuCode) {
 		List<Inventory> inventories = inventoryRepository.findByProductColorProductSkuCode(productSkuCode);
 		return createQuantityStatusDto(inventories);
 	}
 
-
-
 	@Override
 	public List<InventoryForBasketDto> getProductAvailableStatus(List<ProductColorDto> productColorDto) {
 		List<InventoryForBasketDto> checkAvailableAndStatus = new ArrayList<>();
 		for (ProductColorDto productColor : productColorDto) {
-			Optional<Integer> inventory = inventoryRepository.findQuantityByProductSkuCodeAndColorHex(productColor.getProductSkuCode(),
-					productColor.getColorHex());
+			Optional<Integer> inventory = inventoryRepository.findQuantityByProductSkuCodeAndColorHex(
+					productColor.getProductSkuCode(), productColor.getColorHex());
 
 			if (inventory.isPresent()) {
-				checkAvailableAndStatus.add(new InventoryForBasketDto(productColor, new CheckingProductAvailableAndStatusDto(inventory.get(),
-						ProductQuantityStatus.getStatusByQuantity(inventory.get()))));
+				checkAvailableAndStatus
+						.add(new InventoryForBasketDto(productColor, new ProductAvailabilityDto(inventory.get(),
+								ProductQuantityStatus.getStatusByQuantity(inventory.get()))));
 				log.info("Get availableProductQuantity and quantityStatus for product with skuCode = "
 						+ productColor.getProductSkuCode() + ", and color hex = " + productColor.getColorHex()
-						+ ". class: InventoryServiceImpl, method: getProductAvailableStatus");
+						+ "method: getProductAvailableStatus");
 			}
 		}
-
+		
 		return checkAvailableAndStatus;
 	}
 

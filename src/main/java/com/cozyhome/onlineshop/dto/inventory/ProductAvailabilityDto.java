@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class CheckingProductAvailableAndStatusDto {
+public class ProductAvailabilityDto {
     private int availableProductQuantity;
     private String quantityStatus;
 }

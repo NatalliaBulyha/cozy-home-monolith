@@ -29,9 +29,9 @@ public class BasketServiceImpl implements BasketService {
 
 	@Override
 	public List<BasketDto> getBasket(String userId) {
-		List<BasketItem> list = basketRepository.findByUserId(userId);
-		List<FavoriteProduct> favoriteItems = favoriteProductRepository.findAllByUserId(userId);
-		return basketBuilder.buildBasketDtoList(list, favoriteItems);
+		List<BasketItem> basketItemList = basketRepository.findByUserId(userId);
+		List<FavoriteProduct> favoriteProductList = favoriteProductRepository.findAllByUserId(userId);
+		return basketBuilder.buildBasketDtoList(basketItemList, favoriteProductList);
 	}	
 	
 
