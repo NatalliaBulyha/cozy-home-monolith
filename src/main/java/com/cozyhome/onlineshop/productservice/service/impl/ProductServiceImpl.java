@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import com.cozyhome.onlineshop.dto.ProductDto;
 import com.cozyhome.onlineshop.dto.ProductForBasketDto;
+import com.cozyhome.onlineshop.dto.SearchResultDto;
 import com.cozyhome.onlineshop.dto.ProductStatusDto;
 import com.cozyhome.onlineshop.dto.filter.FilterDto;
 import com.cozyhome.onlineshop.dto.inventory.ProductAvailabilityDto;
@@ -229,8 +230,8 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<ProductDto> search(String keyWord, PageableDto pageable) {		
-		List<Product> product = productRepositoryCustom.search(keyWord, buildPageable(pageable));		
-		return productBuilder.buildProductDtoList(product, isMain);
+	public SearchResultDto searchProducts(String keyWord) {		
+		List<Product> products = productRepositoryCustom.search(keyWord);		
+		return productBuilder.buildSearchResult(products);
 	}
 }

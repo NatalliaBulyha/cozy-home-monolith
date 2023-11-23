@@ -22,12 +22,12 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     private final DeliveryCompanyRepository deliveryCompanyRepository;
     private final ModelMapper modelMapper;
-    @Value("${delivery.company.status}")
-    private EntityStatus status;
+//    @Value("${delivery.company.status}")
+//    private EntityStatus status;
 
     @Override
     public List<DeliveryCompanyDto> getDeliveryCompanies() {
-        List<DeliveryCompany> deliveryCompanies = deliveryCompanyRepository.findAllByStatus(status);
+        List<DeliveryCompany> deliveryCompanies = deliveryCompanyRepository.findAllByStatus(EntityStatus.ACTIVE);
         if (deliveryCompanies.isEmpty()) {
             return new ArrayList<>();
         }

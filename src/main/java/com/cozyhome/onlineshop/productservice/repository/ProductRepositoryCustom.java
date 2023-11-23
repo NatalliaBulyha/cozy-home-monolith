@@ -17,5 +17,5 @@ public interface ProductRepositoryCustom {
 	
 	List<Product> filterProductsByCriterias(FilterDto dto, Pageable page);
 	
-	List<Product> search(String keyWord, Pageable pageable);
+	List<Product> search(String keyWord);
 }

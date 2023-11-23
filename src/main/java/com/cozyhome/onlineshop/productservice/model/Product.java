@@ -70,5 +70,4 @@ public class Product {
     private Float depth;
 
     private boolean available;
-
 }

@@ -19,8 +19,9 @@ public interface ImageRepositoryCustom {
 
     Map<String, List<Color>> groupColorsByProductSkuCodeIn(List<String> productSkuCodes);
 
-    Map<ProductColorDto, ImageProduct> findImagesByMainPhotoTrueAndProductSkuCodeWithColorHexIn(List<ProductColorDto> productColorDtos);
+//    Map<ProductColorDto, ImageProduct> findImagesByMainPhotoTrueAndProductSkuCodeWithColorHexIn(List<ProductColorDto> productColorDtos);
 
     Map<ProductColorDto, ImageProduct> findMainImagesByProductColorList(List<ProductColorDto> productColorDtos);
 
+    Map<String, ImageProduct> findMainFirstImagesBySkuCodeIn(List<String> skuCodes);
 }

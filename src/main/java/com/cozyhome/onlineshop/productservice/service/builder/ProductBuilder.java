@@ -1,9 +1,12 @@
 package com.cozyhome.onlineshop.productservice.service.builder;
 
 import com.cozyhome.onlineshop.dto.inventory.ProductAvailabilityDto;
+import com.cozyhome.onlineshop.dto.CategorySearchDto;
 import com.cozyhome.onlineshop.dto.CollectionDto;
 import com.cozyhome.onlineshop.dto.ProductDto;
 import com.cozyhome.onlineshop.dto.ProductForBasketDto;
+import com.cozyhome.onlineshop.dto.ProductSearchDto;
+import com.cozyhome.onlineshop.dto.SearchResultDto;
 import com.cozyhome.onlineshop.dto.inventory.QuantityStatusDto;
 import com.cozyhome.onlineshop.dto.productcard.ColorQuantityStatusDto;
 import com.cozyhome.onlineshop.dto.productcard.ProductCardDto;
@@ -167,7 +170,7 @@ public class ProductBuilder {
 
     public List<ProductForBasketDto> buildProductsShopCard(Map<String, Product> productsMap, Map<ProductColorDto, ImageProduct> imagesMap,
 														   List<ProductColorDto> productColorDtos,
-														   Map<ProductColorDto, ProductAvailabilityDto> productAvailableAndStatus) {
+														   Map<ProductColorDto, ProductAvailabilityDto> productAvailabilityMap) {
         List<ProductForBasketDto> productShopCards = new ArrayList<>();
         productColorDtos.forEach(productColor -> {
             BigDecimal discount = BigDecimal.valueOf(productsMap.get(productColor.getProductSkuCode()).getDiscount());
@@ -179,9 +182,9 @@ public class ProductBuilder {
 				.colorHex(productColor.getColorHex())
                 .build();
 
-			if (productAvailableAndStatus.get(productColor) != null) {
-				productShopCard.setAvailableProductQuantity(productAvailableAndStatus.get(productColor).getAvailableProductQuantity());
-				productShopCard.setQuantityStatus(productAvailableAndStatus.get(productColor).getQuantityStatus());
+			if (productAvailabilityMap.get(productColor) != null) {
+				productShopCard.setAvailableProductQuantity(productAvailabilityMap.get(productColor).getAvailableProductQuantity());
+				productShopCard.setQuantityStatus(productAvailabilityMap.get(productColor).getQuantityStatus());
 			}
 
             if (!discount.equals(NULL_PERCENT)) {
@@ -196,6 +199,53 @@ public class ProductBuilder {
         });
 
         return productShopCards;
+    }
+    
+    public SearchResultDto buildSearchResult(List<Product> products){
+    	final byte searchResultSize = 4;  	
+
+    	List<String> skuCodes = extractSkuCodes(products.subList(0, searchResultSize));
+        Map<String, ImageProduct> imagesMap = imageRepositoryCustom.findMainFirstImagesBySkuCodeIn(skuCodes);
+        List<ProductSearchDto> productSearchList = products.stream()
+                .limit(searchResultSize)
+                .map(product -> mapToProductSearchDto(product, imagesMap.get(product.getSkuCode())))
+                .toList();
+    	
+    	Map<Category, Long> categoriesMap = groupProductsByCategory(products);
+    	List<CategorySearchDto> categorySearchList = categoriesMap.entrySet().stream()
+    			.map(entry -> mapToCategorySearchDto(entry.getKey(), entry.getValue().shortValue()))
+    			.toList();
+
+    	return new SearchResultDto(productSearchList, categorySearchList);
+    }
+    
+    private ProductSearchDto mapToProductSearchDto(Product product, ImageProduct image) {
+        ProductSearchDto result = ProductSearchDto.builder()
+        		.skuCode(product.getSkuCode())
+        		.name(product.getName())
+        		.price(product.getPrice())
+        		.priceWithDiscount(product.getPriceWithDiscount())
+        		.imagePath(imagePathBase + image.getSliderImageName())
+        		.colorHex(image.getColor().getId())
+        		.build();
+        return result;
+    }
+    
+    private CategorySearchDto mapToCategorySearchDto(Category category, short size){
+    	return CategorySearchDto.builder()
+    			.id(category.getId().toString())
+    			.name(category.getName())
+    			.countOfProducts(size)
+    			.build();   			
+    }
+    
+    private Map<Category, Long> groupProductsByCategory(List<Product> products) {
+        return products.stream()
+                .collect(Collectors.groupingBy(
+                        product -> categoryRepository.findById(product.getSubCategory().getParentId())
+                                .orElseThrow(() -> new DataNotFoundException("No category found")),
+                        Collectors.counting()
+                ));
     }
 
     private float countAverageRating(List<ReviewResponse> reviews) {

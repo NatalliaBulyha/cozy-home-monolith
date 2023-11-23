@@ -8,8 +8,12 @@ import org.bson.types.ObjectId;
 import java.util.List;
 
 public interface CategoryService {
+	
     List<CategoryWithIconDto> getCategoryWithIcon();
+    
     List<ObjectId> getCategoriesIdsByParentId(String parentId);
+    
     List<CategoryWithSubCategoriesDto> getCategoriesWithPhoto();
+    
     List<CategoryWithPhotoDto> getCategoriesForHomepage();
 }
