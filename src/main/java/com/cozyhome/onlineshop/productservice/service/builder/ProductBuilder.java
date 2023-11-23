@@ -203,8 +203,9 @@ public class ProductBuilder {
     
     public SearchResultDto buildSearchResult(List<Product> products){
     	final byte searchResultSize = 4;  	
-
-    	List<String> skuCodes = extractSkuCodes(products.subList(0, searchResultSize));
+    	byte indexTo =  products.size() < searchResultSize ? (byte) products.size() : searchResultSize;
+    	
+    	List<String> skuCodes = extractSkuCodes(products.subList(0, indexTo));
         Map<String, ImageProduct> imagesMap = imageRepositoryCustom.findMainFirstImagesBySkuCodeIn(skuCodes);
         List<ProductSearchDto> productSearchList = products.stream()
                 .limit(searchResultSize)

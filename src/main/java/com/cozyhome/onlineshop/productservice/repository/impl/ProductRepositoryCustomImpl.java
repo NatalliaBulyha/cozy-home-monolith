@@ -53,8 +53,17 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 	}
 
 	@Override
-	public List<Product> filterProductsByCriterias(FilterDto filter, Pageable page) {
+	public List<Product> filterProductsByCriterias(FilterDto filter, Pageable page) {	
+
 		final Query query = page == null ? new Query() : new Query().with(page);
+		
+		if(filter.getKeyWord() != null) {
+			final String pattern = ".*" + filter.getKeyWord() + ".*";
+			final String caseInsensitive = "i";
+			Criteria skuCodeCriteria = Criteria.where("skuCode").regex(pattern);		
+		    Criteria nameCriteria = Criteria.where("name").regex(pattern, caseInsensitive);
+		    query.addCriteria(new Criteria().orOperator(skuCodeCriteria, nameCriteria));
+		}
 
 		if (filter.getParentCategoryId() == null) {
 			throw new IllegalArgumentException("ParentCategoryId is required.");
