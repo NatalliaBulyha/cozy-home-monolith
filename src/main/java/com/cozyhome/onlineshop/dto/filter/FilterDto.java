@@ -16,6 +16,8 @@ public class FilterDto {
     private short countOfProducts;
     private byte countOfPages;
 
+    private String keyWord;
+    
     @ValidId
     private String parentCategoryId;
     private List<? extends ParametersDto> subCategories;
