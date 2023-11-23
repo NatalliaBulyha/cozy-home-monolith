@@ -26,6 +26,7 @@ public class ProductFilterParametersBuilder {
 
     @Value("${digits.after.decimal}")
     private int digitsAfterDecimal;
+    
     public FilterDto buildFilterParameters(List<Product> filteredProducts, List<Product> notFilteredProducts, byte size) {
         List<String> productsSkuCodes = filteredProducts.stream().map(Product::getSkuCode).toList();
         short countOfProducts = (short) filteredProducts.size();

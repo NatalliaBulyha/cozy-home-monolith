@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cozyhome.onlineshop.dto.ProductDto;
 import com.cozyhome.onlineshop.dto.ProductForBasketDto;
+import com.cozyhome.onlineshop.dto.SearchResultDto;
 import com.cozyhome.onlineshop.dto.ProductStatusDto;
 import com.cozyhome.onlineshop.dto.filter.FilterDto;
 import com.cozyhome.onlineshop.dto.productcard.ProductCardDto;
@@ -12,6 +13,7 @@ import com.cozyhome.onlineshop.dto.request.ProductColorDto;
 import com.cozyhome.onlineshop.dto.request.SortDto;
 
 public interface ProductService {
+	
     List<ProductStatusDto> getProductStatuses();
 
     List<ProductDto> getRandomProductsByStatus(Byte status, int productCount);
@@ -34,5 +36,5 @@ public interface ProductService {
     
     void markFavoritesForUser(String userId, ProductCardDto productCard);
     
-    List<ProductDto> search(String keyWord, PageableDto pageable);
+    SearchResultDto searchProducts(String keyWord);
 }

@@ -56,7 +56,7 @@ public class UserSecuredController {
     @Operation(summary = "Update user information in personal account")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
-    @Secured({"ROLE_CUSTOMER"})
+    @Secured({"ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_ADMIN"})
     @PutMapping("/profile/update")
     public ResponseEntity<UserInformationResponse> updateUserInfo(@RequestBody @Valid UserInformationRequest userInformationDto,
                                                                   HttpServletRequest request) {
@@ -79,7 +79,7 @@ public class UserSecuredController {
     @Operation(summary = "Get user information from personal account")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
-    @Secured({"ROLE_CUSTOMER"})
+    @Secured({"ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_ADMIN"})
     @GetMapping("/profile")
     public ResponseEntity<UserInformationResponse> getUserInfo(HttpServletRequest request) {
         String userId = (String) request.getAttribute(userIdAttribute);
@@ -101,7 +101,7 @@ public class UserSecuredController {
     @Operation(summary = "Add product to favorite.", description = "Add product to favorite by product skuCode and color hex.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
-    @Secured({"ROLE_CUSTOMER"})
+    @Secured({"ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_ADMIN"})
     @PostMapping("/favorites")
     public ResponseEntity<Void> updateUserFavoriteProducts(HttpServletRequest request, @Valid @RequestBody ProductColorDto dtoRequest) {
     	String userId = (String) request.getAttribute(userIdAttribute);        
@@ -112,7 +112,7 @@ public class UserSecuredController {
     @Operation(summary = "Get all of the user's favorite products.", description = "Get all of the user's favorite products.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
-    @Secured({"ROLE_CUSTOMER"})
+    @Secured({"ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_ADMIN"})
     @GetMapping("/favorites")
     public ResponseEntity<List<ProductDto>> getFavoriteProductsForUserId(HttpServletRequest request, PageableDto pageable) {
     	String userId = (String) request.getAttribute(userIdAttribute);
@@ -123,7 +123,7 @@ public class UserSecuredController {
     @Operation(summary = "Get user's favorite products by category id.", description = "Get user's favorite products by category id.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
-    @Secured({"ROLE_CUSTOMER"})
+    @Secured({"ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_ADMIN"})
     @GetMapping("/favorites/category-id")
     public ResponseEntity<List<ProductDto>> getFavoriteProductsForUserAndCategoryId(HttpServletRequest request, @RequestParam @ValidId String categoryId,
     		PageableDto pageable) {

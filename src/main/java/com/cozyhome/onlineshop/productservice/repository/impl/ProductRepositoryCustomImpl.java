@@ -172,8 +172,8 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 	}
 
 	@Override
-	public List<Product> search(String keyWord, Pageable pageable) {
-		final Query query = pageable == null ? new Query() : new Query().with(pageable);
+	public List<Product> search(String keyWord) {
+		final Query query = new Query();
 		final String pattern = ".*" + keyWord + ".*";
 		final String caseInsensitive = "i";
 		Criteria skuCodeCriteria = Criteria.where("skuCode").regex(pattern);		
@@ -182,5 +182,4 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 		query.addCriteria(new Criteria().orOperator(skuCodeCriteria, nameCriteria));
 	    return mongoTemplate.find(query, Product.class);
 	}
-
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cozyhome.onlineshop.dto.ProductDto;
 import com.cozyhome.onlineshop.dto.ProductForBasketDto;
+import com.cozyhome.onlineshop.dto.SearchResultDto;
 import com.cozyhome.onlineshop.dto.ProductStatusDto;
 import com.cozyhome.onlineshop.dto.filter.FilterDto;
 import com.cozyhome.onlineshop.dto.productcard.ProductCardDto;
@@ -167,7 +168,7 @@ public class ProductController {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION),
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_400, description = SwaggerResponse.Message.CODE_400) })
     @GetMapping("/search")
-    public ResponseEntity<List<ProductDto>> search(@RequestParam String keyWord, @Valid PageableDto pageable){
-        return ResponseEntity.ok(productService.search(keyWord, pageable));
+    public ResponseEntity<SearchResultDto> search(@RequestParam String keyWord){
+        return ResponseEntity.ok(productService.searchProducts(keyWord.trim()));
     }
 }

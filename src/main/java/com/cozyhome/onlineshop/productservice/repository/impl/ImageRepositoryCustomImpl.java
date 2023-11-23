@@ -1,28 +1,29 @@
 package com.cozyhome.onlineshop.productservice.repository.impl;
 
-import com.cozyhome.onlineshop.dto.request.ProductColorDto;
-import com.cozyhome.onlineshop.productservice.model.Color;
-import com.cozyhome.onlineshop.productservice.model.ImageProduct;
-import com.cozyhome.onlineshop.productservice.repository.ImageRepositoryCustom;
-import lombok.RequiredArgsConstructor;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.lookup;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.replaceRoot;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.unwind;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import com.cozyhome.onlineshop.dto.request.ProductColorDto;
+import com.cozyhome.onlineshop.productservice.model.Color;
+import com.cozyhome.onlineshop.productservice.model.ImageProduct;
+import com.cozyhome.onlineshop.productservice.repository.ImageRepositoryCustom;
 
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.lookup;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.replaceRoot;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.unwind;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Repository
@@ -73,33 +74,33 @@ public class ImageRepositoryCustomImpl implements ImageRepositoryCustom {
         return mongoTemplate.aggregate(aggregation, ImageProduct.class, Color.class).getMappedResults();
     }
 
-    @Override
-    public Map<ProductColorDto, ImageProduct> findImagesByMainPhotoTrueAndProductSkuCodeWithColorHexIn(List<ProductColorDto> productColorDtos) {
-        List<String> skuCodes = productColorDtos.stream().map(ProductColorDto::getProductSkuCode).toList();
-        Map<ProductColorDto, ImageProduct> imagesMap = new HashMap<>();
-        Map<String, List<ImageProduct>> resultMap = new HashMap<>();
-
-        Aggregation aggregation = Aggregation.newAggregation(
-            match(Criteria.where("product.$id").in(skuCodes).and("mainPhoto").is(true)),
-            group("product.$id").addToSet("$$ROOT").as("image"));
-
-        AggregationResults<Map> result = mongoTemplate.aggregate(aggregation, ImageProduct.class, Map.class);
-        for (Map<String, List<ImageProduct>> entry : result.getMappedResults()) {
-            resultMap.put(String.valueOf(entry.get("_id")), entry.get("image"));
-        }
-
-        for (ProductColorDto entry : productColorDtos) {
-            List<ImageProduct> images = resultMap.get(entry.getProductSkuCode());
-            Optional<ImageProduct> image = images.stream().filter(imageProduct -> imageProduct.getColor().getId().equals(entry.getColorHex())).findFirst();
-
-            if (image.isPresent()) {
-                imagesMap.put(new ProductColorDto(entry.getProductSkuCode(), entry.getColorHex()), image.get());
-            } else {
-                imagesMap.put(new ProductColorDto(entry.getProductSkuCode(), entry.getColorHex()), null);
-            }
-        }
-        return imagesMap;
-    }
+//    @Override
+//    public Map<ProductColorDto, ImageProduct> findImagesByMainPhotoTrueAndProductSkuCodeWithColorHexIn(List<ProductColorDto> productColorDtos) {
+//        List<String> skuCodes = productColorDtos.stream().map(ProductColorDto::getProductSkuCode).toList();
+//        Map<ProductColorDto, ImageProduct> imagesMap = new HashMap<>();
+//        Map<String, List<ImageProduct>> resultMap = new HashMap<>();
+//
+//        Aggregation aggregation = Aggregation.newAggregation(
+//            match(Criteria.where("product.$id").in(skuCodes).and("mainPhoto").is(true)),
+//            group("product.$id").addToSet("$$ROOT").as("image"));
+//
+//        AggregationResults<Map> result = mongoTemplate.aggregate(aggregation, ImageProduct.class, Map.class);
+//        for (Map<String, List<ImageProduct>> entry : result.getMappedResults()) {
+//            resultMap.put(String.valueOf(entry.get("_id")), entry.get("image"));
+//        }
+//
+//        for (ProductColorDto entry : productColorDtos) {
+//            List<ImageProduct> images = resultMap.get(entry.getProductSkuCode());
+//            Optional<ImageProduct> image = images.stream().filter(imageProduct -> imageProduct.getColor().getId().equals(entry.getColorHex())).findFirst();
+//
+//            if (image.isPresent()) {
+//                imagesMap.put(new ProductColorDto(entry.getProductSkuCode(), entry.getColorHex()), image.get());
+//            } else {
+//                imagesMap.put(new ProductColorDto(entry.getProductSkuCode(), entry.getColorHex()), null);
+//            }
+//        }
+//        return imagesMap;
+//    }
 
 	@Override
 	public Map<ProductColorDto, ImageProduct> findMainImagesByProductColorList(List<ProductColorDto> productColorDtos) {
@@ -125,5 +126,19 @@ public class ImageRepositoryCustomImpl implements ImageRepositoryCustom {
 		return imageProductList.stream()
 	            .collect(Collectors.toMap(imageProduct -> new ProductColorDto(imageProduct.getProduct().getSkuCode(), imageProduct.getColor().getId()), 
 	            		imageProduct -> imageProduct));
+	}
+	
+	@Override
+	public Map<String, ImageProduct> findMainFirstImagesBySkuCodeIn(List<String> skuCodes){
+		Aggregation aggregation = Aggregation.newAggregation(
+	            match(Criteria.where("product.$id").in(skuCodes)),
+	            match(Criteria.where("mainPhoto").is(true)),
+	            group("product.$id").first("$$ROOT").as("firstImage"),
+	            replaceRoot("firstImage"));
+		
+		List<ImageProduct> result = mongoTemplate.aggregate(aggregation, ImageProduct.class, ImageProduct.class).getMappedResults();
+		Map<String, ImageProduct> resultMap = result.stream()
+	            .collect(Collectors.toMap(imageProduct -> imageProduct.getProduct().getSkuCode(), Function.identity()));
+		return resultMap;
 	}
 }
