@@ -149,6 +149,15 @@ public class ProductServiceImpl implements ProductService {
 		}
 		return productFilterParametersBuilder.buildFilterParameters(filteredProducts, notFilteredProducts, size);
 	}
+	
+	private FilterDto getDefaultFilterParameters() {
+		List<Product> notFilteredProducts = productRepository.findAllByStatusNotDeletedAndCategoryIdIn(objectIds);
+		if (notFilteredProducts.isEmpty()) {
+			log.info("[ON getFilterParameters]:: Products for category with id {} don't found.",
+					filter.getParentCategoryId());
+			return productFilterParametersBuilder.buildFilterParameters(filteredProducts, filteredProducts, size);
+		}
+	}
 
 	@Override
 	public ProductCardDto getProductCard(ProductColorDto productColor) {

@@ -16,7 +16,9 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper=true)
 @ToString(callSuper=true)
 public class ParameterDetailsDto extends ParametersDto {
+	
     private String name;
+    
     private int countOfProducts;
 
     public ParameterDetailsDto(String id, String name, int countOfProducts) {
