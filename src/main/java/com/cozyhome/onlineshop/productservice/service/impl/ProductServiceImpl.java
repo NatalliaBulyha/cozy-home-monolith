@@ -120,7 +120,7 @@ public class ProductServiceImpl implements ProductService {
 		return productBuilder.buildProductDtoList(products.getContent(), isMain);
 	}
 
-	@Cacheable(value = "filteredProducts", key = "#filter")
+//	@Cacheable(value = "filteredProducts", key = "#filter")
 	@Override
 	public List<ProductDto> getFilteredProducts(FilterDto filter, PageableDto pageable, SortDto sortDto) {
 		Pageable currentPageable = buildPageable(pageable, sortDto);
