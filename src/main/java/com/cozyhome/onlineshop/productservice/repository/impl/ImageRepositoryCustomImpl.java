@@ -6,6 +6,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.matc
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.replaceRoot;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.unwind;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import com.cozyhome.onlineshop.dto.request.ProductColorDto;
@@ -104,19 +106,21 @@ public class ImageRepositoryCustomImpl implements ImageRepositoryCustom {
 
 	@Override
 	public Map<ProductColorDto, ImageProduct> findMainImagesByProductColorList(List<ProductColorDto> productColorDtos) {
-		List<String> skuCodeList = extractValues(productColorDtos, ProductColorDto::getProductSkuCode);		
-		List<String> colorHexList = extractValues(productColorDtos, ProductColorDto::getColorHex);		
-		
-		Aggregation aggregation = Aggregation.newAggregation(
-			    match(Criteria.where("product.$id").in(skuCodeList)
-			        .and("color.$id").in(colorHexList)
-			        .and("mainPhoto").is(true))
-			);		
-		List<ImageProduct> results = mongoTemplate.aggregate(aggregation, ImageProduct.class, ImageProduct.class)
-				.getMappedResults();				
-	    
-		return buildResultMap(results);
-	}
+		List<Criteria> criteriaList = new ArrayList<>();
+
+	    for (ProductColorDto dto : productColorDtos) {
+	        Criteria criteria = new Criteria().and("product.$id").is(dto.getProductSkuCode())
+	                                           .and("color.$id").is(dto.getColorHex())
+	                                           .and("mainPhoto").is(true);
+	        criteriaList.add(criteria);
+	    }
+
+	    Criteria finalCriteria = new Criteria().orOperator(criteriaList.toArray(new Criteria[0]));
+	    Query query = new Query(finalCriteria);
+
+	    List<ImageProduct> results = mongoTemplate.find(query, ImageProduct.class);
+        return buildResultMap(results);
+    }
 	
 	private <T> List<T> extractValues(List<ProductColorDto> list, Function<ProductColorDto, T> function){
 		return list.stream().map(function).toList();

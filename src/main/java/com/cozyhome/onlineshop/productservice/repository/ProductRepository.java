@@ -30,4 +30,7 @@ public interface ProductRepository extends MongoRepository<Product, String> {
 
     @Query("{$and:[{'status': {$ne: 'DELETED'}},{'skuCode': {$in: ?0}}]}")
     List<Product> findAllByStatusNotDeletedAndSkuCodeIn(List<String> skuCodes);
+    
+//    @Query("{$and:[{'status': {$ne: 'DELETED'}, 'skuCode': {$in: ?0}, 'subCategoryd': {$in: ?1}}]}")
+//    Page<Product> findAllByStatusNotDeletedAndSkuCodeInAndCategoryIdIn(List<String> skuCodesList, List<ObjectId> categoryIdsList, Pageable page);
 }

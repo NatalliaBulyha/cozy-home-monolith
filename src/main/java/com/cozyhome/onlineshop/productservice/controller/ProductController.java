@@ -25,6 +25,7 @@ import com.cozyhome.onlineshop.dto.request.ProductColorDto;
 import com.cozyhome.onlineshop.dto.request.SortDto;
 import com.cozyhome.onlineshop.productservice.controller.swagger.SwaggerResponse;
 import com.cozyhome.onlineshop.productservice.service.ProductService;
+import com.cozyhome.onlineshop.userservice.security.service.FavoriteProductService;
 import com.cozyhome.onlineshop.validation.ValidId;
 import com.cozyhome.onlineshop.validation.ValidSkuCode;
 
@@ -47,6 +48,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductController {
 
 	private final ProductService productService;
+	private final FavoriteProductService favoriteProductService;
 	
 	@Value("${header.name.user-id}")
     private String userIdAttribute;
@@ -69,7 +71,7 @@ public class ProductController {
     	String userId = (String) request.getAttribute(userIdAttribute);
     	List<ProductDto> products = productService.getRandomProductsByStatus(status, countOfProducts);
     	if(userId != null) {
-    		productService.markFavoritesForUser(userId, products);
+    		favoriteProductService.markFavoritesForUser(userId, products);
     	}
         return ResponseEntity.ok(products);
     }
@@ -85,7 +87,7 @@ public class ProductController {
     	String userId = (String) request.getAttribute(userIdAttribute);
     	List<ProductDto> products = productService.getRandomProductsByStatusAndCategoryId(status, categoryId, countOfProducts);
     	if(userId != null) {
-    		productService.markFavoritesForUser(userId, products);
+    		favoriteProductService.markFavoritesForUser(userId, products);
     	}
     	return ResponseEntity.ok(products);
     }
@@ -100,7 +102,7 @@ public class ProductController {
     	String userId = (String) request.getAttribute(userIdAttribute);
     	List<ProductDto> products = productService.getProductsByCategoryId(categoryId, pageable);
     	if(userId != null) {
-    		productService.markFavoritesForUser(userId, products);
+    		favoriteProductService.markFavoritesForUser(userId, products);
     	}
     	return ResponseEntity.ok(products);
     }
@@ -112,8 +114,13 @@ public class ProductController {
     @PostMapping("/filter")
     public ResponseEntity<List<ProductDto>> getFilteredProducts(@RequestBody FilterDto filter,
                                                                       @Valid PageableDto pageable,
-                                                                      @Valid SortDto sortDto) {
-        return new ResponseEntity<>(productService.getFilteredProducts(filter, pageable, sortDto), HttpStatus.OK);
+                                                                      @Valid SortDto sortDto, HttpServletRequest request) {
+    	String userId = (String) request.getAttribute(userIdAttribute);
+    	List<ProductDto> products = productService.getFilteredProducts(filter, pageable, sortDto);
+    	if(userId != null) {
+    		favoriteProductService.markFavoritesForUser(userId, products);
+    	}
+        return ResponseEntity.ok(products);
     }
 
     @Operation(summary = "Get Filter Parameters", description = "Get the filter parameters for filtering products.")
@@ -134,7 +141,7 @@ public class ProductController {
     	String userId = (String) request.getAttribute(userIdAttribute);
     	ProductCardDto productCardDto = productService.getProductCard(dto);
     	if(userId != null) {
-    		productService.markFavoritesForUser(userId, productCardDto);
+    		favoriteProductService.markFavoritesForUser(userId, productCardDto);
     	}
     	return ResponseEntity.ok().body(productCardDto);
     }
@@ -149,7 +156,7 @@ public class ProductController {
     	String userId = (String) request.getAttribute(userIdAttribute);
     	List<ProductDto> products = productService.getProductsByCollectionExcludeSkuCode(collectionId, productSkuCode);
     	if(userId != null) {
-    		productService.markFavoritesForUser(userId, products);
+    		favoriteProductService.markFavoritesForUser(userId, products);
     	}
     	return ResponseEntity.ok(products);
     }
