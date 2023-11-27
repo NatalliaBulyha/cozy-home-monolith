@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cozyhome.onlineshop.dto.CategoryFavoriteProductsDto;
+import com.cozyhome.onlineshop.dto.FavoriteProductsDto;
 import com.cozyhome.onlineshop.dto.ProductDto;
 import com.cozyhome.onlineshop.dto.request.PageableDto;
 import com.cozyhome.onlineshop.dto.request.ProductColorDto;
@@ -114,7 +116,7 @@ public class UserSecuredController {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @Secured({"ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_ADMIN"})
     @GetMapping("/favorites")
-    public ResponseEntity<List<ProductDto>> getFavoriteProductsForUserId(HttpServletRequest request, PageableDto pageable) {
+    public ResponseEntity<FavoriteProductsDto> getFavoriteProductsForUserId(HttpServletRequest request, PageableDto pageable) {
     	String userId = (String) request.getAttribute(userIdAttribute);
         log.info("[ON getFavoriteProductsForUser] :: Get all favorite products for user with id {}", userId);
         return ResponseEntity.ok(favoriteProductService.getFavoriteProductsByUserId(userId, pageable));
@@ -125,7 +127,7 @@ public class UserSecuredController {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @Secured({"ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_ADMIN"})
     @GetMapping("/favorites/category-id")
-    public ResponseEntity<List<ProductDto>> getFavoriteProductsForUserAndCategoryId(HttpServletRequest request, @RequestParam @ValidId String categoryId,
+    public ResponseEntity<CategoryFavoriteProductsDto> getFavoriteProductsForUserAndCategoryId(HttpServletRequest request, @RequestParam @ValidId String categoryId,
     		PageableDto pageable) {
     	String userId = (String) request.getAttribute(userIdAttribute);
         log.info("[ON getFavoriteProductsForUserAndCategoryId] :: Get all favorite items for user with id {} and category id {}.", userId, categoryId);

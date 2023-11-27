@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.bson.types.Decimal128;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -50,6 +52,25 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
 		List<Product> result = mongoTemplate.aggregate(aggregation, Product.class, Product.class).getMappedResults();
 		return result;
+	}
+	
+	@Override
+	public Page<Product> getBySkuCodeInAndCategoryIdsIn(List<String> skuCodesList, List<ObjectId> categoryIdsList, Pageable page){						
+		if (skuCodesList.isEmpty() && categoryIdsList.isEmpty()) {
+            return Page.empty();
+        }
+		
+		Criteria categoryId = Criteria.where("subCategory.$id").in(categoryIdsList);
+		Criteria skuCode = Criteria.where("skuCode").in(skuCodesList);
+		
+		final Query query = page == null ? new Query() : new Query().with(page);
+		query.addCriteria(categoryId);
+		query.addCriteria(skuCode);
+
+		List<Product> resultList = mongoTemplate.find(query, Product.class);
+        long count = mongoTemplate.count(query, Product.class);
+
+        return new PageImpl(resultList, page, count);
 	}
 
 	@Override

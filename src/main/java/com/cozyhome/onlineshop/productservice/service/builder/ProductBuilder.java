@@ -62,7 +62,7 @@ public class ProductBuilder {
 		Map<String, QuantityStatusDto> quantityStatusMap = inventoryService.getQuantityStatusBySkuCodeList(productsSkuCodes);
 		return products.stream().map(product -> buildProductDto(product, imageMap.get(product.getSkuCode()),
 				quantityStatusMap.get(product.getSkuCode()))).toList();
-	}
+	}		
 
 	public ProductDto buildProductDto(Product product, List<ImageProduct> images,
 									  QuantityStatusDto quantityStatus) {
@@ -88,6 +88,37 @@ public class ProductBuilder {
 		return productDto;
 	}
 
+	public List<ProductDto> buildFavoriteProductDtoList(List<Product> products, List<ProductColorDto> favoritesProductColor) {
+		Map<ProductColorDto, ImageProduct> imageMap = imageRepositoryCustom.findMainImagesByProductColorList(favoritesProductColor);
+		System.out.println("imageMap----------------" + imageMap);
+		Map<String, QuantityStatusDto> quantityStatusMap = inventoryService.getQuantityStatusBySkuCodeList(extractSkuCodes(products));
+		Map<String, Product> productMap = convertProductListToMap(products);
+		
+		List<ProductDto> result = new ArrayList<>();
+		Map<String, List<ImageProduct>> imageMap2 = imageRepositoryCustom.findMainImagesByProductColorList(favoritesProductColor)
+				.entrySet().stream().collect(Collectors.groupingBy(entry -> entry.getKey().getProductSkuCode(),
+						Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+		System.out.println("imageMap------------" + imageMap2);
+		
+		for(Product product : products) {
+			String productSkuCode = product.getSkuCode();
+			ProductDto productDto = buildProductDto(product, imageMap2.get(productSkuCode), quantityStatusMap.get(productSkuCode));
+			for(ColorQuantityStatusDto dto : productDto.getColorDtoList()) {
+				boolean isFavorite = imageMap2.get(productSkuCode).stream().anyMatch(image -> image.getColor().getId().equals(dto.getId()));
+				if(isFavorite) {
+					dto.setFavorite(true);
+				}
+			}			
+			result.add(productDto);
+		}		
+		return result;
+	}
+	
+	private Map<String, Product> convertProductListToMap(List<Product> productList){
+		return productList.stream()
+				.collect(Collectors.toMap(Product::getSkuCode, product -> product));
+	}
+	
 	public ProductCardDto buildProductCardDto(Product product, String colorId) {
 		final String productSkuCode = product.getSkuCode();
 		ObjectId id = product.getSubCategory().getParentId();

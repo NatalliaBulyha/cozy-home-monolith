@@ -32,9 +32,5 @@ public interface ProductService {
 
     List<ProductForBasketDto> getProductsForBasket(List<ProductColorDto> dto);
     
-    void markFavoritesForUser(String userId, List<ProductDto> products);
-    
-    void markFavoritesForUser(String userId, ProductCardDto productCard);
-    
     SearchResultDto searchProducts(String keyWord);
 }

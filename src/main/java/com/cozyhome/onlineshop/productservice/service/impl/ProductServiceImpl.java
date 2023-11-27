@@ -64,7 +64,6 @@ public class ProductServiceImpl implements ProductService {
 	private final ProductBuilder productBuilder;
 	private final ProductFilterParametersBuilder productFilterParametersBuilder;
 	private final InventoryService inventoryService;
-	private final FavoriteProductRepository favoriteItemsRepository;
 
 	private final boolean isMain = true;
 
@@ -190,28 +189,7 @@ public class ProductServiceImpl implements ProductService {
 
 		return productBuilder.buildProductsShopCard(productMap, imagesMap, productColorDtos,
 				productAvailableAndStatusMap);
-	}
-
-	@Override
-	public void markFavoritesForUser(String userId, List<ProductDto> products) {
-		for (ProductDto productDto : products) {
-			doMarkFavorites(userId, productDto.getSkuCode(), productDto.getColorDtoList());
-		}
-	}
-
-	@Override
-	public void markFavoritesForUser(String userId, ProductCardDto productCard) {
-		doMarkFavorites(userId, productCard.getSkuCode(), productCard.getColors());
-	}
-
-	private void doMarkFavorites(String userId, String skuCode, List<ColorQuantityStatusDto> colorsDto) {
-		Set<ProductColor> favoriteProductColors = favoriteItemsRepository.findAllByUserId(userId).stream()
-				.map(item -> item.getProductColor()).collect(Collectors.toSet());
-		for (ColorQuantityStatusDto colorDto : colorsDto) {
-			ProductColor productColor = new ProductColor(skuCode, colorDto.getId());
-			colorDto.setFavorite(favoriteProductColors.contains(productColor));
-		}
-	}
+	}	
 
 	private Pageable buildPageable(PageableDto pageable, SortDto sortDto) {
 		List<Order> orders = new ArrayList<>();
