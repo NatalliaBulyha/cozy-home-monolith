@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.cozyhome.onlineshop.dto.CategoryDto;
-import com.cozyhome.onlineshop.dto.CategoryFavoriteProductsDto;
 import com.cozyhome.onlineshop.dto.FavoriteProductsDto;
 import com.cozyhome.onlineshop.dto.ProductDto;
 import com.cozyhome.onlineshop.dto.productcard.ColorQuantityStatusDto;
@@ -79,25 +78,26 @@ public class FavoriteProductServiceImpl implements FavoriteProductService {
 					productSkuCode, colorHex, userId);
 		}
 	}
-
+	
+	@Override
+	public List<CategoryDto> getFavoriteCategoriesByUserId(String userId) {
+		List<FavoriteProduct> favoriteProducts = favoriteProductsRepository.findAllByUserId(userId);				
+		List<Product> products = getProductsByFavorites(favoriteProducts);						
+		List<ObjectId> categoryIds = products.stream().map(product -> product.getSubCategory().getParentId()).toList();		
+		List<CategoryDto> categories = categoryRepository.findAllByActiveAndIdIn(true, categoryIds).stream()
+				.map(category -> new CategoryDto(category.getId().toString(), category.getName())).toList();
+		return categories;
+	}
+	
 	@Override
 	public FavoriteProductsDto getFavoriteProductsByUserId(String userId, PageableDto pageable) {
 		Page<FavoriteProduct> favoriteProducts = favoriteProductsRepository.findAllByUserId(userId,
-				PageRequest.of(pageable.getPage(), pageable.getSize()));	
-		System.out.println("favorite products-------------" + favoriteProducts.getContent());
-		
-		List<Product> products = getProductsByFavorites(favoriteProducts.getContent());
-
-		List<ObjectId> categoryIds = products.stream().map(product -> product.getSubCategory().getParentId()).toList();
-		List<CategoryDto> categories = categoryRepository.findAllByActiveAndIdIn(true, categoryIds).stream()
-				.map(category -> new CategoryDto(category.getId().toString(), category.getName())).toList();
-		System.out.println("product color--------------------" + favoriteProducts.stream()
-				.map(fp -> modelMapper.map(fp.getProductColor(), ProductColorDto.class)).toList());
+				PageRequest.of(pageable.getPage(), pageable.getSize()));			
+		List<Product> products = getProductsByFavorites(favoriteProducts.getContent());				
 		List<ProductDto> productDtoList =  productBuilder.buildFavoriteProductDtoList(products, favoriteProducts.stream()
-				.map(fp -> modelMapper.map(fp.getProductColor(), ProductColorDto.class)).toList());
+				.map(favoriteProduct -> modelMapper.map(favoriteProduct.getProductColor(), ProductColorDto.class)).toList());
 		
 		FavoriteProductsDto result = FavoriteProductsDto.builder()
-				.categories(categories)
 				.products(productDtoList)
 				.countOfPages((short) favoriteProducts.getTotalPages())
 				.countOfProducts((short) favoriteProducts.getTotalElements())
@@ -107,23 +107,19 @@ public class FavoriteProductServiceImpl implements FavoriteProductService {
 	}	
 
 	@Override
-	public CategoryFavoriteProductsDto getFavoriteProductsByUserIdAndCategoryId(String userId, String categoryId,
+	public FavoriteProductsDto getFavoriteProductsByUserIdAndCategoryId(String userId, String categoryId,
 			PageableDto pageable) {	
 		List<FavoriteProduct> favoriteProducts = favoriteProductsRepository.findAllByUserId(userId);				
-		List<String> skuCodesList = favoriteProducts.stream().map(fp -> fp.getProductColor().getProductSkuCode()).toList();
-		System.out.println("skuCodes------------------" + skuCodesList);
-		List<ObjectId> subCategoriesList = categoryRepository.findAllIdsOnlyByActiveAndParentId(true, new ObjectId(categoryId)).stream().map(IdWrapper::getId).toList();
-		System.out.println("subcategories----------------" + subCategoriesList);
-		
+		List<String> skuCodesList = favoriteProducts.stream().map(favoriteProduct -> favoriteProduct.getProductColor().getProductSkuCode()).toList();
+		List<ObjectId> subCategoriesList = categoryRepository.findAllIdsOnlyByActiveAndParentId(true, new ObjectId(categoryId)).stream().map(IdWrapper::getId).toList();		
 		Page<Product> products = productRepositoryCustom.getBySkuCodeInAndCategoryIdsIn(skuCodesList, subCategoriesList, buildPageable(pageable));
-		System.out.println("products--------------------" + products.getContent());
 		if(products.getContent().isEmpty()) {
-			return new CategoryFavoriteProductsDto();
+			return new FavoriteProductsDto();
 		}
 		List<ProductDto> productDtoList = productBuilder.buildFavoriteProductDtoList(products.getContent(), favoriteProducts.stream()
 				.map(favoriteProduct -> modelMapper.map(favoriteProduct.getProductColor(), ProductColorDto.class)).toList());
 		
-		return new CategoryFavoriteProductsDto((short) products.getTotalPages(), (short) products.getTotalElements(), productDtoList);
+		return new FavoriteProductsDto((short) products.getTotalElements(), (short) products.getTotalPages(), productDtoList);
 	}
 	
 	private Pageable buildPageable(PageableDto pageable) {
@@ -137,22 +133,6 @@ public class FavoriteProductServiceImpl implements FavoriteProductService {
 		List<Product> products = productRepository.findAllByStatusNotDeletedAndSkuCodeIn(productSkuCodes);
 		return products;
 	}
-	
-//	private void markFavorites(List<FavoriteProduct> favoriteProducts, List<ProductDto> productDtoList) {
-//		List<ProductColor> productColorList = favoriteProducts.stream().map(FavoriteProduct::getProductColor).toList();
-//		
-//		for(ProductColor productColor : productColorList) {
-//			productDtoList.stream()
-//	        .filter(product -> product.getSkuCode().equals(productColor.getProductSkuCode()))
-//	        .findFirst() 
-//	        .ifPresent(product -> {
-//	            product.getColorDtoList().stream()
-//	                .filter(color -> color.getId().equals(productColor.getColorHex()))
-//	                .findFirst() 
-//	                .ifPresent(color -> color.setFavorite(true));
-//	        });
-//		}
-//	}
 	
 	@Override
 	public void markFavoritesForUser(String userId, List<ProductDto> products) {

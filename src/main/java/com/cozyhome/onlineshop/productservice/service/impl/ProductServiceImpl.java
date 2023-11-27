@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,18 +20,16 @@ import org.springframework.stereotype.Service;
 
 import com.cozyhome.onlineshop.dto.ProductDto;
 import com.cozyhome.onlineshop.dto.ProductForBasketDto;
-import com.cozyhome.onlineshop.dto.SearchResultDto;
 import com.cozyhome.onlineshop.dto.ProductStatusDto;
+import com.cozyhome.onlineshop.dto.SearchResultDto;
 import com.cozyhome.onlineshop.dto.filter.FilterDto;
-import com.cozyhome.onlineshop.dto.inventory.ProductAvailabilityDto;
 import com.cozyhome.onlineshop.dto.inventory.InventoryForBasketDto;
-import com.cozyhome.onlineshop.dto.productcard.ColorQuantityStatusDto;
+import com.cozyhome.onlineshop.dto.inventory.ProductAvailabilityDto;
 import com.cozyhome.onlineshop.dto.productcard.ProductCardDto;
 import com.cozyhome.onlineshop.dto.request.PageableDto;
 import com.cozyhome.onlineshop.dto.request.ProductColorDto;
 import com.cozyhome.onlineshop.dto.request.SortDto;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
-import com.cozyhome.onlineshop.inventoryservice.model.ProductColor;
 import com.cozyhome.onlineshop.inventoryservice.service.InventoryService;
 import com.cozyhome.onlineshop.productservice.model.ImageProduct;
 import com.cozyhome.onlineshop.productservice.model.Product;
@@ -46,7 +42,6 @@ import com.cozyhome.onlineshop.productservice.service.CategoryService;
 import com.cozyhome.onlineshop.productservice.service.ProductService;
 import com.cozyhome.onlineshop.productservice.service.builder.ProductBuilder;
 import com.cozyhome.onlineshop.productservice.service.builder.ProductFilterParametersBuilder;
-import com.cozyhome.onlineshop.userservice.repository.FavoriteProductRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -119,7 +114,6 @@ public class ProductServiceImpl implements ProductService {
 		return productBuilder.buildProductDtoList(products.getContent(), isMain);
 	}
 
-	@Cacheable(value = "filteredProducts", key = "#filter")
 	@Override
 	public List<ProductDto> getFilteredProducts(FilterDto filter, PageableDto pageable, SortDto sortDto) {
 		Pageable currentPageable = buildPageable(pageable, sortDto);

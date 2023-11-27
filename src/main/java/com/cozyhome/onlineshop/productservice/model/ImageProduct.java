@@ -1,17 +1,16 @@
 package com.cozyhome.onlineshop.productservice.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-
-import org.apache.commons.lang3.builder.ToStringExclude;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 
 @NoArgsConstructor
@@ -27,8 +26,6 @@ public class ImageProduct {
     @DBRef
     private Color color;
     @DBRef
-    
-    @ToString.Exclude
     @Indexed
     private Product product;
     private boolean mainPhoto;
@@ -37,5 +34,4 @@ public class ImageProduct {
     private String sliderImageName;
     private String mobileImageName;
     private String previewImageName;
-
 }

@@ -89,22 +89,18 @@ public class ProductBuilder {
 	}
 
 	public List<ProductDto> buildFavoriteProductDtoList(List<Product> products, List<ProductColorDto> favoritesProductColor) {
-		Map<ProductColorDto, ImageProduct> imageMap = imageRepositoryCustom.findMainImagesByProductColorList(favoritesProductColor);
-		System.out.println("imageMap----------------" + imageMap);
 		Map<String, QuantityStatusDto> quantityStatusMap = inventoryService.getQuantityStatusBySkuCodeList(extractSkuCodes(products));
-		Map<String, Product> productMap = convertProductListToMap(products);
 		
 		List<ProductDto> result = new ArrayList<>();
-		Map<String, List<ImageProduct>> imageMap2 = imageRepositoryCustom.findMainImagesByProductColorList(favoritesProductColor)
+		Map<String, List<ImageProduct>> imageMap = imageRepositoryCustom.findMainImagesByProductColorList(favoritesProductColor)
 				.entrySet().stream().collect(Collectors.groupingBy(entry -> entry.getKey().getProductSkuCode(),
 						Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
-		System.out.println("imageMap------------" + imageMap2);
 		
 		for(Product product : products) {
 			String productSkuCode = product.getSkuCode();
-			ProductDto productDto = buildProductDto(product, imageMap2.get(productSkuCode), quantityStatusMap.get(productSkuCode));
+			ProductDto productDto = buildProductDto(product, imageMap.get(productSkuCode), quantityStatusMap.get(productSkuCode));
 			for(ColorQuantityStatusDto dto : productDto.getColorDtoList()) {
-				boolean isFavorite = imageMap2.get(productSkuCode).stream().anyMatch(image -> image.getColor().getId().equals(dto.getId()));
+				boolean isFavorite = imageMap.get(productSkuCode).stream().anyMatch(image -> image.getColor().getId().equals(dto.getId()));
 				if(isFavorite) {
 					dto.setFavorite(true);
 				}
