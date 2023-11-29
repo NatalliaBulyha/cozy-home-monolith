@@ -73,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
 				.map(status -> new ProductStatusDto(status.toString(), status.getDescription())).toList();
 	}
 
-	@Cacheable(value = "randomProduct", key = "#status", cacheManager = "cacheManagerWithExpiration")
+//	@Cacheable(value = "randomProduct", key = "#status", cacheManager = "cacheManagerWithExpiration")
 	@Override
 	public List<ProductDto> getRandomProductsByStatus(Byte status, int productCount) {
 		List<Product> products = productRepositoryCustom
@@ -81,7 +81,7 @@ public class ProductServiceImpl implements ProductService {
 		return productBuilder.buildProductDtoList(products, isMain);
 	}
 
-	@Cacheable(value = "randomProductsByStatusAndCategoryId", key = "#categoryId", cacheManager = "cacheManagerWithExpiration")
+//	@Cacheable(value = "randomProductsByStatusAndCategoryId", key = "#categoryId", cacheManager = "cacheManagerWithExpiration")
 	@Override
 	public List<ProductDto> getRandomProductsByStatusAndCategoryId(Byte status, String categoryId,
 			int countOfProducts) {
@@ -98,7 +98,7 @@ public class ProductServiceImpl implements ProductService {
 		return productBuilder.buildProductDtoList(products, isMain);
 	}
 
-	@Cacheable(value = "productsByCategoryId", key = "#categoryId")
+//	@Cacheable(value = "productsByCategoryId", key = "#categoryId")
 	@Override
 	public List<ProductDto> getProductsByCategoryId(String categoryId, PageableDto pageable) {
 		boolean isSubcategory = categoryRepository.hasParentById(new ObjectId(categoryId));
@@ -155,7 +155,8 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<ProductDto> getProductsByCollectionExcludeSkuCode(String collectionId, @Param("#skuCode") String skuCodeToExclude) {
+	public List<ProductDto> getProductsByCollectionExcludeSkuCode(String collectionId,
+			@Param("#skuCode") String skuCodeToExclude) {
 		List<Product> products = productRepository
 				.findAllByStatusNotDeletedAndCollectionIdExcludeSkuCode(new ObjectId(collectionId), skuCodeToExclude);
 		return productBuilder.buildProductDtoList(products, isMain);
@@ -172,7 +173,8 @@ public class ProductServiceImpl implements ProductService {
 			log.info("[ON getProductsForBasket]:: Products for basket don't found.");
 			return new ArrayList<>();
 		}
-		Map<ProductColorDto, ImageProduct> imagesMap = imageRepositoryCustom.findMainImagesByProductColorList(productColorDtos);
+		Map<ProductColorDto, ImageProduct> imagesMap = imageRepositoryCustom
+				.findMainImagesByProductColorList(productColorDtos);
 		List<InventoryForBasketDto> inventoryForBasket = inventoryService.getProductAvailableStatus(productColorDtos);
 
 		products.forEach(product -> productMap.put(product.getSkuCode(), product));
@@ -183,7 +185,7 @@ public class ProductServiceImpl implements ProductService {
 
 		return productBuilder.buildProductsShopCard(productMap, imagesMap, productColorDtos,
 				productAvailableAndStatusMap);
-	}	
+	}
 
 	private Pageable buildPageable(PageableDto pageable, SortDto sortDto) {
 		List<Order> orders = new ArrayList<>();
@@ -203,8 +205,8 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public SearchResultDto searchProducts(String keyWord) {		
-		List<Product> products = productRepositoryCustom.search(keyWord);		
+	public SearchResultDto searchProducts(String keyWord) {
+		List<Product> products = productRepositoryCustom.search(keyWord);
 		return productBuilder.buildSearchResult(products);
 	}
 }
