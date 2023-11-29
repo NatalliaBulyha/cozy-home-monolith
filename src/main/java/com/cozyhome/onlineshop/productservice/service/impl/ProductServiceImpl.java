@@ -66,6 +66,8 @@ public class ProductServiceImpl implements ProductService {
 	private static final Direction DIRECTION_FOR_DEFAULT_SORTING = Direction.DESC;
 	private static final String FIELD_NAME_FOR_DEFAULT_SORTING = "available";
 	private static final String FIELD_NAME_FOR_ADDITIONAL_SORTING = "_id";
+	private static final String PRICE_FIELD = "price";
+	private static final String PRICE_WITH_DISCOUNT_FIELD = "priceWithDiscount";
 
 	@Override
 	public List<ProductStatusDto> getProductStatuses() {
@@ -193,6 +195,9 @@ public class ProductServiceImpl implements ProductService {
 
 		if (sortDto.getFieldName() != null && sortDto.getDirection() != null) {
 			Direction dir = sortDto.getDirection().equals(DIRECTION_ASC) ? Direction.ASC : Direction.DESC;
+			if(sortDto.getFieldName().equalsIgnoreCase(PRICE_FIELD)) {
+				orders.add(new Order(dir, PRICE_WITH_DISCOUNT_FIELD));			
+			} 
 			orders.add(new Order(dir, sortDto.getFieldName()));
 		} else {
 			orders.add(new Order(DIRECTION_FOR_DEFAULT_SORTING, FIELD_NAME_FOR_ADDITIONAL_SORTING));
