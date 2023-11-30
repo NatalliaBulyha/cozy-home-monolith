@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cozyhome.onlineshop.dto.CategoryDto;
 import com.cozyhome.onlineshop.dto.FavoriteProductsDto;
 import com.cozyhome.onlineshop.dto.request.PageableDto;
-import com.cozyhome.onlineshop.dto.request.ProductColorDto;
 import com.cozyhome.onlineshop.dto.user.PasswordUpdateRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
@@ -104,9 +103,9 @@ public class UserSecuredController {
             @ApiResponse(responseCode = SwaggerResponse.Code.CODE_200, description = SwaggerResponse.Message.CODE_200_FOUND_DESCRIPTION) })
     @Secured({"ROLE_CUSTOMER", "ROLE_MANAGER", "ROLE_ADMIN"})
     @PostMapping("/favorites")
-    public ResponseEntity<Void> updateUserFavoriteProducts(HttpServletRequest request, @Valid @RequestBody ProductColorDto dtoRequest) {
+    public ResponseEntity<Void> updateUserFavoriteProducts(HttpServletRequest request, @Valid @RequestParam String productSkuCode) {
     	String userId = (String) request.getAttribute(userIdAttribute);        
-        favoriteProductService.updateUserFavoriteProducts(userId, dtoRequest);
+        favoriteProductService.updateUserFavoriteProducts(userId, productSkuCode);
         return ResponseEntity.ok().build();
     } 
     

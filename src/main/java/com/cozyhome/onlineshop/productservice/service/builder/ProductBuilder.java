@@ -1,17 +1,29 @@
 package com.cozyhome.onlineshop.productservice.service.builder;
 
-import com.cozyhome.onlineshop.dto.inventory.ProductAvailabilityDto;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.bson.types.ObjectId;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import com.cozyhome.onlineshop.dto.CategorySearchDto;
 import com.cozyhome.onlineshop.dto.CollectionDto;
 import com.cozyhome.onlineshop.dto.ProductDto;
 import com.cozyhome.onlineshop.dto.ProductForBasketDto;
 import com.cozyhome.onlineshop.dto.ProductSearchDto;
 import com.cozyhome.onlineshop.dto.SearchResultDto;
+import com.cozyhome.onlineshop.dto.inventory.ProductAvailabilityDto;
 import com.cozyhome.onlineshop.dto.inventory.QuantityStatusDto;
 import com.cozyhome.onlineshop.dto.productcard.ColorQuantityStatusDto;
 import com.cozyhome.onlineshop.dto.productcard.ProductCardDto;
-import com.cozyhome.onlineshop.dto.review.ReviewResponse;
 import com.cozyhome.onlineshop.dto.request.ProductColorDto;
+import com.cozyhome.onlineshop.dto.review.ReviewResponse;
 import com.cozyhome.onlineshop.exception.DataNotFoundException;
 import com.cozyhome.onlineshop.inventoryservice.service.InventoryService;
 import com.cozyhome.onlineshop.productservice.model.Category;
@@ -23,19 +35,9 @@ import com.cozyhome.onlineshop.productservice.repository.CategoryRepository;
 import com.cozyhome.onlineshop.productservice.repository.ImageProductRepository;
 import com.cozyhome.onlineshop.productservice.repository.ImageRepositoryCustom;
 import com.cozyhome.onlineshop.reviewservice.service.ReviewService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bson.types.ObjectId;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -88,27 +90,27 @@ public class ProductBuilder {
 		return productDto;
 	}
 
-	public List<ProductDto> buildFavoriteProductDtoList(List<Product> products, List<ProductColorDto> favoritesProductColor) {
-		Map<String, QuantityStatusDto> quantityStatusMap = inventoryService.getQuantityStatusBySkuCodeList(extractSkuCodes(products));
-		
-		List<ProductDto> result = new ArrayList<>();
-		Map<String, List<ImageProduct>> imageMap = imageRepositoryCustom.findMainImagesByProductColorList(favoritesProductColor)
-				.entrySet().stream().collect(Collectors.groupingBy(entry -> entry.getKey().getProductSkuCode(),
-						Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
-		
-		for(Product product : products) {
-			String productSkuCode = product.getSkuCode();
-			ProductDto productDto = buildProductDto(product, imageMap.get(productSkuCode), quantityStatusMap.get(productSkuCode));
-			for(ColorQuantityStatusDto dto : productDto.getColorDtoList()) {
-				boolean isFavorite = imageMap.get(productSkuCode).stream().anyMatch(image -> image.getColor().getId().equals(dto.getId()));
-				if(isFavorite) {
-					dto.setFavorite(true);
-				}
-			}			
-			result.add(productDto);
-		}		
-		return result;
-	}
+//	public List<ProductDto> buildFavoriteProductDtoList(List<Product> products, List<ProductColorDto> favoritesProductColor) {
+//		Map<String, QuantityStatusDto> quantityStatusMap = inventoryService.getQuantityStatusBySkuCodeList(extractSkuCodes(products));
+//		
+//		List<ProductDto> result = new ArrayList<>();
+//		Map<String, List<ImageProduct>> imageMap = imageRepositoryCustom.findMainImagesByProductColorList(favoritesProductColor)
+//				.entrySet().stream().collect(Collectors.groupingBy(entry -> entry.getKey().getProductSkuCode(),
+//						Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+//		
+//		for(Product product : products) {
+//			String productSkuCode = product.getSkuCode();
+//			ProductDto productDto = buildProductDto(product, imageMap.get(productSkuCode), quantityStatusMap.get(productSkuCode));
+//			for(ColorQuantityStatusDto dto : productDto.getColorDtoList()) {
+//				boolean isFavorite = imageMap.get(productSkuCode).stream().anyMatch(image -> image.getColor().getId().equals(dto.getId()));
+//				if(isFavorite) {
+//					dto.setFavorite(true);
+//				}
+//			}			
+//			result.add(productDto);
+//		}		
+//		return result;
+//	}
 	
 	private Map<String, Product> convertProductListToMap(List<Product> productList){
 		return productList.stream()

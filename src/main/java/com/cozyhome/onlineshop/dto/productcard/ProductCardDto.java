@@ -48,5 +48,6 @@ public class ProductCardDto {
     private short maxLoad;
 
     private String quantityStatus;
+    private boolean isFavorite;
     
 }

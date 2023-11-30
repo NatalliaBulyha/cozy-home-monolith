@@ -7,11 +7,10 @@ import com.cozyhome.onlineshop.dto.FavoriteProductsDto;
 import com.cozyhome.onlineshop.dto.ProductDto;
 import com.cozyhome.onlineshop.dto.productcard.ProductCardDto;
 import com.cozyhome.onlineshop.dto.request.PageableDto;
-import com.cozyhome.onlineshop.dto.request.ProductColorDto;
 
 public interface FavoriteProductService {
 
-	void updateUserFavoriteProducts(String userId, ProductColorDto dtoRequest);
+	void updateUserFavoriteProducts(String userId, String productSkuCode);
 	
 	FavoriteProductsDto getFavoriteProductsByUserId(String userId, PageableDto pageable);
 	
