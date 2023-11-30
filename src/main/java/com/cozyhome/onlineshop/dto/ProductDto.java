@@ -14,6 +14,7 @@ import java.util.List;
 @Builder
 @Data
 public class ProductDto {
+	
     private String skuCode;
     private String name;
     private String shortDescription;
@@ -23,4 +24,5 @@ public class ProductDto {
     private List<ImageDto> imageDtoList;
     private List<ColorQuantityStatusDto> colorDtoList;
     private String productQuantityStatus;
+    private boolean isFavorite;
 }

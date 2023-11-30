@@ -55,7 +55,7 @@ public class BasketBuilder {
 					.orElseThrow(() -> new DataNotFoundException("No available quantity found"));
 			BasketDto dto = buildBasketDto(basketItem, imageMap.get(productColorDto), inventory);
 			boolean isFavorite = favoriteProductList.stream()
-					.anyMatch(item -> item.getProductColor().equals(basketItem.getProductColor()));
+					.anyMatch(item -> item.getProductSkuCode().equals(basketItem.getProductColor().getProductSkuCode()));
 			if (isFavorite) {
 				dto.setFavorite(isFavorite);
 			}
