@@ -119,6 +119,6 @@ public class FavoriteProductServiceImpl implements FavoriteProductService {
 	@Override
 	public void markFavoritesForUser(String userId, ProductCardDto productCard) {
 		productCard.setFavorite(
-				favoriteProductsRepository.existsByProductSkuCodeAndUserId(userId, productCard.getSkuCode()));
+				favoriteProductsRepository.existsByProductSkuCodeAndUserId(productCard.getSkuCode(), userId));
 	}
 }
