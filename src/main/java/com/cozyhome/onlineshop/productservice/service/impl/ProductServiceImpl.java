@@ -120,14 +120,20 @@ public class ProductServiceImpl implements ProductService {
 	public List<ProductDto> getFilteredProducts(FilterDto filter, PageableDto pageable, SortDto sortDto) {
 		Pageable currentPageable = buildPageable(pageable, sortDto);
 		List<Product> products = productRepositoryCustom.filterProductsByCriterias(filter, currentPageable);
-		return productBuilder.buildProductDtoList(products, isMain);
+		List<String> colors;
+		if(filter.getColors()==null) {
+			colors = new ArrayList<>();
+		} else {
+			colors = filter.getColors().stream().map(color -> color.getId()).toList();
+		}
+		return productBuilder.buildFilteredProductDtoList(products, colors);
 	}
 
 	@Override
 	public FilterDto getFilterParameters(FilterDto filter, byte size) {
 		List<Product> filteredProducts = productRepositoryCustom.filterProductsByCriterias(filter, null);
 		if (filteredProducts.isEmpty()) {
-			log.info("[ON getFilterParameters]:: Products by the given parameters don't found.");
+			log.info("[ON getFilterParameters]:: Products with the given parameters don't found.");
 			return new FilterDto();
 		}
 		List<ObjectId> objectIds = categoryService.getCategoriesIdsByParentId(filter.getParentCategoryId());

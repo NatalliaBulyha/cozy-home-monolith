@@ -64,7 +64,22 @@ public class ProductBuilder {
 		Map<String, QuantityStatusDto> quantityStatusMap = inventoryService.getQuantityStatusBySkuCodeList(productsSkuCodes);
 		return products.stream().map(product -> buildProductDto(product, imageMap.get(product.getSkuCode()),
 				quantityStatusMap.get(product.getSkuCode()))).toList();
-	}		
+	}
+	
+	public List<ProductDto> buildFilteredProductDtoList(List<Product> products, List<String> colors) {
+		List<String> productsSkuCodes = extractSkuCodes(products);
+		Map<String, List<ImageProduct>> imageMap;
+		if(colors.isEmpty()) {
+			imageMap = getImageMap(productsSkuCodes, true);
+		} else {
+			List<ProductColorDto> productColorDtos = products.stream().flatMap(product -> colors.stream()
+					.map(colorId -> new ProductColorDto(product.getSkuCode(), colorId))).toList();			
+			imageMap = getImageMapByColor(productColorDtos);
+		}
+		Map<String, QuantityStatusDto> quantityStatusMap = inventoryService.getQuantityStatusBySkuCodeList(productsSkuCodes);
+		return products.stream().map(product -> buildProductDto(product, imageMap.get(product.getSkuCode()),
+				quantityStatusMap.get(product.getSkuCode()))).toList();
+	}
 
 	public ProductDto buildProductDto(Product product, List<ImageProduct> images,
 									  QuantityStatusDto quantityStatus) {
@@ -111,11 +126,11 @@ public class ProductBuilder {
 //		}		
 //		return result;
 //	}
-	
-	private Map<String, Product> convertProductListToMap(List<Product> productList){
-		return productList.stream()
-				.collect(Collectors.toMap(Product::getSkuCode, product -> product));
-	}
+//	
+//	private Map<String, Product> convertProductListToMap(List<Product> productList){
+//		return productList.stream()
+//				.collect(Collectors.toMap(Product::getSkuCode, product -> product));
+//	}
 	
 	public ProductCardDto buildProductCardDto(Product product, String colorId) {
 		final String productSkuCode = product.getSkuCode();
@@ -305,5 +320,15 @@ public class ProductBuilder {
 		List<ImageProduct> images = imageRepositoryCustom.findImagesByMainPhotoAndProductSkuCodeIn(productsSkuCodes, isMain);
 		return images.stream()
 				.collect(Collectors.groupingBy(image -> image.getProduct().getSkuCode(), Collectors.toList()));
+	}
+	
+	private Map<String, List<ImageProduct>> getImageMapByColor(List<ProductColorDto> productColorDtos) {
+		return imageRepositoryCustom.findMainImagesByProductColorList(productColorDtos)
+	            .entrySet()
+	            .stream()
+	            .collect(Collectors.groupingBy(
+	                    pair -> pair.getKey().getProductSkuCode(),
+	                    Collectors.mapping(Map.Entry::getValue, Collectors.toList())
+	            ));
 	}
 }
