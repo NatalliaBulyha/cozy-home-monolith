@@ -77,7 +77,7 @@ public class ProductBuilder {
 			imageMap = getImageMapByColor(productColorDtos);
 		}
 		Map<String, QuantityStatusDto> quantityStatusMap = inventoryService.getQuantityStatusBySkuCodeList(productsSkuCodes);
-		return products.stream().map(product -> buildProductDto(product, imageMap.get(product.getSkuCode()),
+		return products.stream().map(product -> buildProductDto(product, List.of(imageMap.get(product.getSkuCode()).get(0)),
 				quantityStatusMap.get(product.getSkuCode()))).toList();
 	}
 
@@ -104,33 +104,6 @@ public class ProductBuilder {
 		log.info("[ON buildProductDto] :: build product dto with skuCode {}", productDto.getSkuCode());
 		return productDto;
 	}
-
-//	public List<ProductDto> buildFavoriteProductDtoList(List<Product> products, List<ProductColorDto> favoritesProductColor) {
-//		Map<String, QuantityStatusDto> quantityStatusMap = inventoryService.getQuantityStatusBySkuCodeList(extractSkuCodes(products));
-//		
-//		List<ProductDto> result = new ArrayList<>();
-//		Map<String, List<ImageProduct>> imageMap = imageRepositoryCustom.findMainImagesByProductColorList(favoritesProductColor)
-//				.entrySet().stream().collect(Collectors.groupingBy(entry -> entry.getKey().getProductSkuCode(),
-//						Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
-//		
-//		for(Product product : products) {
-//			String productSkuCode = product.getSkuCode();
-//			ProductDto productDto = buildProductDto(product, imageMap.get(productSkuCode), quantityStatusMap.get(productSkuCode));
-//			for(ColorQuantityStatusDto dto : productDto.getColorDtoList()) {
-//				boolean isFavorite = imageMap.get(productSkuCode).stream().anyMatch(image -> image.getColor().getId().equals(dto.getId()));
-//				if(isFavorite) {
-//					dto.setFavorite(true);
-//				}
-//			}			
-//			result.add(productDto);
-//		}		
-//		return result;
-//	}
-//	
-//	private Map<String, Product> convertProductListToMap(List<Product> productList){
-//		return productList.stream()
-//				.collect(Collectors.toMap(Product::getSkuCode, product -> product));
-//	}
 	
 	public ProductCardDto buildProductCardDto(Product product, String colorId) {
 		final String productSkuCode = product.getSkuCode();
