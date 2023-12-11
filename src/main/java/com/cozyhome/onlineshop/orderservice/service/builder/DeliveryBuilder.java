@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 @Component
 @RequiredArgsConstructor
 public class DeliveryBuilder {
+	
     private final DeliveryCompanyRepository deliveryCompanyRepository;
     private final DeliveryRepository deliveryRepository;
 
