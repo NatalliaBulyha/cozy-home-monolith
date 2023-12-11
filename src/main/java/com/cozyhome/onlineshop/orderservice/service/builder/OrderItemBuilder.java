@@ -37,7 +37,6 @@ public class OrderItemBuilder {
                  "color hex %s.", orderItemDto.getProductSkuCode(), orderItemDto.getColorHex()));
         }
         inventory.setQuantity(inventory.getQuantity() - orderItemDto.getQuantity());
-        //inventory.setQuantity(2000);
         inventoryRepository.save(inventory);
         OrderItem orderItem = OrderItem.builder()
                 .productColorId(inventory.getProductColor().getId())
