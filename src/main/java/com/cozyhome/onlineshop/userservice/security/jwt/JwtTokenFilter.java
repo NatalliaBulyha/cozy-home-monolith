@@ -1,4 +1,4 @@
-package com.cozyhome.onlineshop.userservice.security.JWT;
+package com.cozyhome.onlineshop.userservice.security.jwt;
 
 import java.io.IOException;
 

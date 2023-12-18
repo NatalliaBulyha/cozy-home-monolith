@@ -1,4 +1,4 @@
-package com.cozyhome.onlineshop.keepAliveServer;
+package com.cozyhome.onlineshop.keepaliveserver;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;

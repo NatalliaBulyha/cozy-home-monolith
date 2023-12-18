@@ -21,7 +21,7 @@ import com.cozyhome.onlineshop.dto.user.PasswordUpdateRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationRequest;
 import com.cozyhome.onlineshop.dto.user.UserInformationResponse;
 import com.cozyhome.onlineshop.productservice.controller.swagger.SwaggerResponse;
-import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenUtil;
+import com.cozyhome.onlineshop.userservice.security.jwt.JwtTokenUtil;
 import com.cozyhome.onlineshop.userservice.security.service.FavoriteProductService;
 import com.cozyhome.onlineshop.userservice.security.service.TokenBlackListService;
 import com.cozyhome.onlineshop.userservice.security.service.UserService;

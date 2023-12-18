@@ -19,7 +19,7 @@ import com.cozyhome.onlineshop.dto.auth.TokenResponse;
 import com.cozyhome.onlineshop.exception.AuthException;
 import com.cozyhome.onlineshop.productservice.controller.swagger.SwaggerResponse;
 import com.cozyhome.onlineshop.userservice.model.User;
-import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenUtil;
+import com.cozyhome.onlineshop.userservice.security.jwt.JwtTokenUtil;
 import com.cozyhome.onlineshop.userservice.security.service.SecurityService;
 import com.cozyhome.onlineshop.userservice.security.service.SecurityTokenService;
 import com.cozyhome.onlineshop.userservice.security.service.UserService;

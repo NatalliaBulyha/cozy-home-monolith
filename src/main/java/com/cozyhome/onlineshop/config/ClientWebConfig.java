@@ -8,7 +8,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.cozyhome.onlineshop.keepAliveServer.KeepAliveServer;
+import com.cozyhome.onlineshop.keepaliveserver.KeepAliveServer;
 
 @EnableScheduling
 @EnableWebMvc

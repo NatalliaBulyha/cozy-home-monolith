@@ -17,8 +17,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
-import com.cozyhome.onlineshop.userservice.security.JWT.JwtAuthEntryPoint;
-import com.cozyhome.onlineshop.userservice.security.JWT.JwtTokenFilter;
+import com.cozyhome.onlineshop.userservice.security.jwt.JwtAuthEntryPoint;
+import com.cozyhome.onlineshop.userservice.security.jwt.JwtTokenFilter;
 import com.cozyhome.onlineshop.userservice.security.service.impl.UserDetailsServiceImpl;
 
 import lombok.RequiredArgsConstructor;

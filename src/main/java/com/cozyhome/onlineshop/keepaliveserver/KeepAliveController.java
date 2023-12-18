@@ -1,4 +1,4 @@
-package com.cozyhome.onlineshop.keepAliveServer;
+package com.cozyhome.onlineshop.keepaliveserver;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
