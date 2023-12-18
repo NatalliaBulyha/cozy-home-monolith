@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -117,7 +116,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public List<ProductDto> getFilteredProducts(FilterDto filter, PageableDto pageable, SortDto sortDto) {
+	public List<ProductDto> getFilteredProducts(FilterDto filter, PageableDto pageable, SortDto sortDto) {		
 		Pageable currentPageable = buildPageable(pageable, sortDto);
 		List<Product> products = productRepositoryCustom.filterProductsByCriterias(filter, currentPageable);
 		List<String> colors;
@@ -194,6 +193,12 @@ public class ProductServiceImpl implements ProductService {
 		return productBuilder.buildProductsShopCard(productMap, imagesMap, productColorDtos,
 				productAvailableAndStatusMap);
 	}
+	
+	@Override
+	public SearchResultDto searchProducts(String keyWord) {
+		List<Product> products = productRepositoryCustom.search(keyWord);
+		return productBuilder.buildSearchResult(products);
+	}
 
 	private Pageable buildPageable(PageableDto pageable, SortDto sortDto) {
 		List<Order> orders = new ArrayList<>();
@@ -213,11 +218,5 @@ public class ProductServiceImpl implements ProductService {
 
 	private Pageable buildPageable(PageableDto pageable) {
 		return PageRequest.of(pageable.getPage(), pageable.getSize());
-	}
-
-	@Override
-	public SearchResultDto searchProducts(String keyWord) {
-		List<Product> products = productRepositoryCustom.search(keyWord);
-		return productBuilder.buildSearchResult(products);
 	}
 }

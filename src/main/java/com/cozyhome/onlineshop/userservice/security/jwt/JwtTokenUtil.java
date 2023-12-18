@@ -1,4 +1,4 @@
-package com.cozyhome.onlineshop.userservice.security.JWT;
+package com.cozyhome.onlineshop.userservice.security.jwt;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 

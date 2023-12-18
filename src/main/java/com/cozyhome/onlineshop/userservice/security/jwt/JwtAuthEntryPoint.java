@@ -1,4 +1,4 @@
-package com.cozyhome.onlineshop.userservice.security.JWT;
+package com.cozyhome.onlineshop.userservice.security.jwt;
 
 import jakarta.servlet.ServletException;
 import org.springframework.beans.factory.annotation.Autowired;
