@@ -62,11 +62,11 @@ public class ProductServiceImpl implements ProductService {
 	private final boolean isMain = true;
 
 	private static final String DIRECTION_ASC = "asc";
-	private static final Direction DIRECTION_FOR_DEFAULT_SORTING = Direction.DESC;
-	private static final String FIELD_NAME_FOR_DEFAULT_SORTING = "available";
-	private static final String FIELD_NAME_FOR_ADDITIONAL_SORTING = "_id";
-	private static final String PRICE_FIELD = "price";
-	private static final String PRICE_WITH_DISCOUNT_FIELD = "priceWithDiscount";
+	private static final Direction DEFAULT_DIRECTION = Direction.DESC;
+	private static final String DEFAULT_SORTING = "available";
+	private static final String ADDITIONAL_SORTING = "_id";
+	private static final String SORTING_BY_PRICE = "price";
+	private static final String SORTING_BY_PRICE_WITH_DISCOUNT = "priceWithDiscount";
 
 	@Override
 	public List<ProductStatusDto> getProductStatuses() {
@@ -202,16 +202,16 @@ public class ProductServiceImpl implements ProductService {
 
 	private Pageable buildPageable(PageableDto pageable, SortDto sortDto) {
 		List<Order> orders = new ArrayList<>();
-		orders.add(new Order(DIRECTION_FOR_DEFAULT_SORTING, FIELD_NAME_FOR_DEFAULT_SORTING));
+		orders.add(new Order(DEFAULT_DIRECTION, DEFAULT_SORTING));
 
 		if (sortDto.getFieldName() != null && sortDto.getDirection() != null) {
-			Direction dir = sortDto.getDirection().equals(DIRECTION_ASC) ? Direction.ASC : Direction.DESC;
-			if(sortDto.getFieldName().equalsIgnoreCase(PRICE_FIELD)) {
-				orders.add(new Order(dir, PRICE_WITH_DISCOUNT_FIELD));			
+			Direction direction = sortDto.getDirection().equals(DIRECTION_ASC) ? Direction.ASC : Direction.DESC;
+			if(sortDto.getFieldName().equalsIgnoreCase(SORTING_BY_PRICE)) {
+				orders.add(new Order(direction, SORTING_BY_PRICE_WITH_DISCOUNT));			
 			} 
-			orders.add(new Order(dir, sortDto.getFieldName()));
+			orders.add(new Order(direction, sortDto.getFieldName()));
 		} else {
-			orders.add(new Order(DIRECTION_FOR_DEFAULT_SORTING, FIELD_NAME_FOR_ADDITIONAL_SORTING));
+			orders.add(new Order(DEFAULT_DIRECTION, ADDITIONAL_SORTING));
 		}
 		return PageRequest.of(pageable.getPage(), pageable.getSize(), Sort.by(orders));
 	}
