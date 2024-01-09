@@ -90,6 +90,7 @@ public class ProductBuilder {
 			}
 			result.add(dto);
 		}
+		log.info("[ON buildProductColorList] :: build product-color list {}", result);
 		return result;
 	}
 	
