@@ -60,10 +60,37 @@ public class ProductBuilder {
 
 	public List<ProductDto> buildProductDtoList(List<Product> products, boolean isMain) {
 		List<String> productsSkuCodes = extractSkuCodes(products);
-		Map<String, List<ImageProduct>> imageMap = getImageMap(productsSkuCodes, isMain);
+		
 		Map<String, QuantityStatusDto> quantityStatusMap = inventoryService.getQuantityStatusBySkuCodeList(productsSkuCodes);
+		
+		List<ProductColorDto> productColorList = buildProductColorList(quantityStatusMap);
+		Map<String, List<ImageProduct>> imageMap = getImageMapByColor(productColorList);
+		
 		return products.stream().map(product -> buildProductDto(product, imageMap.get(product.getSkuCode()),
 				quantityStatusMap.get(product.getSkuCode()))).toList();
+	}
+	
+	private List<ProductColorDto> buildProductColorList(Map<String, QuantityStatusDto> quantityStatusMap){
+		List<ProductColorDto> result = new ArrayList<>();
+		for(Map.Entry<String, QuantityStatusDto> pair : quantityStatusMap.entrySet()) {
+			ProductColorDto dto = new ProductColorDto();
+			dto.setProductSkuCode(pair.getKey());
+			if(!pair.getValue().getStatus().equals("Немає в наявності")) {
+				for(Map.Entry<String, String> colorStatusPair : pair.getValue().getColorQuantityStatus().entrySet()) {
+					if(!colorStatusPair.getValue().equals("Немає в наявності")) {
+						dto.setColorHex(colorStatusPair.getKey());
+						break;
+					}					
+				}					
+			} else {
+				for(Map.Entry<String, String> colorStatusPair : pair.getValue().getColorQuantityStatus().entrySet()) {
+						dto.setColorHex(colorStatusPair.getKey());
+						break;			
+				}
+			}
+			result.add(dto);
+		}
+		return result;
 	}
 	
 	public List<ProductDto> buildFilteredProductDtoList(List<Product> products, List<String> colors) {
