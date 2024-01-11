@@ -103,24 +103,26 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public List<ProductDto> getProductsByCategoryId(String categoryId, PageableDto pageable) {
 		boolean isSubcategory = categoryRepository.hasParentById(new ObjectId(categoryId));
+		Pageable page = buildPageable(pageable, new SortDto());
 		Page<Product> products;
 		if (isSubcategory) {
-			products = productRepository.findAllByStatusNotDeletedAndCategoryId(new ObjectId(categoryId),
-					buildPageable(pageable, new SortDto(null, null)));
+			products = productRepository.findAllByStatusNotDeletedAndCategoryId(new ObjectId(categoryId), page);
 		} else {
 			List<ObjectId> objectIds = categoryService.getCategoriesIdsByParentId(categoryId);
-			products = productRepository.findAllByStatusNotDeletedAndCategoryIdIn(objectIds,
-					buildPageable(pageable, new SortDto(null, null)));
+			products = productRepository.findAllByStatusNotDeletedAndCategoryIdIn(objectIds, page);
 		}
-		return productBuilder.buildProductDtoList(products.getContent(), isMain);
+		List<ProductDto> result = productBuilder.buildProductDtoList(products.getContent(), isMain);
+		log.info("[ON getProductsByCategoryId] :: recieve products [count:{}] for category id {}, page {}, size {}",
+				result.size(), categoryId, pageable.getPage(), pageable.getSize());
+		return result;
 	}
 
 	@Override
-	public List<ProductDto> getFilteredProducts(FilterDto filter, PageableDto pageable, SortDto sortDto) {		
+	public List<ProductDto> getFilteredProducts(FilterDto filter, PageableDto pageable, SortDto sortDto) {
 		Pageable currentPageable = buildPageable(pageable, sortDto);
 		List<Product> products = productRepositoryCustom.filterProductsByCriterias(filter, currentPageable);
 		List<String> colors;
-		if(filter.getColors()==null) {
+		if (filter.getColors() == null) {
 			colors = new ArrayList<>();
 		} else {
 			colors = filter.getColors().stream().map(color -> color.getId()).toList();
@@ -193,7 +195,7 @@ public class ProductServiceImpl implements ProductService {
 		return productBuilder.buildProductsShopCard(productMap, imagesMap, productColorDtos,
 				productAvailableAndStatusMap);
 	}
-	
+
 	@Override
 	public SearchResultDto searchProducts(String keyWord) {
 		List<Product> products = productRepositoryCustom.search(keyWord);
@@ -206,17 +208,13 @@ public class ProductServiceImpl implements ProductService {
 
 		if (sortDto.getFieldName() != null && sortDto.getDirection() != null) {
 			Direction direction = sortDto.getDirection().equals(DIRECTION_ASC) ? Direction.ASC : Direction.DESC;
-			if(sortDto.getFieldName().equalsIgnoreCase(SORTING_BY_PRICE)) {
-				orders.add(new Order(direction, SORTING_BY_PRICE_WITH_DISCOUNT));			
-			} 
+			if (sortDto.getFieldName().equalsIgnoreCase(SORTING_BY_PRICE)) {
+				orders.add(new Order(direction, SORTING_BY_PRICE_WITH_DISCOUNT));
+			}
 			orders.add(new Order(direction, sortDto.getFieldName()));
 		} else {
 			orders.add(new Order(DEFAULT_DIRECTION, ADDITIONAL_SORTING));
 		}
 		return PageRequest.of(pageable.getPage(), pageable.getSize(), Sort.by(orders));
-	}
-
-	private Pageable buildPageable(PageableDto pageable) {
-		return PageRequest.of(pageable.getPage(), pageable.getSize());
 	}
 }
