@@ -79,6 +79,9 @@ public class ProductServiceImpl implements ProductService {
 	public List<ProductDto> getRandomProductsByStatus(Byte status, int productCount) {
 		List<Product> products = productRepositoryCustom
 				.getRandomByStatusAndInStock(ProductStatus.valueOfDescription(status), productCount);
+		if(products.isEmpty()) {
+			return new ArrayList<>();
+		}
 		return productBuilder.buildProductDtoList(products, isMain);
 	}
 
@@ -96,6 +99,9 @@ public class ProductServiceImpl implements ProductService {
 		}
 		List<Product> products = productRepositoryCustom.getRandomByStatusAndCategoryIdAndInStock(
 				ProductStatus.valueOfDescription(status), categoriesIds, countOfProducts);
+		if(products.isEmpty()) {
+			return new ArrayList<>();
+		}
 		return productBuilder.buildProductDtoList(products, isMain);
 	}
 
