@@ -69,7 +69,7 @@ public class FavoriteProductServiceImpl implements FavoriteProductService {
 	@Override
 	public FavoriteProductsDto getFavoriteProductsByUserId(String userId, PageableDto pageable) {
 		Page<FavoriteProduct> favoriteProducts = favoriteProductsRepository.findAllByUserId(userId,
-				PageRequest.of(pageable.getPage(), pageable.getSize()));
+				buildPageable(pageable));
 		List<Product> products = getProductsByFavorites(favoriteProducts.getContent());
 		List<ProductDto> productDtoList = productBuilder.buildProductDtoList(products, true);
 		productDtoList.parallelStream().forEach(productDto -> productDto.setFavorite(true));
@@ -85,19 +85,22 @@ public class FavoriteProductServiceImpl implements FavoriteProductService {
 			PageableDto pageable) {
 		List<FavoriteProduct> favoriteProducts = favoriteProductsRepository.findAllByUserId(userId);
 		List<String> skuCodesList = favoriteProducts.stream()
-				.map(favoriteProduct -> favoriteProduct.getProductSkuCode()).toList();
+				.map(FavoriteProduct::getProductSkuCode).toList();
 		List<ObjectId> subCategoriesList = categoryRepository
 				.findAllIdsOnlyByActiveAndParentId(true, new ObjectId(categoryId)).stream().map(IdWrapper::getId)
 				.toList();
-		Page<Product> products = productRepositoryCustom.getBySkuCodeInAndCategoryIdsIn(skuCodesList, subCategoriesList,
+
+		List<Product> products = productRepositoryCustom.getBySkuCodeInAndCategoryIdsIn(skuCodesList, subCategoriesList,
 				buildPageable(pageable));
-		if (products.getContent().isEmpty()) {
+		if(products.isEmpty()) {
 			return new FavoriteProductsDto();
 		}
-		List<ProductDto> productDtoList = productBuilder.buildProductDtoList(products.getContent(), true);
+		List<ProductDto> productDtoList = productBuilder.buildProductDtoList(products, true);
 		productDtoList.parallelStream().forEach(productDto -> productDto.setFavorite(true));
-		return new FavoriteProductsDto((short) products.getTotalElements(), (short) products.getTotalPages(),
-				productDtoList);
+		FavoriteProductsDto result = FavoriteProductsDto.builder().products(productDtoList)
+				.countOfPages((short) (products.size()/pageable.getSize()))
+				.countOfProducts((short)products.size()).build();
+		return result;
 	}
 
 	private Pageable buildPageable(PageableDto pageable) {
